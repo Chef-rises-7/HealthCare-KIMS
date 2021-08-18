@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-z!(_^r0ibd(t*d&dt#ug3-3f-s=&(9lsq8p85b^#p14l7t-s_(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '10.196.7.19']
+ALLOWED_HOSTS = ['localhost', '10.196.6.86', '127.0.0.1']
 
 
 # Application definition
@@ -87,9 +87,9 @@ DATABASES = {
     # }
     'default': {
        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-       'NAME': 'healthcare',
+       'NAME': 'healthcare-kims',
        'USER': 'postgres',
-       'PASSWORD': 'root',
+       'PASSWORD': 'hrtgrt',
        'HOST': 'localhost',
        'PORT': '5432',
     },
