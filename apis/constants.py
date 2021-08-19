@@ -14,8 +14,13 @@ QR_CODE_ENCRYPTION_KEY = b'6NtNqmhcaH_AA7xx_N7w-PsncxMbsN6uMyKQFzDxwtE='
 
 ADVANCE_DAYS = 1
 
+DOSE_1 = "dose1"
+DOSE_2 = "dose2"
 AGE_GROUP_18_TO_45 = '18to45'
 AGE_GROUP_45_PLUS = '45plus'
+COVISHIELD = "covishield"
+COVAXIN = "covaxin"
+AVAILABILITY = "availability"
 
 
 BENEFICIARYS = 'beneficiaries'
@@ -30,6 +35,9 @@ VACCINATION_STATUS = 'vaccination_status'
 VACCINE = 'vaccine'
 DOSE1_DATE = 'dose1_date'
 DOSE2_DATE = 'dose2_date'
+
+START_DATE = "start_date"
+END_DATE = "end_date"
 
 PAYLOAD = 'payload'
 
@@ -49,11 +57,15 @@ DOSE_CHOICES = [
 ]
 
 VACCINE_CHOICES = [
-    ['COVISHIELD', 'COVISHIELD'],
-    ['COVAXIN', 'COVAXIN']
+    ['covishield', 'Covishield'],
+    ['covaxin', 'Covaxin']
 ]
 
 SLOT_CHOICES = [
     ['morning', 'Morning'],
     ['afternoon', 'Afternoon']
 ]
+
+# ADD SLOTS
+
+

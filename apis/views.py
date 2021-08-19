@@ -1,6 +1,6 @@
 import logging
 import sys
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 
 from django.db import transaction, IntegrityError
 from rest_framework.decorators import api_view
@@ -44,6 +44,7 @@ def generateToken(request):
                 beneficiary.phone_number = int(data[PHONE_NUMBER])
                 beneficiary.name = str(data_obj[NAME])
                 beneficiary.birth_year = str(data_obj[BIRTH_YEAR])
+                # print(str(data_obj[BIRTH_YEAR]))
                 beneficiary.gender = str(data_obj[GENDER])
                 beneficiary.photo_id_type = str(data_obj[PHOTO_ID_TYPE])
                 beneficiary.photo_id_number = str(data_obj[PHOTO_ID_NUMBER])
@@ -60,9 +61,11 @@ def generateToken(request):
                     beneficiary.dose2_date = datetime.strptime(data_obj[DOSE2_DATE], '%d-%m-%Y')
                 beneficiary.save()
             else:
+                print("Tt")
                 beneficiary = beneficiary[0]
 
             age = int(date.today().year) - int(beneficiary.birth_year)
+            # print(beneficiary.birth_year)
 
             no_of_slots_booked = 0
             slot_18_to_45 = Slot.objects.filter(date=datetime.strptime(data[DATE], '%d-%m-%Y'), slot=data[SLOT],
@@ -169,4 +172,79 @@ def verifyToken(request):
         logger.warning("Verify Token: " + str(sys.exc_info()))
         return Response({'action': "Verify Token", 'message': "Error Occurred {0}".format(
             str(sys.exc_info()[1]))},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+
+
+@api_view(['POST'])
+@transaction.atomic(durable=True)
+@precheck([DOSE_1,DOSE_2,AGE_GROUP_18_TO_45,AGE_GROUP_45_PLUS,COVISHIELD,COVAXIN,AVAILABILITY])
+def addSlots(request):
+    dose_choice = ""
+    data = request.data
+    if data[DOSE_1]:
+        dose_choice = DOSE_1
+    else:
+        dose_choice = DOSE_2
+    
+    age_group = ""
+
+    if data[AGE_GROUP_18_TO_45]:
+        age_group = AGE_GROUP_18_TO_45
+    else:
+        age_group = AGE_GROUP_45_PLUS
+
+    vaccine = ""
+    
+    if data[COVISHIELD]:
+        vaccine = COVISHIELD
+    else:
+        vaccine = COVAXIN
+    try:
+
+        slot = Slot.objects.filter(vaccine=vaccine,dose_choice=dose_choice,age_group=age_group)
+        if len(slot):
+            raise IntegrityError('Slot already generated')
+        new_slot = Slot()
+        new_slot.vaccine = vaccine
+        new_slot.date = datetime.today()
+        new_slot.slot = "morning" #Edit Later
+        new_slot.dose_choice = dose_choice
+        new_slot.age_group = age_group
+        new_slot.availability = data[AVAILABILITY]
+        new_slot.booked = 0
+        new_slot.created_at = datetime.utcnow()
+
+        new_slot.save()
+        return Response({
+            "message": "slot created successfully"
+        })
+    except IntegrityError as e:
+        return Response({'action': "Generate Token", 'message': str(e)},
+                        status=status.HTTP_400_BAD_REQUEST)
+    except:
+        logger.warning("Add Slots: " + str(sys.exc_info()))
+        return Response({'action': "Add Slots", 'message': "Error Occurred {0}".format(
+            str(sys.exc_info()[1]))}, 
+                        status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def getTokens(request):
+    # start = request.data[START_DATE]
+    # end = request.data[END_DATE]
+
+    try:
+        tokens = Token.objects.filter()
+        if not tokens:
+            return Response({
+                "message": "No Tokens found"
+            })
+        serializer = TokenSerializer(tokens,many=True)
+        # serializer.is_valid(raise_exception=True)
+        return Response(serializer.data)
+    except:
+        logger.warning("Add Slots: " + str(sys.exc_info()))
+        return Response({'action': "Add Slots", 'message': "Error Occurred {0}".format(
+            str(sys.exc_info()[1]))}, 
                         status=status.HTTP_400_BAD_REQUEST)

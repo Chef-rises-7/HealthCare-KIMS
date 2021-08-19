@@ -29,6 +29,7 @@ class Slot(models.Model):
     vaccine = models.CharField(blank=False, choices=VACCINE_CHOICES, max_length=15)
     date = models.DateField(blank=False)
     slot = models.CharField(blank=False, choices=SLOT_CHOICES, max_length=10)
+    dose_choice = models.CharField(blank=False,choices=DOSE_CHOICES,max_length=25,default=None,null=True)
     age_group = models.CharField(blank=False, choices=AGE_GROUPS, max_length=10, default=None, null=True)
     availability = models.IntegerField(blank=False)
     booked = models.IntegerField(blank=False, default=0)

@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'django_db_logger',
+    'users'
 ]
 
 MIDDLEWARE = [
@@ -144,12 +145,15 @@ STATICFILES_DIR = (
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "http://localhost:8000",
     "http://127.0.0.1:8000"
 ]
+
+AUTH_USER_MODEL = 'users.User'
 
 LOGGING = {
     'version': 1,
