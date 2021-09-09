@@ -19,10 +19,10 @@ class RegisterView(APIView):
 
 class LoginView(APIView):
     def post(self,request):
-        staffID = request.data['staffID']
+        username = request.data['username']
         password = request.data['password']
 
-        user = User.objects.filter(staffID=staffID).first()
+        user = User.objects.filter(username=username).first()
         if user is None:
             raise AuthenticationFailed("User not found!")
         
@@ -30,7 +30,7 @@ class LoginView(APIView):
             raise AuthenticationFailed("Incorrect password")
         
         payload = {
-            "staffID": user.staffID,
+            "username": user.username,
             "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=60),
             "iat": datetime.datetime.utcnow()
         }
@@ -58,7 +58,7 @@ class UserView(APIView):
         except jwt.ExpiredSignatureError:
             raise AuthenticationFailed("Unauthenticated_2")
 
-        user = User.objects.filter(staffID=payload['staffID']).first()
+        user = User.objects.filter(username=payload['username']).first()
         serializer = UserSerializer(user)
         return Response(serializer.data)
 

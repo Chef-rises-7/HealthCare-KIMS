@@ -3,9 +3,8 @@ from django.contrib.auth.models import AbstractUser
 
 # Create your models here.
 class User(AbstractUser):
-    staffID = models.CharField(max_length=250,unique=True)
     password = models.CharField(max_length=250)
-    username = None
+    username = models.CharField(max_length=250,unique=True)
 
-    USERNAME_FIELD = 'staffID'
+    USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = []

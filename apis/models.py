@@ -15,7 +15,8 @@ class Beneficiary(models.Model):
     vaccine = models.CharField(blank=True, max_length=25, choices=VACCINE_CHOICES)
     dose1_date = models.DateField(blank=True, default=None, null=True)
     dose2_date = models.DateField(blank=True, default=None, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    # created_at = models.DateTimeField(auto_now_add=True)
+    date = models.DateField(blank=False,default=None)
 
     class Meta:
         verbose_name_plural = "Beneficiaries"
@@ -28,7 +29,7 @@ class Slot(models.Model):
     id = models.AutoField(primary_key=True)
     vaccine = models.CharField(blank=False, choices=VACCINE_CHOICES, max_length=15)
     date = models.DateField(blank=False)
-    slot = models.CharField(blank=False, choices=SLOT_CHOICES, max_length=10)
+    # slot = models.CharField(blank=False, choices=SLOT_CHOICES, max_length=10)
     dose_choice = models.CharField(blank=False,choices=DOSE_CHOICES,max_length=25,default=None,null=True)
     age_group = models.CharField(blank=False, choices=AGE_GROUPS, max_length=10, default=None, null=True)
     availability = models.IntegerField(blank=False)
@@ -36,10 +37,10 @@ class Slot(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ("vaccine", "date", 'slot', 'age_group')
+        unique_together = ("vaccine", "date", 'age_group','dose_choice')
 
     def __str__(self):
-        return "{date} ({slot})".format(date=self.date, slot=self.slot)
+        return "{date} ".format(date=self.date)
 
 
 class Token(models.Model):
@@ -51,3 +52,6 @@ class Token(models.Model):
     dose = models.CharField(blank=False, max_length=10, choices=DOSE_CHOICES)
     verified = models.BooleanField(blank=False, default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+    date = models.DateField(blank=False,default=None)
+    checked = models.IntegerField(blank=False, choices=CHECKED_CHOICES,default=0)
+    created_by = models.CharField(max_length=15, blank=False, default=None)

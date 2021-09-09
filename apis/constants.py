@@ -65,6 +65,10 @@ SLOT_CHOICES = [
     ['morning', 'Morning'],
     ['afternoon', 'Afternoon']
 ]
+CHECKED_CHOICES = [
+    ['yes', 1],
+    ['no', 0]
+]
 
 # ADD SLOTS
 

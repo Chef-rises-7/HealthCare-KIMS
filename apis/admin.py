@@ -5,7 +5,7 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeText
 from .models import *
 
-admin.site.site_header = "Euprime Admin Dashboard"
+admin.site.site_header = "KIMS Admin Dashboard"
 
 
 def model_admin_url(obj, name=None) -> str:
@@ -20,10 +20,10 @@ class Beneficiary(admin.ModelAdmin):
 
 @admin.register(Slot)
 class Slot(admin.ModelAdmin):
-    list_display = ("date", "slot", "age_group", "vaccine", "availability", "booked")
-    search_fields = ("date", "slot")
+    list_display = ("date", "age_group", "vaccine", "availability", "booked")
+    search_fields = ("date",)
     ordering = ("date", "id")
-    list_filter = ("slot", "age_group", "vaccine")
+    list_filter = ("age_group", "vaccine")
 
 @admin.register(Token)
 class Token(admin.ModelAdmin):

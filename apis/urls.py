@@ -6,5 +6,6 @@ urlpatterns = [
     path('generateToken/', generateToken),
     path('getSlots/', getSlots),
     path('addSlots/',addSlots),
-    path('getTokens/',getTokens)
+    path('getTokens/',getTokens),
+    path('getBeneficiaries/',getBeneficiaries)
 ]
