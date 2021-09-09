@@ -225,7 +225,7 @@ def verifyToken(request):
 @api_view(['POST'])
 @transaction.atomic(durable=True)
 @precheck([DOSE_1,DOSE_2,AGE_GROUP_18_TO_45,AGE_GROUP_45_PLUS,COVISHIELD,COVAXIN,AVAILABILITY])
-def addSlots(request):
+def addAndUpdateSlots(request):
     dose_choice = ""
     data = request.data
     if data[DOSE_1]:
@@ -250,17 +250,20 @@ def addSlots(request):
 
         slot = Slot.objects.filter(vaccine=vaccine,dose_choice=dose_choice,age_group=age_group,date = date.today())
         if len(slot):
-            raise IntegrityError('Slot already generated')
-        new_slot = Slot()
-        new_slot.vaccine = vaccine
-        new_slot.date = datetime.today()
-        new_slot.dose_choice = dose_choice
-        new_slot.age_group = age_group
-        new_slot.availability = data[AVAILABILITY]
-        new_slot.booked = 0
-        new_slot.created_at = datetime.utcnow()
+            slot[0].availability = data[AVAILABILITY]
+            slot[0].save()
+        else:
+            new_slot = Slot()
+            new_slot.vaccine = vaccine
+            new_slot.date = datetime.today()
+            new_slot.dose_choice = dose_choice
+            new_slot.age_group = age_group
+            new_slot.availability = data[AVAILABILITY]
+            new_slot.booked = 0
+            new_slot.created_at = datetime.utcnow()
 
-        new_slot.save()
+            new_slot.save()
+        
         return Response({
             "message": "slot created successfully"
         })
