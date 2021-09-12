@@ -16,7 +16,6 @@ logger = logging.getLogger('db')
 @transaction.atomic(durable=True)
 @precheck([PHONE_NUMBER, BENEFICIARYS, DOSES])
 def generateToken(request):
-    print("loda bhenchod")
     try:
         data = request.data
         response_tokens = []
@@ -29,7 +28,6 @@ def generateToken(request):
         registration_id = generateRandomString()
 
         for data_obj in data[BENEFICIARYS]:
-            print("->" , data_obj)
             required_fields = [BENEFICIARY_ID, NAME, GENDER, BIRTH_YEAR, PHOTO_ID_TYPE, PHOTO_ID_NUMBER,
                                COMORBIDITY_IND, VACCINATION_STATUS, VACCINE, DOSE1_DATE, DOSE2_DATE]
             for field in required_fields:
@@ -94,16 +92,21 @@ def generateToken(request):
                     token.dose = data[DOSES][beneficiary.id]
                     token.date = date.today()
                     token.created_by = data[PHONE_NUMBER]
+                    token.name = data_obj[NAME]
+                    token.vaccine = data_obj[VACCINE]
+                    token.age = age
+                    token.availability = required_slot[0].availability
+                    token.booked = required_slot[0].booked + 1
                     token.save()
                     required_slot[0].booked = required_slot[0].booked + 1
                     required_slot[0].save()
 
                     ser_token = TokenSerializer(token).data
-                    ser_token["name"] = data_obj[NAME]
-                    ser_token["vaccine"] = data_obj[VACCINE]
-                    ser_token["age"] = age
+                    # ser_token["name"] = data_obj[NAME]
+                    # ser_token["vaccine"] = data_obj[VACCINE]
+                    # ser_token["age"] = age
                     ser_token["availability"] = required_slot[0].availability
-                    ser_token["booked"] = required_slot[0].booked
+                    # ser_token["booked"] = required_slot[0].booked
                     response_tokens.append(ser_token)
                 else:
                     raise IntegrityError('Token already generated')
@@ -111,7 +114,7 @@ def generateToken(request):
                 raise IntegrityError('Slot not found on ' + data[DATE] + ' '+ age_group + ', ' + data[DOSES][data_obj[BENEFICIARY_ID]] + ', ' + data_obj[VACCINE] )
                 
 
-        encrypted_registration_id = encrypt(str(registration_id))
+        encrypted_registration_id = encrypt(str(registration_id)) 
 
         return Response( 
             {'action': "Generate Token", 'message': "Beneficiaries Found", 'qr_payload': encrypted_registration_id , "response_tokens" : response_tokens},
@@ -140,6 +143,9 @@ def getBeneficiaries(request):
             for token in tokens:
                 ser_token = TokenSerializer(token).data
                 print(token.registration_id)
+                curr_slot = Slot.objects.filter(id=token.slot.id)
+                ser_token["qr_payload"] = encrypt(token.registration_id)
+                ser_token["availability"] = curr_slot[0].availability
                 if token.registration_id in beneficiaries.keys():
                     beneficiaries[token.registration_id].append(ser_token)
                 else:
@@ -156,7 +162,7 @@ def getBeneficiaries(request):
         else:
             return Response( 
             {'action': "Get Beneficiaries", 'message': "Beneficiaries Not Found"},
-            status=status.HTTP_400_OK)
+            status=status.HTTP_400_BAD_REQUEST)
 
     except:
         logger.warning("Get Beneficiaries: " + str(sys.exc_info()))

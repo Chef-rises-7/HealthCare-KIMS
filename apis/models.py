@@ -54,4 +54,8 @@ class Token(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     date = models.DateField(blank=False,default=None)
     checked = models.IntegerField(blank=False, choices=CHECKED_CHOICES,default=0)
+    name = models.CharField(blank=False, max_length=50,default=None)
+    age = models.IntegerField(blank=False,default=0)
+    vaccine = models.CharField(blank=False, choices=VACCINE_CHOICES, max_length=15,default='covishield')
+    booked = models.IntegerField(blank=False, default=0)
     created_by = models.CharField(max_length=15, blank=False, default=None)
