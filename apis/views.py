@@ -28,8 +28,7 @@ def generateToken(request):
         registration_id = generateRandomString()
 
         for data_obj in data[BENEFICIARYS]:
-            required_fields = [BENEFICIARY_ID, NAME, GENDER, BIRTH_YEAR, PHOTO_ID_TYPE, PHOTO_ID_NUMBER,
-                               COMORBIDITY_IND, VACCINATION_STATUS, VACCINE, DOSE1_DATE, DOSE2_DATE]
+            required_fields = [BENEFICIARY_ID, NAME, GENDER, BIRTH_YEAR, VACCINE]
             for field in required_fields:
                 if field not in data_obj:
                     raise ValueError(field + ' Not Found')

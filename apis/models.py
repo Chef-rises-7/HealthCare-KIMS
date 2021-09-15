@@ -4,19 +4,19 @@ from .constants import *
 
 class Beneficiary(models.Model):
     id = models.CharField(primary_key=True, blank=False, max_length=15)
-    phone_number = models.PositiveBigIntegerField(db_index=True, blank=False)
-    name = models.CharField(blank=False, max_length=50)
-    birth_year = models.IntegerField(blank=False)
-    gender = models.CharField(choices=GENDER_CHOICES, max_length=6)
-    photo_id_type = models.CharField(blank=False, max_length=25)
-    photo_id_number = models.CharField(blank=False, max_length=25)
-    comorbidity_ind = models.CharField(blank=False, max_length=4)
-    vaccination_status = models.CharField(blank=False, max_length=15)
-    vaccine = models.CharField(blank=True, max_length=25, choices=VACCINE_CHOICES)
+    phone_number = models.PositiveBigIntegerField(db_index=True, blank=True,null=True)
+    name = models.CharField(blank=True, max_length=50,null=True)
+    birth_year = models.IntegerField(blank=True,null=True)
+    gender = models.CharField(choices=GENDER_CHOICES, max_length=6,null=True)
+    photo_id_type = models.CharField(blank=True, max_length=25,null=True,default=None)
+    photo_id_number = models.CharField(blank=True, max_length=25,null=True,default=None)
+    comorbidity_ind = models.CharField(blank=True, max_length=4,null=True,default=None)
+    vaccination_status = models.CharField(blank=True, max_length=15,null=True,default=None)
+    vaccine = models.CharField(blank=True, max_length=25, choices=VACCINE_CHOICES,null=True)
     dose1_date = models.DateField(blank=True, default=None, null=True)
     dose2_date = models.DateField(blank=True, default=None, null=True)
     # created_at = models.DateTimeField(auto_now_add=True)
-    date = models.DateField(blank=False,default=None)
+    date = models.DateField(blank=True,default=None,null=True)
 
     class Meta:
         verbose_name_plural = "Beneficiaries"
