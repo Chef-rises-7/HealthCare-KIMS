@@ -28,7 +28,7 @@ def generateToken(request):
         registration_id = generateRandomString()
 
         for data_obj in data[BENEFICIARYS]:
-            required_fields = [BENEFICIARY_ID, NAME, GENDER, BIRTH_YEAR, VACCINE]
+            required_fields = [BENEFICIARY_ID, NAME, BIRTH_YEAR, VACCINE]
             for field in required_fields:
                 if field not in data_obj:
                     raise ValueError(field + ' Not Found')
@@ -44,23 +44,23 @@ def generateToken(request):
                 beneficiary.phone_number = int(data[PHONE_NUMBER])
                 beneficiary.name = str(data_obj[NAME])
                 beneficiary.birth_year = str(data_obj[BIRTH_YEAR])
-                # print(str(data_obj[BIRTH_YEAR]))
-                beneficiary.gender = str(data_obj[GENDER])
-                beneficiary.photo_id_type = str(data_obj[PHOTO_ID_TYPE])
-                beneficiary.photo_id_number = str(data_obj[PHOTO_ID_NUMBER])
-                beneficiary.comorbidity_ind = str(data_obj[COMORBIDITY_IND])
-                beneficiary.vaccination_status = str(data_obj[VACCINATION_STATUS])
                 beneficiary.vaccine = str(data_obj[VACCINE])
+                # print(str(data_obj[BIRTH_YEAR]))
+                if GENDER in data_obj.keys():
+                    beneficiary.gender = str(data_obj[GENDER])
+                    beneficiary.photo_id_type = str(data_obj[PHOTO_ID_TYPE])
+                    beneficiary.photo_id_number = str(data_obj[PHOTO_ID_NUMBER])
+                    beneficiary.comorbidity_ind = str(data_obj[COMORBIDITY_IND])
+                    beneficiary.vaccination_status = str(data_obj[VACCINATION_STATUS])
+                    if data_obj[DOSE1_DATE] == "":
+                        beneficiary.dose1_date = None
+                    else:
+                        beneficiary.dose1_date = datetime.strptime(data_obj[DOSE1_DATE], '%d-%m-%Y')
+                    if data_obj[DOSE2_DATE] == "":
+                        beneficiary.dose2_date = None
+                    else:
+                        beneficiary.dose2_date = datetime.strptime(data_obj[DOSE2_DATE], '%d-%m-%Y')
                 beneficiary.date = date.today()
-
-                if data_obj[DOSE1_DATE] == "":
-                    beneficiary.dose1_date = None
-                else:
-                    beneficiary.dose1_date = datetime.strptime(data_obj[DOSE1_DATE], '%d-%m-%Y')
-                if data_obj[DOSE2_DATE] == "":
-                    beneficiary.dose2_date = None
-                else:
-                    beneficiary.dose2_date = datetime.strptime(data_obj[DOSE2_DATE], '%d-%m-%Y')
                 beneficiary.save()
             else:
                 beneficiary = beneficiary[0]
@@ -133,7 +133,7 @@ def generateToken(request):
 
 @api_view(['POST'])
 @precheck([PHONE_NUMBER])
-def getBeneficiaries(request):
+def getActiveSlots(request):
     try:
         data = request.data
         beneficiaries = {}

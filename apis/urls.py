@@ -7,5 +7,5 @@ urlpatterns = [
     path('getSlots/', getSlots),
     path('addAndUpdateSlots/',addAndUpdateSlots),
     path('getTokens/',getTokens),
-    path('getBeneficiaries/',getBeneficiaries)
+    path('getActiveSlots/',getActiveSlots)
 ]
