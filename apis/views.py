@@ -18,6 +18,7 @@ logger = logging.getLogger('db')
 def generateToken(request):
     try:
         data = request.data
+        print(data)
         response_tokens = []
         # if (datetime.strptime(data[DATE], '%d-%m-%Y').date() - date.today()).days > ADVANCE_DAYS:
         #     raise RuntimeError("Can't book slots on this Day")
@@ -123,7 +124,7 @@ def generateToken(request):
                 else:
                     raise IntegrityError('Token already generated')
             else:
-                raise IntegrityError('Slot not found on ' + data[DATE] + ' '+ age_group + ', ' + data[DOSES][data_obj[BENEFICIARY_ID]] + ', ' + data_obj[VACCINE] )
+                raise IntegrityError('Slot not found on ' + date.today() + ' '+ age_group + ', ' + data[DOSES][data_obj[BENEFICIARY_ID]] + ', ' + data_obj[VACCINE] )
                 
 
         encrypted_registration_id = encrypt(str(registration_id)) 
