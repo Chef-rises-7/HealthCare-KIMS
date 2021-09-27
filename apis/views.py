@@ -32,9 +32,22 @@ def generateToken(request):
             for field in required_fields:
                 if field not in data_obj:
                     raise ValueError(field + ' Not Found')
-
             if data_obj[BENEFICIARY_ID] not in data[DOSES]:
                 raise IntegrityError(BENEFICIARY_ID + " " + data_obj[BENEFICIARY_ID] + ' is not present in ' + DOSES)
+
+        for data_obj in data[BENEFICIARYS]:
+            beneficiary = Beneficiary.objects.filter(id=str(data_obj[BENEFICIARY_ID]), date = date.today())
+            if(len(beneficiary)):
+                raise ValueError("name: "+data_obj[NAME]+" beneficiaryId: "+data_obj[BENEFICIARY_ID]+" already booked.")
+
+        for data_obj in data[BENEFICIARYS]:
+            # required_fields = [BENEFICIARY_ID, NAME, BIRTH_YEAR, VACCINE]
+            # for field in required_fields:
+            #     if field not in data_obj:
+            #         raise IntegrityError(field + ' Not Found')
+
+            # if data_obj[BENEFICIARY_ID] not in data[DOSES]:
+            #     raise IntegrityError(BENEFICIARY_ID + " " + data_obj[BENEFICIARY_ID] + ' is not present in ' + DOSES)
 
             beneficiary = Beneficiary.objects.filter(id=str(data_obj[BENEFICIARY_ID]), date = date.today())
 

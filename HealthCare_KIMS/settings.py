@@ -92,7 +92,8 @@ DATABASES = {
        'USER': 'postgres',
        'PASSWORD': 'hrtgrt',
        'HOST': 'localhost',
-       'PORT': '5432',
+       'PORT': '5432'
+    #    'ATOMIC_REQUESTS' : True
     },
 }
 
