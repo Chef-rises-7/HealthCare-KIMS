@@ -27,8 +27,6 @@ import EventAvailableIcon from "@material-ui/icons/EventAvailable";
 import { makeStyles } from "@material-ui/core/styles";
 import Chip from "@material-ui-new/core/Chip";
 const BeneficiaryCard = (props) => {
-  // name, age, birth_year, photo_id_type, photo_id_number, isDose1, isDose2
-  //const navigate = useNavigate();
   const { match, history } = props;
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   let formikref = React.useRef(null);
@@ -77,6 +75,7 @@ const BeneficiaryCard = (props) => {
     birth_year: 2021,
     photo_id_number,
   };
+
   const classes = useStyles();
   return (
     <>

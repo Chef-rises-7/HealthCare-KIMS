@@ -98,26 +98,6 @@ const ActiveSlotCard = (props) => {
                   style={{ marginRight: "5px" }}
                 />
                 Token number(s): {props.tokenIds}
-                {/* <div
-                  style={{
-                    display: "flex",
-                    flexGrow: 1,
-                    alignItems: "flex-end",
-                    justifyContent: "flex-end",
-                  }}
-                >
-                  <Chip
-                    className={classes.chip}
-                    style={{
-                      background: "#1fd451",
-                      color: "#ffffff",
-                      fontSize: "14px",
-                      fontWeight: "bold",
-                    }}
-                    label="Confirmed"
-                    icon={<CheckOutlinedIcon style={{ color: "#ffffff" }} />}
-                  />
-                </div> */}
               </div>
             </Grid>
           </Grid>

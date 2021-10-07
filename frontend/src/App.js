@@ -25,43 +25,44 @@ function App() {
           <Route
             exact
             path="/signinotp"
-            render={(props) => <Signin {...props} />}
+            render={(props) => <Signin {...props} />} //Initial route
           />
           <Route
             exact
-            path="/signinstaff"
+            path="/signinstaff" // for staff login, not configured yet
             render={(props) => <SigninStaff {...props} />}
           />
           <Route
             exact
-            path="/signinverify"
+            path="/signinverify" // OTP Verification
             render={(props) => <SigninVerify {...props} />}
           />
           <Route
             exact
-            path="/dashboard"
+            path="/dashboard" // for data visualisation, not configured yet
             render={(props) => <Statistics {...props} />}
           />
           <Route
             exact
-            path="/beneficiary"
+            path="/beneficiary" // display beneficiary details
             render={(props) => <BeneficiaryVerify {...props} />}
           />
           <Route
             exact
-            path="/slotBookingForm"
+            path="/slotBookingForm" // alternate slot booking form
             render={(props) => <SlotBookingForm {...props} />}
           />
           <Route
             exact
-            path="/slotBooking"
+            path="/slotBooking" // book slots with general flow
             render={(props) => <SlotBooking {...props} />}
           />
           <Route
             exact
-            path="/confirmPage"
+            path="/confirmPage" // slot confirmation page
             render={(props) => <ConfirmationPage {...props} />}
           />
+
           <Redirect to="/signinotp" />
         </Switch>
       </ThemeProvider>

@@ -92,7 +92,7 @@ const AvailableSlots = (props) => {
               </div>
               <div
                 style={{
-                  display: "flex",
+                  display: "flex", // Set tag values according to props
                   flexGrow: 1,
                   alignItems: "flex-end",
                 }}

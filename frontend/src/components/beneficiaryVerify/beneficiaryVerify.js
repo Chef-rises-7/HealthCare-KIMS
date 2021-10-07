@@ -58,7 +58,6 @@ const BeneficiaryVerify = (props) => {
     // aEl.click();
     // document.body.removeChild(aEl);
     // Don't forget, that there are CORS-Restrictions. So if you want to run it without a Server in your Browser you need to transform the image to a dataURL
-    // Use http://dataurl.net/#dataurlmaker
     var doc = new jsPDF();
     doc.setFontSize(20);
     var line = 20; // Line height to start text at
