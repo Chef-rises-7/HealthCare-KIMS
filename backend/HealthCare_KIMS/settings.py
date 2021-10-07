@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import os
 from pathlib import Path
+import django_heroku
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-z!(_^r0ibd(t*d&dt#ug3-3f-s=&(9lsq8p85b^#p14l7t-s_('
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['localhost', '10.196.6.86', '127.0.0.1','0.0.0.0','10.196.8.137','10.196.4.79']
 
@@ -90,12 +91,29 @@ DATABASES = {
        'ENGINE': 'django.db.backends.postgresql_psycopg2',
        'NAME': 'healthcare-kims',
        'USER': 'postgres',
-       'PASSWORD': 'hrtgrt',
+       'PASSWORD': 'pj@iitdh',
        'HOST': 'localhost',
        'PORT': '5432'
     #    'ATOMIC_REQUESTS' : True
     },
 }
+
+# Database settings for hosted on heroku
+# DATABASES = {
+#     # 'default': {
+#     #     'ENGINE': 'django.db.backends.sqlite3',
+#     #     'NAME': BASE_DIR / 'db.sqlite3',
+#     # }
+#     'default': {
+#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#        'NAME': 'dba20ge8m3kcke',
+#        'USER': 'xqozgcigztmjec',
+#        'PASSWORD': 'f5cc4d89866d6b386a9060fa65a63aaa021a131ab14729aa2bee844a1531be86',
+#        'HOST': 'ec2-44-198-154-255.compute-1.amazonaws.com',
+#        'PORT': '5432'
+#     #    'ATOMIC_REQUESTS' : True
+#     },
+# }
 
 
 # Password validation
@@ -180,3 +198,6 @@ LOGGING = {
         }
     }
 }
+
+# Activate Django-Heroku.
+django_heroku.settings(locals())
