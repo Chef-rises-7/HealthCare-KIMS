@@ -14,52 +14,42 @@ logger = logging.getLogger('db')
 
 @api_view(['POST'])
 @transaction.atomic(durable=True)
-@precheck([PHONE_NUMBER, BENEFICIARYS, DOSES])
-def generateToken(request):
+@precheck([PHONE_NUMBER, BENEFICIARYS, DOSES])  # Prechecks for the request parameters sent.
+def generateToken(request): # It generates a beneficiary for a user if not present. Generate token for users if not present. If errors are present it responses respective error message.
     try:
         data = request.data
         print(data)
         response_tokens = []
-        # if (datetime.strptime(data[DATE], '%d-%m-%Y').date() - date.today()).days > ADVANCE_DAYS:
-        #     raise RuntimeError("Can't book slots on this Day")
 
-        if len(data[BENEFICIARYS]) != len(data[DOSES]):
+        if len(data[BENEFICIARYS]) != len(data[DOSES]): # Length of beneficiaries and doses fields should be equal.
             raise RuntimeError("Length of " + BENEFICIARYS + " and " + DOSES + " is different")
 
-        registration_id = generateRandomString()
+        registration_id = generateRandomString()  # It generates random string.
 
-        for data_obj in data[BENEFICIARYS]:
+        for data_obj in data[BENEFICIARYS]: # Prechecks for required field of beneficiaries for each user.
             required_fields = [BENEFICIARY_ID, NAME, BIRTH_YEAR, VACCINE]
             for field in required_fields:
                 if field not in data_obj:
                     raise ValueError(field + ' Not Found')
-            if data_obj[BENEFICIARY_ID] not in data[DOSES]:
+            if data_obj[BENEFICIARY_ID] not in data[DOSES]: # Beneficiary id present in beneficiaries field should also be present in doses field.
                 raise IntegrityError(BENEFICIARY_ID + " " + data_obj[BENEFICIARY_ID] + ' is not present in ' + DOSES)
 
-        for data_obj in data[BENEFICIARYS]:
+        for data_obj in data[BENEFICIARYS]:  # Checks if a user have already booked a token for the current day.
             beneficiary = Beneficiary.objects.filter(id=str(data_obj[BENEFICIARY_ID]), date = date.today())
             if(len(beneficiary)):
                 raise ValueError("name: "+data_obj[NAME]+" beneficiaryId: "+data_obj[BENEFICIARY_ID]+" already booked.")
 
-        for data_obj in data[BENEFICIARYS]:
-            # required_fields = [BENEFICIARY_ID, NAME, BIRTH_YEAR, VACCINE]
-            # for field in required_fields:
-            #     if field not in data_obj:
-            #         raise IntegrityError(field + ' Not Found')
-
-            # if data_obj[BENEFICIARY_ID] not in data[DOSES]:
-            #     raise IntegrityError(BENEFICIARY_ID + " " + data_obj[BENEFICIARY_ID] + ' is not present in ' + DOSES)
+        for data_obj in data[BENEFICIARYS]: # Generates a beneficiary and token for each user sequentially.
 
             beneficiary = Beneficiary.objects.filter(id=str(data_obj[BENEFICIARY_ID]), date = date.today())
 
-            if not len(beneficiary):
+            if not len(beneficiary): # Checks if the beneficiary is already present for the user on the current day.
                 beneficiary = Beneficiary()
                 beneficiary.id = str(data_obj[BENEFICIARY_ID])
                 beneficiary.phone_number = int(data[PHONE_NUMBER])
                 beneficiary.name = str(data_obj[NAME])
                 beneficiary.birth_year = str(data_obj[BIRTH_YEAR])
                 beneficiary.vaccine = str(data_obj[VACCINE])
-                # print(str(data_obj[BIRTH_YEAR]))
                 if GENDER in data_obj.keys():
                     beneficiary.gender = str(data_obj[GENDER])
                     beneficiary.photo_id_type = str(data_obj[PHOTO_ID_TYPE])
@@ -86,12 +76,14 @@ def generateToken(request):
 
             total_slots = Slot.objects.filter(date=date.today())
             for slot in total_slots:
-                no_of_slots_booked+=slot.booked
+                no_of_slots_booked+=slot.booked  #total number of tokens booked on the current day.
             age_group = ""
-            if 45 > age >= 18:
+            if 45 > age >= 18: # Determining age group of the user.
                 age_group = "18to45"
             else:
                 age_group = "45plus"
+
+            # Find a slot with respect to user details on the current day.
             required_slot = Slot.objects.filter(date=date.today(),dose_choice=data[DOSES][data_obj[BENEFICIARY_ID]],age_group=age_group,vaccine=data_obj[VACCINE])
             
             if len(required_slot):
@@ -115,11 +107,7 @@ def generateToken(request):
                     required_slot[0].save()
 
                     ser_token = TokenSerializer(token).data
-                    # ser_token["name"] = data_obj[NAME]
-                    # ser_token["vaccine"] = data_obj[VACCINE]
-                    # ser_token["age"] = age
                     ser_token["availability"] = required_slot[0].availability
-                    # ser_token["booked"] = required_slot[0].booked
                     response_tokens.append(ser_token)
                 else:
                     raise IntegrityError('Token already generated')
@@ -127,7 +115,7 @@ def generateToken(request):
                 raise IntegrityError('Slot not found on ' + date.today() + ' '+ age_group + ', ' + data[DOSES][data_obj[BENEFICIARY_ID]] + ', ' + data_obj[VACCINE] )
                 
 
-        encrypted_registration_id = encrypt(str(registration_id)) 
+        encrypted_registration_id = encrypt(str(registration_id)) # Encrypts the registration id.
 
         return Response( 
             {'action': "Generate Token", 'message': "Beneficiaries Found", 'qr_payload': encrypted_registration_id , "response_tokens" : response_tokens},
@@ -147,7 +135,7 @@ def generateToken(request):
 
 @api_view(['POST'])
 @precheck([PHONE_NUMBER])
-def getActiveSlots(request):
+def getActiveSlots(request):  # Responses the tokens generated by a particular user.
     try:
         data = request.data
         beneficiaries = {}
@@ -163,12 +151,6 @@ def getActiveSlots(request):
                     beneficiaries[token.registration_id].append(ser_token)
                 else:
                     beneficiaries[token.registration_id] = [ser_token]
-                    # beneficiaries[token.registration_id].append(ser_token)
-            # beneficiaries = Token.objects.filter(registration_id = token[0].registration_id , date = date.today())
-            # beneficiaries_data = []
-            # for beneficiary in beneficiaries:
-            #     bene_data=BeneficiarySerializer(beneficiary).data
-            #     beneficiaries_data.append(bene_data)
             return Response( 
             {'action': "Get Beneficiaries", 'message': "Beneficiaries Found", 'data': beneficiaries},
             status=status.HTTP_200_OK)
@@ -184,7 +166,7 @@ def getActiveSlots(request):
                         status=status.HTTP_400_BAD_REQUEST)
 
 
-def create_slot(vaccine,dose_choice,age_group):
+def create_slot(vaccine,dose_choice,age_group):  # Creates a instance of a Slot.
     new_slot = Slot()
     new_slot.vaccine = vaccine
     new_slot.date = date.today()
@@ -199,11 +181,11 @@ def create_slot(vaccine,dose_choice,age_group):
 
 
 @api_view(['GET'])
-def getSlots(request):
+def getSlots(request): # Responses Slot information for the current day.
     try:
         slots = Slot.objects.filter(date=date.today())
         data = []
-        if len(slots) == 0:
+        if len(slots) == 0: # If no slots are created so far, it creates 8 slots for the current day.
             data.append(create_slot("covishield",'dose1','18to45'))
             data.append(create_slot("covishield",'dose1','45plus'))
             data.append(create_slot("covishield",'dose2','18to45'))
@@ -244,24 +226,24 @@ def verifyToken(request):
 @api_view(['POST'])
 @transaction.atomic(durable=True)
 @precheck([DOSE_1,DOSE_2,AGE_GROUP_18_TO_45,AGE_GROUP_45_PLUS,COVISHIELD,COVAXIN,AVAILABILITY])
-def addAndUpdateSlots(request):
+def addAndUpdateSlots(request): #Adds a Slot if not present or Update it for the current day.
     dose_choice = ""
     data = request.data
-    if data[DOSE_1]:
+    if data[DOSE_1]: # Determine dose choice for the slot.
         dose_choice = DOSE_1
     else:
         dose_choice = DOSE_2
     
     age_group = ""
 
-    if data[AGE_GROUP_18_TO_45]:
+    if data[AGE_GROUP_18_TO_45]: # Determine age group for the slot.
         age_group = AGE_GROUP_18_TO_45
     else:
         age_group = AGE_GROUP_45_PLUS
 
     vaccine = ""
     
-    if data[COVISHIELD]:
+    if data[COVISHIELD]:  # Determine vaccine for the slot.
         vaccine = COVISHIELD
     else:
         vaccine = COVAXIN
@@ -297,9 +279,7 @@ def addAndUpdateSlots(request):
 
 
 @api_view(['GET'])
-def getTokens(request):
-    # start = request.data[START_DATE]
-    # end = request.data[END_DATE]
+def getTokens(request):  # Responses all the tokens generated so far.
 
     try:
         tokens = Token.objects.filter()
@@ -308,7 +288,6 @@ def getTokens(request):
                 "message": "No Tokens found"
             })
         serializer = TokenSerializer(tokens,many=True)
-        # serializer.is_valid(raise_exception=True)
         return Response(serializer.data)
     except:
         logger.warning("Add Slots: " + str(sys.exc_info()))

@@ -2,6 +2,8 @@ from rest_framework import serializers
 
 from .models import *
 
+
+#Used serializers to convert querySet to json object.
 class SlotSerializer(serializers.ModelSerializer):
     class Meta:
         model = Slot

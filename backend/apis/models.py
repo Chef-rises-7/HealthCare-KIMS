@@ -2,7 +2,7 @@ from django.db import models
 from .constants import *
 
 
-class Beneficiary(models.Model):
+class Beneficiary(models.Model):   #Beneficiary model consisiting of following attributes. Each user will have one instance of this model for a particular day. 
     id = models.CharField(primary_key=True, blank=False, max_length=15)
     phone_number = models.PositiveBigIntegerField(db_index=True, blank=True,null=True)
     name = models.CharField(blank=True, max_length=50,null=True)
@@ -25,7 +25,7 @@ class Beneficiary(models.Model):
         return "{name} ({id})".format(name=self.name, id=self.id)
 
 
-class Slot(models.Model):
+class Slot(models.Model):  #Slot model consisting of following attributes. There are 8 instances of this model for a particular day.
     id = models.AutoField(primary_key=True)
     vaccine = models.CharField(blank=False, choices=VACCINE_CHOICES, max_length=15)
     date = models.DateField(blank=False)
@@ -43,7 +43,7 @@ class Slot(models.Model):
         return "{date} ".format(date=self.date)
 
 
-class Token(models.Model):
+class Token(models.Model):  #Token model consisting of following attributes. Each booked user will a instance of this model associated with them for a particular day.
     id = models.AutoField(primary_key=True)
     registration_id = models.CharField(max_length=15, blank=False, default=None, null=True)
     token_number = models.IntegerField(blank=False)

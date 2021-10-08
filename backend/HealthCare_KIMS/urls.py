@@ -18,6 +18,6 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('apis/', include('apis.urls')),
-    path('auth/',include('users.urls'))
+    path('apis/', include('apis.urls')), #All the requests having apis/ as prefix route will use apis(app) url
+    path('auth/',include('users.urls')) #All the requests having auth/ as prefix route will use auth(app) url
 ]

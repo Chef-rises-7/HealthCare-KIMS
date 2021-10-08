@@ -99,7 +99,7 @@ WSGI_APPLICATION = 'HealthCare_KIMS.wsgi.application'
 # }
 
 # Database settings for hosted on heroku
-DATABASES = {
+DATABASES = {                                       #Details of postgresql database hosted on heroku.
     # 'default': {
     #     'ENGINE': 'django.db.backends.sqlite3',
     #     'NAME': BASE_DIR / 'db.sqlite3',

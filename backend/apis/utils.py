@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from cryptography.fernet import Fernet
 from .constants import *
 
-
+# precheck function used to check if all the parameters are present before calling a API function.
 def precheck(required_data=None):
     if required_data is None:
         required_data = []
