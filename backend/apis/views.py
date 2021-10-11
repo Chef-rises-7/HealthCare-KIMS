@@ -41,33 +41,28 @@ def generateToken(request): # It generates a beneficiary for a user if not prese
 
         for data_obj in data[BENEFICIARYS]: # Generates a beneficiary and token for each user sequentially.
 
-            beneficiary = Beneficiary.objects.filter(id=str(data_obj[BENEFICIARY_ID]), date = date.today())
-
-            if not len(beneficiary): # Checks if the beneficiary is already present for the user on the current day.
-                beneficiary = Beneficiary()
-                beneficiary.id = str(data_obj[BENEFICIARY_ID])
-                beneficiary.phone_number = int(data[PHONE_NUMBER])
-                beneficiary.name = str(data_obj[NAME])
-                beneficiary.birth_year = str(data_obj[BIRTH_YEAR])
-                beneficiary.vaccine = str(data_obj[VACCINE])
-                if GENDER in data_obj.keys():
-                    beneficiary.gender = str(data_obj[GENDER])
-                    beneficiary.photo_id_type = str(data_obj[PHOTO_ID_TYPE])
-                    beneficiary.photo_id_number = str(data_obj[PHOTO_ID_NUMBER])
-                    beneficiary.comorbidity_ind = str(data_obj[COMORBIDITY_IND])
-                    beneficiary.vaccination_status = str(data_obj[VACCINATION_STATUS])
-                    if data_obj[DOSE1_DATE] == "":
-                        beneficiary.dose1_date = None
-                    else:
-                        beneficiary.dose1_date = datetime.strptime(data_obj[DOSE1_DATE], '%d-%m-%Y')
-                    if data_obj[DOSE2_DATE] == "":
-                        beneficiary.dose2_date = None
-                    else:
-                        beneficiary.dose2_date = datetime.strptime(data_obj[DOSE2_DATE], '%d-%m-%Y')
-                beneficiary.date = date.today()
-                beneficiary.save()
-            else:
-                beneficiary = beneficiary[0]
+            beneficiary = Beneficiary()
+            beneficiary.id = str(data_obj[BENEFICIARY_ID])
+            beneficiary.phone_number = int(data[PHONE_NUMBER])
+            beneficiary.name = str(data_obj[NAME])
+            beneficiary.birth_year = str(data_obj[BIRTH_YEAR])
+            beneficiary.vaccine = str(data_obj[VACCINE])
+            if GENDER in data_obj.keys():
+                beneficiary.gender = str(data_obj[GENDER])
+                beneficiary.photo_id_type = str(data_obj[PHOTO_ID_TYPE])
+                beneficiary.photo_id_number = str(data_obj[PHOTO_ID_NUMBER])
+                beneficiary.comorbidity_ind = str(data_obj[COMORBIDITY_IND])
+                beneficiary.vaccination_status = str(data_obj[VACCINATION_STATUS])
+                if data_obj[DOSE1_DATE] == "":
+                    beneficiary.dose1_date = None
+                else:
+                    beneficiary.dose1_date = datetime.strptime(data_obj[DOSE1_DATE], '%d-%m-%Y')
+                if data_obj[DOSE2_DATE] == "":
+                    beneficiary.dose2_date = None
+                else:
+                    beneficiary.dose2_date = datetime.strptime(data_obj[DOSE2_DATE], '%d-%m-%Y')
+            beneficiary.date = date.today()
+            beneficiary.save()
 
             age = int(date.today().year) - int(beneficiary.birth_year)
             print("age: ",age)
