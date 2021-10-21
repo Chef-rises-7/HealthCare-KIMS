@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-z!(_^r0ibd(t*d&dt#ug3-3f-s=&(9lsq8p85b^#p14l7t-s_('
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', '10.196.6.86', '127.0.0.1','0.0.0.0','10.196.8.137','10.196.4.79',"https://healthcarekims.herokuapp.com/ "]
 
@@ -82,38 +82,38 @@ WSGI_APPLICATION = 'HealthCare_KIMS.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-# DATABASES = {
-#     # 'default': {
-#     #     'ENGINE': 'django.db.backends.sqlite3',
-#     #     'NAME': BASE_DIR / 'db.sqlite3',
-#     # }
-#     'default': {
-#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#        'NAME': 'healthcare-kims',
-#        'USER': 'postgres',
-#        'PASSWORD': 'pj@iitdh',
-#        'HOST': 'localhost',
-#        'PORT': '5432'
-#     #    'ATOMIC_REQUESTS' : True
-#     },
-# }
-
-# Database settings for hosted on heroku
-DATABASES = {                                       #Details of postgresql database hosted on heroku.
+DATABASES = {
     # 'default': {
     #     'ENGINE': 'django.db.backends.sqlite3',
     #     'NAME': BASE_DIR / 'db.sqlite3',
     # }
     'default': {
        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-       'NAME': 'dba20ge8m3kcke',
-       'USER': 'xqozgcigztmjec',
-       'PASSWORD': '93d005f7f73328506a3ddd8fe00c19254ebca1c6750fb45241f95b627d5bfa8a',
-       'HOST': 'ec2-44-198-154-255.compute-1.amazonaws.com',
+       'NAME': 'healthcare-kims',
+       'USER': 'postgres',
+       'PASSWORD': 'pj@iitdh',
+       'HOST': 'localhost',
        'PORT': '5432'
     #    'ATOMIC_REQUESTS' : True
     },
 }
+
+# Database settings for hosted on heroku
+# DATABASES = {                                       #Details of postgresql database hosted on heroku.
+#     # 'default': {
+#     #     'ENGINE': 'django.db.backends.sqlite3',
+#     #     'NAME': BASE_DIR / 'db.sqlite3',
+#     # }
+#     'default': {
+#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#        'NAME': 'dba20ge8m3kcke',
+#        'USER': 'xqozgcigztmjec',
+#        'PASSWORD': '93d005f7f73328506a3ddd8fe00c19254ebca1c6750fb45241f95b627d5bfa8a',
+#        'HOST': 'ec2-44-198-154-255.compute-1.amazonaws.com',
+#        'PORT': '5432'
+#     #    'ATOMIC_REQUESTS' : True
+#     },
+# }
 
 
 # Password validation

@@ -9,6 +9,9 @@ from .models import *
 from .serializers import *
 from .utils import *
 
+import jwt
+from rest_framework.exceptions import AuthenticationFailed
+
 logger = logging.getLogger('db')
 
 
@@ -222,6 +225,13 @@ def verifyToken(request):
 @transaction.atomic(durable=True)
 @precheck([DOSE_1,DOSE_2,AGE_GROUP_18_TO_45,AGE_GROUP_45_PLUS,COVISHIELD,COVAXIN,AVAILABILITY])
 def addAndUpdateSlots(request): #Adds a Slot if not present or Update it for the current day.
+    token = request.COOKIES.get('jwt')
+
+    try:
+        payload = jwt.decode(token,'SECRET_KEY',algorithms=["HS256"])
+    except jwt.ExpiredSignatureError:
+        raise AuthenticationFailed("Unauthenticated_2")
+
     dose_choice = ""
     data = request.data
     if data[DOSE_1]: # Determine dose choice for the slot.
@@ -260,11 +270,11 @@ def addAndUpdateSlots(request): #Adds a Slot if not present or Update it for the
 
             new_slot.save()
         
-        return Response({
+        return Response({'action': "Add Slots",
             "message": "slot created successfully"
         })
     except IntegrityError as e:
-        return Response({'action': "Generate Token", 'message': str(e)},
+        return Response({'action': "Add Slots", 'message': str(e)},
                         status=status.HTTP_400_BAD_REQUEST)
     except:
         logger.warning("Add Slots: " + str(sys.exc_info()))
@@ -275,10 +285,33 @@ def addAndUpdateSlots(request): #Adds a Slot if not present or Update it for the
 
 @api_view(['GET'])
 def getTokens(request):  # Responses all the tokens generated so far.
-
+    data = request.data
     try:
-        tokens = Token.objects.filter()
-        if not tokens:
+        if "specification" not in data.keys():
+            raise IntegrityError("specification not found")
+        
+        specification = data["specification"]
+        if specification == "all":
+            tokens = Token.objects.filter()
+        elif specification == "byDate":
+            if "date" not in data.keys():
+                raise IntegrityError("date not found")
+            tokens = Token.objects.filter(date=data["date"])
+        elif specification == "byFromToDate":
+            if "fromDate" not in data.keys():
+                raise IntegrityError("fromDate not found")
+            if "toDate" not in data.keys():
+                raise IntegrityError("toDate not found")
+            tokens = Token.objects.filter(date__range=[data["fromDate"],data["toDate"]])
+        elif specification == "byMonth":
+            if "year" not in data.keys():
+                raise IntegrityError("year not found")
+            if "month" not in data.keys():
+                raise IntegrityError("month not found")
+            tokens = Token.objects.filter(date__year=data["year"],date__month=data["month"])
+        else:
+            raise IntegrityError("wrong specification")
+        if not len(tokens):
             return Response({
                 "message": "No Tokens found"
             })

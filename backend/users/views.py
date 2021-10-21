@@ -39,6 +39,7 @@ class LoginView(APIView):
         response = Response()
         response.set_cookie(key="jwt",value=token,httponly=True)
         response.data = {
+            'action': "Login",
             "message": "Success",
             "jwt": token
         }
@@ -67,6 +68,7 @@ class LogoutView(APIView):
         response = Response()
         response.delete_cookie('jwt')
         response.data = {
+            'action': "Logout",
             "message": "Success"
         }
 
