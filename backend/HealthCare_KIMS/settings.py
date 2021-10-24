@@ -82,38 +82,38 @@ WSGI_APPLICATION = 'HealthCare_KIMS.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'db.sqlite3',
-    # }
-    'default': {
-       'ENGINE': 'django.db.backends.postgresql_psycopg2',
-       'NAME': 'healthcare-kims',
-       'USER': 'postgres',
-       'PASSWORD': 'pj@iitdh',
-       'HOST': 'localhost',
-       'PORT': '5432'
-    #    'ATOMIC_REQUESTS' : True
-    },
-}
-
-# Database settings for hosted on heroku
-# DATABASES = {                                       #Details of postgresql database hosted on heroku.
+# DATABASES = {
 #     # 'default': {
 #     #     'ENGINE': 'django.db.backends.sqlite3',
 #     #     'NAME': BASE_DIR / 'db.sqlite3',
 #     # }
 #     'default': {
 #        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#        'NAME': 'dba20ge8m3kcke',
-#        'USER': 'xqozgcigztmjec',
-#        'PASSWORD': '93d005f7f73328506a3ddd8fe00c19254ebca1c6750fb45241f95b627d5bfa8a',
-#        'HOST': 'ec2-44-198-154-255.compute-1.amazonaws.com',
+#        'NAME': 'healthcare-kims',
+#        'USER': 'postgres',
+#        'PASSWORD': 'pj@iitdh',
+#        'HOST': 'localhost',
 #        'PORT': '5432'
 #     #    'ATOMIC_REQUESTS' : True
 #     },
 # }
+
+# Database settings for hosted on heroku
+DATABASES = {                                       #Details of postgresql database hosted on heroku.
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'db.sqlite3',
+    # }
+    'default': {
+       'ENGINE': 'django.db.backends.postgresql_psycopg2',
+       'NAME': 'dba20ge8m3kcke',
+       'USER': 'xqozgcigztmjec',
+       'PASSWORD': 'f5cc4d89866d6b386a9060fa65a63aaa021a131ab14729aa2bee844a1531be86',
+       'HOST': 'ec2-44-198-154-255.compute-1.amazonaws.com',
+       'PORT': '5432'
+    #    'ATOMIC_REQUESTS' : True
+    },
+}
 
 
 # Password validation
