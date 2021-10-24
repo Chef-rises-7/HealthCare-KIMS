@@ -180,6 +180,7 @@ def create_slot(vaccine,dose_choice,age_group):  # Creates a instance of a Slot.
 
 @api_view(['GET'])
 def getSlots(request): # Responses Slot information for the current day.
+
     try:
         slots = Slot.objects.filter(date=date.today())
         data = []
@@ -225,7 +226,9 @@ def verifyToken(request):
 @transaction.atomic(durable=True)
 @precheck([DOSE_1,DOSE_2,AGE_GROUP_18_TO_45,AGE_GROUP_45_PLUS,COVISHIELD,COVAXIN,AVAILABILITY])
 def addAndUpdateSlots(request): #Adds a Slot if not present or Update it for the current day.
-    token = request.COOKIES.get('jwt')
+    # token = request.COOKIES.get('jwt')
+    print(request.headers)
+    token = request.headers["Authorization"][7:]
 
     try:
         payload = jwt.decode(token,'SECRET_KEY',algorithms=["HS256"])
@@ -269,9 +272,13 @@ def addAndUpdateSlots(request): #Adds a Slot if not present or Update it for the
             new_slot.created_at = datetime.utcnow()
 
             new_slot.save()
+
+        slots = Slot.objects.filter(date=date.today())
+        data = SlotSerializer(slots, many=True).data
         
         return Response({'action': "Add Slots",
-            "message": "slot created successfully"
+            "message": "slot created successfully",
+            'data': data
         })
     except IntegrityError as e:
         return Response({'action': "Add Slots", 'message': str(e)},
@@ -283,9 +290,21 @@ def addAndUpdateSlots(request): #Adds a Slot if not present or Update it for the
                         status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 def getTokens(request):  # Responses all the tokens generated so far.
     data = request.data
+
+    # token = request.COOKIES.get('jwt')
+    print(request)
+    token = request.headers["Authorization"][7:]
+    print(token)
+
+    try:
+        payload = jwt.decode(token,'SECRET_KEY',algorithms=["HS256"])
+    except jwt.ExpiredSignatureError:
+        raise AuthenticationFailed("Unauthenticated_2")
+
+    
     try:
         if "specification" not in data.keys():
             raise IntegrityError("specification not found")

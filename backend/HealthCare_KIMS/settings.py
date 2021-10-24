@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-z!(_^r0ibd(t*d&dt#ug3-3f-s=&(9lsq8p85b^#p14l7t-s_(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '10.196.6.86', '127.0.0.1','0.0.0.0','10.196.8.137','10.196.4.79',"https://healthcarekims.herokuapp.com/ "]
+ALLOWED_HOSTS = ['localhost', '10.196.6.86', '127.0.0.1','0.0.0.0','10.196.8.137','10.196.4.79',"https://healthcarekims.herokuapp.com/ ","10.196.9.19"]
 
 
 # Application definition
@@ -198,6 +198,7 @@ LOGGING = {
         }
     }
 }
+
 
 # Activate Django-Heroku.
 django_heroku.settings(locals())
