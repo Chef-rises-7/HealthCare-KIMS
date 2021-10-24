@@ -1,11 +1,12 @@
 import { Link as RouterLink } from "react-router-dom";
+import { isExpired } from "react-jwt";
 import * as Yup from "yup";
 import { useSnackbar } from "notistack";
 import { Formik } from "formik";
 import Image from "material-ui-image";
 import useSWR from "swr";
 import React from "react";
-import { api_endpoint } from "../constants";
+import { api_endpoint1 } from "../constants";
 import {
   Box,
   Button,
@@ -25,7 +26,8 @@ const HandleLogin = (
   history,
   enqueueSnackbar,
   closeSnackbar,
-  phoneNo,
+  staffId,
+  password,
   formikref
 ) => {
   enqueueSnackbar("Logging in...", { autoHideDuration: 3000 });
@@ -34,31 +36,46 @@ const HandleLogin = (
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ mobile: String(phoneNo) }),
+    body: JSON.stringify({
+      username: String(staffId),
+      password: String(password),
+    }),
   };
-  fetch(api_endpoint + "/generateOTP", requestOptions)
+  fetch(api_endpoint1 + "/auth/login", requestOptions)
     .then((response) => {
       if (response.status == 200) return response.json();
-      else throw new Error("Error while generating new OTP, try again ");
+      else throw new Error("Incorrect Staff ID or Password");
     })
     .then((data) => {
       formikref.current.setSubmitting(false);
       console.log(data);
       closeSnackbar();
-      history.push({
-        pathname: "/signinverify",
-        state: { txnId: data.txnId, phoneNo: phoneNo },
+      localStorage.setItem("userTokenStaff", data.jwt);
+      history.replace({
+        pathname: "/dashboard",
+        state: { fromApp: true, jwt: data.jwt },
       });
     })
     .catch((err) => {
       formikref.current.setSubmitting(false);
-      enqueueSnackbar(String(err), { autoHideDuration: 3000 });
+      enqueueSnackbar(String(err), { autoHideDuration: 2000 });
     });
 };
 
 const Login = (props) => {
   //const navigate = useNavigate();
+
   const { match, history } = props;
+  React.useEffect(() => {
+    var userTokenStaff = localStorage.getItem("userTokenStaff");
+    const isMyTokenExpired = isExpired(userTokenStaff);
+    if (!isMyTokenExpired && userTokenStaff !== "") {
+      history.replace({
+        pathname: "/dashboard",
+        state: { fromApp: true, jwt: userTokenStaff },
+      });
+    }
+  }, []);
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   let formikref = React.useRef(null);
   return (
@@ -105,13 +122,14 @@ const Login = (props) => {
                   staffId: Yup.string().required("Staff ID is required"),
                   password: Yup.string().required("Please enter a password"),
                 })}
-                onSubmit={({ staffId }) => {
+                onSubmit={({ staffId, password }) => {
                   console.log(formikref);
                   HandleLogin(
                     history,
                     enqueueSnackbar,
                     closeSnackbar,
                     staffId,
+                    password,
                     formikref
                   );
                 }}
@@ -166,6 +184,7 @@ const Login = (props) => {
                       }
                       label="Password"
                       margin="normal"
+                      type="password"
                       name="password"
                       onBlur={handleBlur}
                       onChange={handleChange}

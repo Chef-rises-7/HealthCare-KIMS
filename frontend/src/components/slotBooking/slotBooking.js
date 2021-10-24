@@ -5,6 +5,7 @@ import { Formik } from "formik";
 import Image from "material-ui-image";
 import useSWR from "swr";
 import React from "react";
+import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import { api_endpoint1 } from "../constants";
 import ActiveSlotCard from "../activeSlotCard/activeSlotCard";
 import Swal from "sweetalert2";
@@ -209,10 +210,29 @@ const SlotBooking = (props) => {
       {!isLoading ? (
         <div style={{ margin: "0 auto", width: "80%" }}>
           <Card style={{ margin: "20px" }}>
-            <CardHeader
-              title="Available Slots"
-              subheader="The numbers might update during the booking procedure."
-            />
+            <div style={{ display: "grid", gridTemplateColumns: "0.5fr 20fr" }}>
+              <div
+                style={{
+                  display: "grid",
+                  alignItems: "center",
+                  cursor: "pointer",
+                }}
+                onClick={() => history.goBack()}
+              >
+                <ArrowBackIcon
+                  style={{
+                    marginLeft: "5px",
+                    alignSelf: "center",
+                    color: "red",
+                  }}
+                  fontSize="large"
+                />
+              </div>
+              <CardHeader
+                title="Available Slots"
+                subheader="The numbers might update during the booking procedure."
+              />
+            </div>
             <Divider />
             <CardContent>
               <div
@@ -221,6 +241,7 @@ const SlotBooking = (props) => {
                   gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
                   gridColumnGap: "20px",
                   gridRowGap: "20px",
+                  padding: "10px",
                 }}
               >
                 {slotInfo.map((slot) => (
@@ -249,7 +270,7 @@ const SlotBooking = (props) => {
               <div
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "repeat(auto-fill, minmax(330px, 1fr))",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(360px, 1fr))",
                   gridColumnGap: "25px",
                   gridRowGap: "20px",
                 }}
@@ -292,16 +313,6 @@ const SlotBooking = (props) => {
                   }}
                 >
                   Book Slot(s)
-                </Button>
-                <Button
-                  color="primary"
-                  variant="contained"
-                  style={{ fontWeight: "bold", borderRadius: "20px" }}
-                  onClick={() => {
-                    history.goBack();
-                  }}
-                >
-                  Back
                 </Button>
               </Box>
             </CardContent>

@@ -151,7 +151,6 @@ const BeneficiaryVerify = (props) => {
       headers: {
         "Content-Type": "application/json",
         Authorization: "Bearer " + props.location.state.tokenId,
-        "X-API-KEY": api_key,
       },
     };
     fetch(api_endpoint + "/api/v2/appointment/beneficiaries", requestOptions)
@@ -259,9 +258,9 @@ const BeneficiaryVerify = (props) => {
               <div
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "repeat(auto-fill, minmax(330px, 1fr))",
-                  gridColumnGap: "40px",
-                  gridRowGap: "30px",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(400px, 1fr))",
+                  gridColumnGap: "20px",
+                  gridRowGap: "20px",
                 }}
               >
                 {benData.map((ben) => (

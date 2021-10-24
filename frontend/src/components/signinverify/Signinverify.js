@@ -6,7 +6,7 @@ import Image from "material-ui-image";
 import { sha256 } from "js-sha256";
 import useSWR from "swr";
 import React from "react";
-import { api_key } from "../constants";
+import { api_key, secret } from "../constants";
 import {
   Box,
   Button,
@@ -39,21 +39,16 @@ const HandleOTP = (
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "X-API-KEY": api_key,
     },
     body: JSON.stringify({ txnId: String(txnId), otp: sha256(OTP) }),
   };
-  fetch(api_endpoint + "/api/v2/auth/confirmOTP", requestOptions)
+  fetch(api_endpoint + "/api/v2/auth/validateMobileOtp", requestOptions)
     .then((response) => {
       if (response.ok)
         // return { resCode: response.status, resBody: response.json() };
         return response.json();
       else {
-        setTimeout(() => {
-          window.open("https://selfregistration.cowin.gov.in", "_blank");
-        }, 1000);
-
-        throw new Error("Your mobile number isn't registered with Co-WIN");
+        throw new Error("Unable to Verify OTP, Try again later");
       } // todo change
     })
     .then((data) => {
@@ -61,6 +56,12 @@ const HandleOTP = (
       formikref.current.setSubmitting(false);
       closeSnackbar();
       console.log(data);
+      if (data.isNewAccount === "Y") {
+        setTimeout(() => {
+          window.open("https://selfregistration.cowin.gov.in", "_blank");
+        }, 1000);
+        throw new Error("Your mobile number isn't registered with Co-WIN");
+      }
       localStorage.setItem("userToken", data.token);
       localStorage.setItem("phoneNo", phoneNo);
 
@@ -92,9 +93,10 @@ const HandleOTPResend = (
       "Content-Type": "application/json",
       "X-API-KEY": api_key,
     },
-    body: JSON.stringify({ mobile: String(phoneNo) }),
+    body: JSON.stringify({ mobile: String(phoneNo), secret: secret }),
   };
-  fetch(api_endpoint + "/api/v2/auth/generateOTP", requestOptions)
+  //   fetch(api_endpoint + "/api/v2/auth/generateOTP", requestOptions)
+  fetch(api_endpoint + "/api/v2/auth/generateMobileOTP", requestOptions)
     .then((response) => {
       setSeconds(181);
       if (response.status == 200) return response.json();

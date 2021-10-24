@@ -12,16 +12,16 @@ import {
   Chip,
   TabPanel,
 } from "@material-ui-new/core";
+import { api_endpoint1 } from "../constants";
 import Loader from "react-loader-spinner";
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import Tabs from "@material-ui-new/core/Tabs";
 import Tab from "@material-ui-new/core/Tab";
 import PropTypes from "prop-types";
-import { withStyles } from "@material-ui-new/core/styles";
+import { withStyles } from "@material-ui-new/styles";
 import TableSortLabel from "@material-ui-new/core/TableSortLabel";
 import Checkbox from "@material-ui-new/core/Checkbox";
 import Tooltip from "@material-ui-new/core/Tooltip";
-import { Search as SearchIcon } from "react-feather";
 import AddIcon from "@material-ui-new/icons/Add";
 import React from "react";
 import { makeStyles } from "@material-ui-new/core/styles";
@@ -54,12 +54,10 @@ const ExpandableTableRow = ({ children, expandComponent, ...otherProps }) => {
   return (
     <>
       <TableRow {...otherProps}>
-        <TableCell padding="checkbox"></TableCell>
         {children}
       </TableRow>
       {isExpanded && (
         <TableRow>
-          <TableCell padding="checkbox" />
           {expandComponent}
         </TableRow>
       )}
@@ -69,30 +67,45 @@ const ExpandableTableRow = ({ children, expandComponent, ...otherProps }) => {
 
 const rows = [
   {
-    id: "name",
+    id: "tokenno",
     numeric: false,
-    disablePadding: true,
+    disablePadding: false,
+    label: "Token No.",
+  },
+  {
+    id: "date",
+    numeric: false,
+    disablePadding: false,
+    label: "Date",
+  },
+  {
+    id: "name",
+    numeric: true,
+    disablePadding: false,
     label: "Name",
   },
   {
-    id: "credits",
+    id: "refid",
     numeric: true,
     disablePadding: false,
-    label: "Credits bought",
+    label: "Reference ID",
   },
-  { id: "start", numeric: true, disablePadding: false, label: "Start date" },
+    {
+    id: "age",
+    numeric: true,
+    disablePadding: false,
+    label: "Age Group",
+  },
+  { id: "vaccine", numeric: true, disablePadding: false, label: "Vaccine" },
+
+
   {
-    id: "type",
+    id: "doseno",
     numeric: true,
     disablePadding: false,
-    label: "Campaign type",
+    label: "Dose No.",
   },
-  {
-    id: "status",
-    numeric: true,
-    disablePadding: false,
-    label: "Status",
-  },
+
 ];
 class EnhancedTableHead extends React.Component {
   createSortHandler = (property) => (event) => {
@@ -100,13 +113,12 @@ class EnhancedTableHead extends React.Component {
   };
 
   render() {
-    const { onSelectAllClick, order, orderBy, numSelected, rowCount } =
+    const { order, orderBy, numSelected, rowCount } =
       this.props;
 
     return (
       <TableHead>
         <TableRow>
-          <TableCell padding="checkbox" />
           {rows.map(
             (row) => (
               <TableCell
@@ -244,35 +256,26 @@ class StatsTable extends React.Component {
   isSelected = (id) => this.state.selected.indexOf(id) !== -1;
 
   componentDidMount() {
-    const { history } = this.props;
     const requestOptions = {
-      method: "GET",
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("euprimeShort")}`,
+        Authorization: `Bearer ${localStorage.getItem("userTokenStaff")}`,
       },
+      body: JSON.stringify({ specification: "all" }),
     };
-    fetch("/api/getCampaigns/", requestOptions)
-      .then((response) => response.json())
-      .then((datalog) => {
-        let newData = [];
-        if (datalog.data) {
-          newData = datalog.data.map((el) => {
-            return {
-              name: el.name,
-              credits: parseInt(el.noOfCredits),
-              date: el.date,
-              type: el.campaignType.plan,
-              status: el.campaignStatus,
-            };
-          });
-        }
-        this.setState({ data: newData, isLoaded: true });
-        // } else {
-        //   console.log(datalog);
-        //   //   this.props.enqueueSnackbar("Session expired, re-logging in.");
-        //   //   history.push("/signin");
-        // }
+
+    fetch(api_endpoint1 + "/apis/getTokens/", requestOptions)
+      .then((response) => {
+        if (response.status == 200) return response.json();
+        else throw new Error("Failed to fetch slots, try again later");
+      })
+      .then((datagg) => {
+        this.setState({data:datagg,isLoaded:true});
+      })
+      .catch((err) => {
+        this.setState({isLoaded:true});
+        console.log(err);
       });
   }
 
@@ -290,8 +293,9 @@ class StatsTable extends React.Component {
           minHeight: "100%",
           py: 3,
         }}
+
       >
-        <Container maxWidth={false} style={{ padding: 0 }}>
+        <Container maxWidth={false} style={{ padding: 0,marginLeft:'10px' }}>
           <Box style={{ marginTop: "10px" }}>
             <Box sx={{ mt: 3 }}>
               <Card>
@@ -307,7 +311,7 @@ class StatsTable extends React.Component {
                     variant="h3"
                     style={{ margin: "auto" }}
                   >
-                    Select Campaign to see Statistics
+                    Token Details
                   </Typography>
                   <Box sx={{ minWidth: "100%" }}>
                     <TextField
@@ -316,34 +320,19 @@ class StatsTable extends React.Component {
                         startAdornment: (
                           <InputAdornment position="start">
                             <SvgIcon fontSize="small" color="action">
-                              <SearchIcon />
                             </SvgIcon>
                           </InputAdornment>
                         ),
                       }}
-                      placeholder="Find Campaign"
+                      placeholder="Find Token by Beneficiary Name"
                       variant="outlined"
                     />
                   </Box>
                 </CardContent>
               </Card>
             </Box>
-          </Box>{" "}
-          <Tabs
-            value={value}
-            onChange={this.handleChange}
-            indicatorColor="primary"
-            textColor="primary"
-            scrollable
-            scrollButtons="auto"
-          >
-            <Tab label="All" {...a11yProps(0)} />
-            <Tab label="Pending" {...a11yProps(1)} />
-            <Tab label="Active" {...a11yProps(2)} />
-            <Tab label="Completed" {...a11yProps(3)} />
-          </Tabs>
-          {value == 0 && (
-            <Box>
+          </Box>
+              <Box>
               <Paper className={classes.root}>
                 <div className={classes.tableWrapper}>
                   <Table className={classes.table} aria-labelledby="tableTitle">
@@ -369,7 +358,6 @@ class StatsTable extends React.Component {
                               role="checkbox"
                               aria-checked={isSelected}
                               tabIndex={-1}
-                              key={n.id}
                               selected={isSelected}
                               key={data.name}
                               expandComponent={
@@ -381,20 +369,75 @@ class StatsTable extends React.Component {
                               <TableCell
                                 component="th"
                                 scope="row"
-                                padding="none"
                               >
-                                {n.name}
+                                {n.token_number}
                               </TableCell>
-                              <TableCell align="right">{n.credits}</TableCell>
-                              <TableCell align="right">{n.date}</TableCell>{" "}
-                              <TableCell align="right">{n.type}</TableCell>{" "}
+                              <TableCell align="left">{n.date}</TableCell>
+                              <TableCell align="right">{n.name}</TableCell>{" "}
+                              <TableCell align="right">{n.beneficiary}</TableCell>{" "}
                               <TableCell align="right">
+                              {parseInt(n.age)<45 ? (
                                 <Chip
+                                  className={classes.chip}
+                                  style={{
+                                    fontSize: "14px",
+                                    fontWeight: "bold",
+                                    color: "#ffffff",
+                                  }}
+                                  label="18-45"
                                   color="primary"
-                                  label={n.status}
-                                  size="small"
                                 />
+                              ) : (
+                                <Chip
+                                  className={classes.chip}
+                                  style={{
+                                    fontSize: "14px",
+                                    fontWeight: "bold",
+                                    color: "#ffffff",
+                                    background: "#a617f2",
+                                  }}
+                                  label="45+"
+                                />
+                              )}
                               </TableCell>
+                              <TableCell align="right">
+                              {n.vaccine === "covaxin" ? (
+                              <Chip
+                                className={classes.chip}
+                                style={{
+                                  background: "#f2ca17",
+                                  color: "#ffffff",
+                                  fontSize: "14px",
+                                  fontWeight: "bold",
+                                }}
+                                label="COVAXIN"
+                              />
+                            ) : (
+                              <Chip
+                                className={classes.chip}
+                                style={{
+                                  fontSize: "14px",
+                                  fontWeight: "bold",
+                                  color: "#ffffff",
+                                  background: "#f2174f",
+                                }}
+                                label="COVISHIELD"
+                              />
+                            )}
+                            </TableCell>
+                              <TableCell align="right">
+                              <Chip
+                              className={classes.chip}
+                              style={{
+                                background: n.dose==='dose2' ? "#1fd451" : "#d4241f",
+                                color: "#ffffff",
+                                fontSize: "14px",
+                                fontWeight: "bold",
+                              }}
+                              label= {n.dose==='dose2'?"Dose 2":'Dose 1'}
+                             />
+                              </TableCell>
+
                             </ExpandableTableRow>
                           );
                         })}
@@ -423,280 +466,8 @@ class StatsTable extends React.Component {
                 />
               </Paper>
             </Box>
-          )}
-          {value == 1 && (
-            <Box>
-              <Paper className={classes.root}>
-                <div className={classes.tableWrapper}>
-                  <Table className={classes.table} aria-labelledby="tableTitle">
-                    <EnhancedTableHead
-                      numSelected={selected.length}
-                      order={order}
-                      orderBy={orderBy}
-                      onSelectAllClick={this.handleSelectAllClick}
-                      onRequestSort={this.handleRequestSort}
-                      rowCount={
-                        data.filter((obj) => {
-                          return obj.campaignStatus == "Pending";
-                        }).length
-                      }
-                    />
-                    <TableBody>
-                      {stableSort(
-                        data.filter((obj) => {
-                          return obj.status == "Pending";
-                        }),
-                        getSorting(order, orderBy)
-                      )
-                        .slice(
-                          page * rowsPerPage,
-                          page * rowsPerPage + rowsPerPage
-                        )
-                        .map((n) => {
-                          const isSelected = this.isSelected(n.id);
-                          return (
-                            <ExpandableTableRow
-                              hover
-                              role="checkbox"
-                              aria-checked={isSelected}
-                              tabIndex={-1}
-                              key={n.id}
-                              selected={isSelected}
-                              key={data.name}
-                              expandComponent={
-                                <TableCell colSpan="6">
-                                  <div>Plan type</div>
-                                </TableCell>
-                              }
-                            >
-                              <TableCell
-                                component="th"
-                                scope="row"
-                                padding="none"
-                              >
-                                {n.name} gg
-                              </TableCell>
-                              <TableCell align="right">{n.credits}</TableCell>
-                              <TableCell align="right">{n.date}</TableCell>
-                              <TableCell align="right">{n.type}</TableCell>
-                              <TableCell align="right">
-                                <Chip
-                                  color="primary"
-                                  label={n.status}
-                                  size="small"
-                                />
-                              </TableCell>
-                            </ExpandableTableRow>
-                          );
-                        })}
-                      {emptyRows > 0 && (
-                        <TableRow style={{ height: 49 * emptyRows }}>
-                          <TableCell colSpan={6} />
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
-                </div>
-                <TablePagination
-                  rowsPerPageOptions={[5, 10, 25, 30]}
-                  component="div"
-                  count={data.length}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  backIconButtonProps={{
-                    "aria-label": "Previous Page",
-                  }}
-                  nextIconButtonProps={{
-                    "aria-label": "Next Page",
-                  }}
-                  onPageChange={this.handleChangePage}
-                  onRowsPerPageChange={this.handleChangeRowsPerPage}
-                />
-              </Paper>
-            </Box>
-          )}
-          {value == 2 && (
-            <Box>
-              <Paper className={classes.root}>
-                <div className={classes.tableWrapper}>
-                  <Table className={classes.table} aria-labelledby="tableTitle">
-                    <EnhancedTableHead
-                      numSelected={selected.length}
-                      order={order}
-                      orderBy={orderBy}
-                      onSelectAllClick={this.handleSelectAllClick}
-                      onRequestSort={this.handleRequestSort}
-                      rowCount={
-                        data.filter((obj) => {
-                          return obj.status == "Pending";
-                        }).length
-                      }
-                    />
-                    <TableBody>
-                      {stableSort(
-                        data.filter((obj) => {
-                          return obj.campaignStatus == "Ongoing";
-                        }),
-                        getSorting(order, orderBy)
-                      )
-                        .slice(
-                          page * rowsPerPage,
-                          page * rowsPerPage + rowsPerPage
-                        )
-                        .map((n) => {
-                          const isSelected = this.isSelected(n.id);
-                          return (
-                            <ExpandableTableRow
-                              hover
-                              role="checkbox"
-                              aria-checked={isSelected}
-                              tabIndex={-1}
-                              key={n.id}
-                              selected={isSelected}
-                              key={data.name}
-                              expandComponent={
-                                <TableCell colSpan="6">
-                                  <div>Plan type</div>
-                                </TableCell>
-                              }
-                            >
-                              <TableCell
-                                component="th"
-                                scope="row"
-                                padding="none"
-                              >
-                                {n.name}
-                              </TableCell>
-                              <TableCell align="right">{n.credits}</TableCell>
-                              <TableCell align="right">{n.date}</TableCell>
-                              <TableCell align="right">{n.type}</TableCell>
-                              <TableCell align="right">
-                                <Chip
-                                  color="primary"
-                                  label={n.status}
-                                  size="small"
-                                />
-                              </TableCell>
-                            </ExpandableTableRow>
-                          );
-                        })}
-                      {emptyRows > 0 && (
-                        <TableRow style={{ height: 49 * emptyRows }}>
-                          <TableCell colSpan={6} />
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
-                </div>
-                <TablePagination
-                  rowsPerPageOptions={[5, 10, 25, 30]}
-                  component="div"
-                  count={data.length}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  backIconButtonProps={{
-                    "aria-label": "Previous Page",
-                  }}
-                  nextIconButtonProps={{
-                    "aria-label": "Next Page",
-                  }}
-                  onPageChange={this.handleChangePage}
-                  onRowsPerPageChange={this.handleChangeRowsPerPage}
-                />
-              </Paper>
-            </Box>
-          )}
-          {value == 3 && (
-            <Box>
-              <Paper className={classes.root}>
-                <div className={classes.tableWrapper}>
-                  <Table className={classes.table} aria-labelledby="tableTitle">
-                    <EnhancedTableHead
-                      numSelected={selected.length}
-                      order={order}
-                      orderBy={orderBy}
-                      onSelectAllClick={this.handleSelectAllClick}
-                      onRequestSort={this.handleRequestSort}
-                      rowCount={
-                        data.filter((obj) => {
-                          return obj.campaignStatus == "Pending";
-                        }).length
-                      }
-                    />
-                    <TableBody>
-                      {stableSort(
-                        data.filter((obj) => {
-                          return obj.status == "Completed";
-                        }),
-                        getSorting(order, orderBy)
-                      )
-                        .slice(
-                          page * rowsPerPage,
-                          page * rowsPerPage + rowsPerPage
-                        )
-                        .map((n) => {
-                          const isSelected = this.isSelected(n.id);
-                          return (
-                            <ExpandableTableRow
-                              hover
-                              role="checkbox"
-                              aria-checked={isSelected}
-                              tabIndex={-1}
-                              key={n.id}
-                              selected={isSelected}
-                              key={data.name}
-                              expandComponent={
-                                <TableCell colSpan="6">
-                                  <div>Plan type</div>
-                                </TableCell>
-                              }
-                            >
-                              <TableCell
-                                component="th"
-                                scope="row"
-                                padding="none"
-                              >
-                                {n.name}
-                              </TableCell>
-                              <TableCell align="right">{n.credits}</TableCell>
-                              <TableCell align="right">{n.date}</TableCell>
-                              <TableCell align="right">{n.type}</TableCell>
-                              <TableCell align="right">
-                                <Chip
-                                  color="primary"
-                                  label={n.status}
-                                  size="small"
-                                />
-                              </TableCell>
-                            </ExpandableTableRow>
-                          );
-                        })}
-                      {emptyRows > 0 && (
-                        <TableRow style={{ height: 49 * emptyRows }}>
-                          <TableCell colSpan={6} />
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
-                </div>
-                <TablePagination
-                  rowsPerPageOptions={[5, 10, 25, 30]}
-                  component="div"
-                  count={data.length}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  backIconButtonProps={{
-                    "aria-label": "Previous Page",
-                  }}
-                  nextIconButtonProps={{
-                    "aria-label": "Next Page",
-                  }}
-                  onPageChange={this.handleChangePage}
-                  onRowsPerPageChange={this.handleChangeRowsPerPage}
-                />
-              </Paper>
-            </Box>
-          )}
+          
+       
         </Container>
       </Box>
     ) : (
