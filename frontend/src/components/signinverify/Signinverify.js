@@ -58,7 +58,10 @@ const HandleOTP = (
       console.log(data);
       if (data.isNewAccount === "Y") {
         setTimeout(() => {
-          window.open("https://selfregistration.cowin.gov.in", "_blank");
+          window.open(
+            "https://selfregistration.sandbox.cowin.gov.in",
+            "_blank"
+          );
         }, 1000);
         throw new Error("Your mobile number isn't registered with Co-WIN");
       }
@@ -91,7 +94,6 @@ const HandleOTPResend = (
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "X-API-KEY": api_key,
     },
     body: JSON.stringify({ mobile: String(phoneNo), secret: secret }),
   };
@@ -287,7 +289,7 @@ const LoginVerify = (props) => {
                     >
                       Haven't registered on Co-WIN?{" "}
                       <a
-                        href="https://selfregistration.cowin.gov.in"
+                        href="https://selfregistration.sandbox.cowin.gov.in"
                         target="_blank"
                       >
                         (Register here)

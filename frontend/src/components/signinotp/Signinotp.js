@@ -99,7 +99,6 @@ const Login = (props) => {
       headers: {
         "Content-Type": "application/json",
         Authorization: "Bearer " + userToken,
-        "X-API-KEY": api_key,
       },
     };
     if (phoneNo !== "") {
@@ -134,10 +133,10 @@ const Login = (props) => {
         <div
           style={{
             display: "grid",
-            height: "102vh",
+            minHeight: "99vh",
             justifyContent: "center",
             alignContent: "center",
-            gridTemplateColumns: "0.9fr 1fr",
+            gridTemplateColumns: "0.9fr 1.1fr",
             justifyItems: "center",
           }}
         >
@@ -250,7 +249,7 @@ const Login = (props) => {
                       >
                         Haven't registered on Co-WIN?{" "}
                         <a
-                          href="https://selfregistration.cowin.gov.in"
+                          href="https://selfregistration.sandbox.cowin.gov.in"
                           target="_blank"
                         >
                           Register here
@@ -276,7 +275,7 @@ const Login = (props) => {
               </Container>
             </CardContent>
           </Card>
-          <Card style={{ margin: "20px", width: "90%" }}>
+          <Card style={{ margin: "20px", width: "90%", alignSelf: "center" }}>
             <CardHeader
               title="Available Slots"
               subheader="The numbers might update during the booking procedure."
@@ -286,9 +285,9 @@ const Login = (props) => {
               <div
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-                  gridColumnGap: "20px",
-                  gridRowGap: "20px",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(255px, 1fr))",
+                  gridColumnGap: "25px",
+                  gridRowGap: "2px",
                   padding: "10px",
                 }}
               >

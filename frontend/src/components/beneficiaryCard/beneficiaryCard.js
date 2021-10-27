@@ -42,8 +42,8 @@ const BeneficiaryCard = (props) => {
   const useStyles = makeStyles((theme) => ({
     root: {
       width: "100%",
-      maxWidth: 500,
-      minWidth: 400,
+      maxWidth: 400,
+      minWidth: 350,
       margin: "15px",
       backgroundColor: theme.palette.background.paper,
       padding: theme.spacing(2),
@@ -52,6 +52,7 @@ const BeneficiaryCard = (props) => {
       borderWidth: "1px",
       borderColor: "#000000",
       borderStyle: "solid",
+      fontSize: "1rem",
     },
     chip: {
       margin: theme.spacing(0.5),
@@ -104,7 +105,7 @@ const BeneficiaryCard = (props) => {
                     className={classes.chip}
                     style={{
                       color: "#ffffff",
-                      fontSize: "14px",
+                      fontSize: "12px",
                       fontWeight: "bold",
                     }}
                     color="primary"
@@ -114,7 +115,7 @@ const BeneficiaryCard = (props) => {
                   <Chip
                     className={classes.chip}
                     style={{
-                      fontSize: "14px",
+                      fontSize: "12px",
                       fontWeight: "bold",
                       color: "#ffffff",
                       background: "#a617f2",
@@ -127,7 +128,7 @@ const BeneficiaryCard = (props) => {
                   style={{
                     background: props.isDose1 ? "#1fd451" : "#d4241f",
                     color: "#ffffff",
-                    fontSize: "14px",
+                    fontSize: "12px",
                     fontWeight: "bold",
                   }}
                   label="Dose-1"
@@ -144,7 +145,7 @@ const BeneficiaryCard = (props) => {
                   style={{
                     background: props.isDose2 ? "#1fd451" : "#d4241f",
                     color: "#ffffff",
-                    fontSize: "14px",
+                    fontSize: "12px",
                     fontWeight: "bold",
                   }}
                   label="Dose-2"
@@ -198,14 +199,14 @@ const BeneficiaryCard = (props) => {
           </div>
         </div>
         <Divider variant="middle" />
-        <div className={classes.section2}>
+        {/* <div className={classes.section2}>
           <Typography gutterBottom variant="body1">
             Dose-1: Appointment not Scheduled
           </Typography>
           <Typography gutterBottom variant="body1">
             Dose-2: Appointment not Scheduled
           </Typography>
-        </div>
+        </div> */}
         <Divider variant="middle" />
       </div>
     </>

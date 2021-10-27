@@ -239,8 +239,8 @@ const SlotBooking = (props) => {
                 style={{
                   display: "grid",
                   gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-                  gridColumnGap: "20px",
-                  gridRowGap: "20px",
+                  gridColumnGap: "15px",
+                  gridRowGap: "15px",
                   padding: "10px",
                 }}
               >
@@ -271,8 +271,9 @@ const SlotBooking = (props) => {
                 style={{
                   display: "grid",
                   gridTemplateColumns: "repeat(auto-fill, minmax(360px, 1fr))",
-                  gridColumnGap: "25px",
+                  gridColumnGap: "20px",
                   gridRowGap: "20px",
+                  padding: "10px",
                 }}
               >
                 {benData.map((ben, id) => (

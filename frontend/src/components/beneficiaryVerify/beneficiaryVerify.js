@@ -258,7 +258,7 @@ const BeneficiaryVerify = (props) => {
               <div
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "repeat(auto-fill, minmax(400px, 1fr))",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(360px, 1fr))",
                   gridColumnGap: "20px",
                   gridRowGap: "20px",
                 }}

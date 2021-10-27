@@ -69,6 +69,7 @@ const Login = (props) => {
   React.useEffect(() => {
     var userTokenStaff = localStorage.getItem("userTokenStaff");
     const isMyTokenExpired = isExpired(userTokenStaff);
+    console.log(isMyTokenExpired);
     if (!isMyTokenExpired && userTokenStaff !== "") {
       history.replace({
         pathname: "/dashboard",

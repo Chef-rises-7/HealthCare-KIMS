@@ -51,6 +51,7 @@ const BookingCard = (props) => {
     root: {
       width: "100%",
       maxWidth: 450,
+      minWidth: 300,
       margin: "15px",
       backgroundColor: theme.palette.background.paper,
       padding: theme.spacing(2),
