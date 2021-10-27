@@ -6,7 +6,9 @@ import Image from "material-ui-image";
 import useSWR from "swr";
 import Loader from "react-loader-spinner";
 import React from "react";
-import { api_endpoint, api_key } from "../constants";
+import AvailableSlots from "../availableSlots/availableSlots";
+
+import { api_endpoint, api_key, api_endpoint1, secret } from "../constants";
 import {
   Box,
   Button,
@@ -17,6 +19,8 @@ import {
   Typography,
   Card,
   CardContent,
+  CardHeader,
+  Divider,
 } from "@material-ui-new/core";
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
@@ -34,12 +38,12 @@ const HandleLogin = (
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "x-api-key": api_key,
       accept: "application/json",
     },
-    body: JSON.stringify({ mobile: String(phoneNo) }),
+    body: JSON.stringify({ mobile: String(phoneNo), secret: secret }),
   };
-  fetch(api_endpoint + "/api/v2/auth/generateOTP", requestOptions)
+  //   fetch(api_endpoint + "/api/v2/auth/generateOTP", requestOptions)
+  fetch(api_endpoint + "/api/v2/auth/generateMobileOTP", requestOptions)
     .then((response) => {
       if (response.status == 200) return response.json();
       else throw new Error("Error while generating new OTP, try again ");
@@ -63,7 +67,30 @@ const Login = (props) => {
   const { match, history } = props;
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const [isLoading, setLoading] = React.useState(true);
-
+  const [isLoading2, setLoading2] = React.useState(true);
+  const [slotInfo, setSlotInfo] = React.useState([]);
+  React.useEffect(() => {
+    const requestOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    fetch(api_endpoint1 + "/apis/getSlots/", requestOptions)
+      .then((response) => {
+        if (response.status == 200) return response.json();
+        else throw new Error("Failed to fetch slots, try again later");
+      })
+      .then((data) => {
+        console.log(data);
+        setSlotInfo(data.slots);
+        setLoading2(false);
+      })
+      .catch((err) => {
+        setLoading2(false);
+        console.log(err);
+      });
+  }, []);
   React.useEffect(() => {
     var userToken = localStorage.getItem("userToken");
     var phoneNo = localStorage.getItem("phoneNo");
@@ -72,7 +99,6 @@ const Login = (props) => {
       headers: {
         "Content-Type": "application/json",
         Authorization: "Bearer " + userToken,
-        "X-API-KEY": api_key,
       },
     };
     if (phoneNo !== "") {
@@ -88,14 +114,6 @@ const Login = (props) => {
                 phoneNo: phoneNo,
               },
             });
-
-            // history.replace({
-            //   pathname: "/slotBookingForm",
-            //   state: {
-            //     fromApp: true,
-            //     phoneNo: phoneNo,
-            //   },
-            // });
           } else {
             setLoading(false);
             localStorage.setItem("userToken", "");
@@ -111,16 +129,23 @@ const Login = (props) => {
   let formikref = React.useRef(null);
   return (
     <>
-      {!isLoading ? (
+      {!isLoading && !isLoading2 ? (
         <div
           style={{
             display: "grid",
-            height: "102vh",
+            minHeight: "99vh",
             justifyContent: "center",
             alignContent: "center",
+            gridTemplateColumns: "0.9fr 1.1fr",
+            justifyItems: "center",
           }}
         >
-          <Card style={{ width: "450px" }}>
+          <Card
+            style={{
+              width: "450px",
+              alignSelf: "center",
+            }}
+          >
             <CardContent>
               <Container
                 maxWidth="sm"
@@ -224,7 +249,7 @@ const Login = (props) => {
                       >
                         Haven't registered on Co-WIN?{" "}
                         <a
-                          href="https://selfregistration.cowin.gov.in"
+                          href="https://selfregistration.sandbox.cowin.gov.in"
                           target="_blank"
                         >
                           Register here
@@ -249,6 +274,38 @@ const Login = (props) => {
                 </Formik>
               </Container>
             </CardContent>
+          </Card>
+          <Card style={{ margin: "20px", width: "90%", alignSelf: "center" }}>
+            <CardHeader
+              title="Available Slots"
+              subheader="The numbers might update during the booking procedure."
+            />
+            <Divider />
+            <CardContent>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(255px, 1fr))",
+                  gridColumnGap: "25px",
+                  gridRowGap: "2px",
+                  padding: "10px",
+                }}
+              >
+                {slotInfo.map((slot) => (
+                  <AvailableSlots
+                    vaccine={slot.vaccine}
+                    ageGrp={slot.age_group}
+                    dose_choice={slot.dose_choice}
+                    available={
+                      parseInt(slot.availability) - parseInt(slot.booked) > 0
+                        ? parseInt(slot.availability) - parseInt(slot.booked)
+                        : 0
+                    }
+                  />
+                ))}
+              </div>
+            </CardContent>
+            <Divider />
           </Card>
         </div>
       ) : (

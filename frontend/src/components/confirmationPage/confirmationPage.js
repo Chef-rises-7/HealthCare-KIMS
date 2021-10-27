@@ -7,9 +7,11 @@ import { jsPDF } from "jspdf";
 import React from "react";
 import { api_endpoint } from "../constants";
 import ActiveSlotCard from "../activeSlotCard/activeSlotCard";
+import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import AvailableSlots from "../availableSlots/availableSlots";
 import BookingCard from "../bookingCard/bookingCard";
 import GeneratedCard from "../generatedCard/generatedCard";
+import html2canvas from "html2canvas";
 import QRCode from "qrcode.react";
 import ReactToPdf from "react-to-pdf";
 import GetAppOutlinedIcon from "@material-ui/icons/GetAppOutlined";
@@ -77,6 +79,7 @@ const ConfirmationPage = (props) => {
   }));
   const downloadQRCode = (arr, payload) => {
     enqueueSnackbar("Generating PDF, please wait.");
+
     // const qrCodeURL = document
     //   .getElementById("qrCodeEl")
     //   .toDataURL("image/png")
@@ -139,14 +142,14 @@ const ConfirmationPage = (props) => {
     doc.setFontSize(15);
     doc.text("QR code", leftMargin + 75, line);
     line = line + 8;
-    var imgGg = new Image();
-    imgGg.onload = function () {
-      doc.addImage(imgGg, "PNG", leftMargin + 65, line, 40, 40);
+    const input = document.getElementById("qrCodeEl");
+    html2canvas(input).then((canvas) => {
+      const imgData = canvas.toDataURL("img/png");
+      doc.addImage(imgData, "PNG", leftMargin + 65, line, 40, 40);
+      // pdf.output('dataurlnewwindow');
+      doc.save("download.pdf");
       closeSnackbar();
-      doc.save("Confirmation.pdf");
-    };
-    console.log(imgGg);
-    imgGg.src = `https://api.qrserver.com/v1/create-qr-code/?data=${payload}&amp;size=150x150`;
+    });
   };
 
   const classes = useStyles();
@@ -156,10 +159,29 @@ const ConfirmationPage = (props) => {
       {!isLoading ? (
         <div style={{ margin: "0 auto", width: "80%" }}>
           <Card style={{ margin: "20px" }}>
-            <CardHeader
-              title="Your slots have been booked!"
-              subheader="Please download the QR Code"
-            />
+            <div style={{ display: "grid", gridTemplateColumns: "0.5fr 20fr" }}>
+              <div
+                style={{
+                  display: "grid",
+                  alignItems: "center",
+                  cursor: "pointer",
+                }}
+                onClick={() => history.goBack()}
+              >
+                <ArrowBackIcon
+                  style={{
+                    marginLeft: "5px",
+                    alignSelf: "center",
+                    color: "red",
+                  }}
+                  fontSize="large"
+                />
+              </div>
+              <CardHeader
+                title="Your slots have been booked!"
+                subheader="Please download the QR Code"
+              />
+            </div>
             <Divider />
             <CardContent>
               <div

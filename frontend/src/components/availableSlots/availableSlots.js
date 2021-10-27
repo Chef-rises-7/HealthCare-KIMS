@@ -46,6 +46,7 @@ const AvailableSlots = (props) => {
   const useStyles = makeStyles((theme) => ({
     root: {
       width: "100%",
+      minWidth: 260,
       maxWidth: 300,
       margin: "15px",
       backgroundColor: theme.palette.background.paper,
@@ -101,7 +102,7 @@ const AvailableSlots = (props) => {
                   <Chip
                     className={classes.chip}
                     style={{
-                      fontSize: "14px",
+                      fontSize: "12px",
                       fontWeight: "bold",
                       color: "#ffffff",
                     }}
@@ -112,7 +113,7 @@ const AvailableSlots = (props) => {
                   <Chip
                     className={classes.chip}
                     style={{
-                      fontSize: "14px",
+                      fontSize: "12px",
                       fontWeight: "bold",
                       color: "#ffffff",
                       background: "#a617f2",
@@ -126,7 +127,7 @@ const AvailableSlots = (props) => {
                     style={{
                       background: "#f2ca17",
                       color: "#ffffff",
-                      fontSize: "14px",
+                      fontSize: "12px",
                       fontWeight: "bold",
                     }}
                     label="COVAXIN"
@@ -135,7 +136,7 @@ const AvailableSlots = (props) => {
                   <Chip
                     className={classes.chip}
                     style={{
-                      fontSize: "14px",
+                      fontSize: "12px",
                       fontWeight: "bold",
                       color: "#ffffff",
                       background: "#f2174f",
@@ -148,7 +149,7 @@ const AvailableSlots = (props) => {
                   style={{
                     background: "#1fd451",
                     color: "#ffffff",
-                    fontSize: "14px",
+                    fontSize: "12px",
                     fontWeight: "bold",
                   }}
                   label={props.dose_choice === "dose1" ? "Dose 1" : "Dose 2"}
@@ -161,7 +162,7 @@ const AvailableSlots = (props) => {
         <div
           style={{
             textAlign: "center",
-            fontSize: "2.5rem",
+            fontSize: "2rem",
             color: props.available == 0 ? "red" : "black",
           }}
         >

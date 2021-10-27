@@ -12,16 +12,22 @@ import {
   Chip,
   TabPanel,
 } from "@material-ui-new/core";
+import "./dateFix.css";
+import XLXS from "xlsx";
+import { api_endpoint1 } from "../constants";
 import Loader from "react-loader-spinner";
+import DateFnsUtils from "@date-io/date-fns";
+import GetAppOutlinedIcon from "@material-ui/icons/GetAppOutlined";
+import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
+import { Search as SearchIcon } from "react-feather";
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import Tabs from "@material-ui-new/core/Tabs";
 import Tab from "@material-ui-new/core/Tab";
 import PropTypes from "prop-types";
-import { withStyles } from "@material-ui-new/core/styles";
+import { withStyles } from "@material-ui-new/styles";
 import TableSortLabel from "@material-ui-new/core/TableSortLabel";
 import Checkbox from "@material-ui-new/core/Checkbox";
 import Tooltip from "@material-ui-new/core/Tooltip";
-import { Search as SearchIcon } from "react-feather";
 import AddIcon from "@material-ui-new/icons/Add";
 import React from "react";
 import { makeStyles } from "@material-ui-new/core/styles";
@@ -33,10 +39,8 @@ import TableHead from "@material-ui-new/core/TableHead";
 import TableRow from "@material-ui-new/core/TableRow";
 import TablePagination from "@material-ui-new/core/TablePagination";
 import Paper from "@material-ui-new/core/Paper";
-import IconButton from "@material-ui-new/core/IconButton";
-import KeyboardArrowDownIcon from "@material-ui-new/icons/KeyboardArrowDown";
-import KeyboardArrowUpIcon from "@material-ui-new/icons/KeyboardArrowUp";
 import { withSnackbar } from "notistack";
+import { DataSaverOff } from "@material-ui/icons";
 
 function a11yProps(index) {
   return {
@@ -53,45 +57,50 @@ const ExpandableTableRow = ({ children, expandComponent, ...otherProps }) => {
 
   return (
     <>
-      <TableRow {...otherProps}>
-        <TableCell padding="checkbox"></TableCell>
-        {children}
-      </TableRow>
-      {isExpanded && (
-        <TableRow>
-          <TableCell padding="checkbox" />
-          {expandComponent}
-        </TableRow>
-      )}
+      <TableRow {...otherProps}>{children}</TableRow>
+      {isExpanded && <TableRow>{expandComponent}</TableRow>}
     </>
   );
 };
 
 const rows = [
   {
-    id: "name",
+    id: "token_number",
     numeric: false,
-    disablePadding: true,
+    disablePadding: false,
+    label: "Token No.",
+  },
+  {
+    id: "date",
+    numeric: false,
+    disablePadding: false,
+    label: "Date",
+  },
+  {
+    id: "name",
+    numeric: true,
+    disablePadding: false,
     label: "Name",
   },
   {
-    id: "credits",
+    id: "beneficiary",
     numeric: true,
     disablePadding: false,
-    label: "Credits bought",
-  },
-  { id: "start", numeric: true, disablePadding: false, label: "Start date" },
-  {
-    id: "type",
-    numeric: true,
-    disablePadding: false,
-    label: "Campaign type",
+    label: "Reference ID",
   },
   {
-    id: "status",
+    id: "age",
     numeric: true,
     disablePadding: false,
-    label: "Status",
+    label: "Age Group",
+  },
+  { id: "vaccine", numeric: true, disablePadding: false, label: "Vaccine" },
+
+  {
+    id: "dose",
+    numeric: true,
+    disablePadding: false,
+    label: "Dose No.",
   },
 ];
 class EnhancedTableHead extends React.Component {
@@ -100,13 +109,11 @@ class EnhancedTableHead extends React.Component {
   };
 
   render() {
-    const { onSelectAllClick, order, orderBy, numSelected, rowCount } =
-      this.props;
+    const { order, orderBy, numSelected, rowCount } = this.props;
 
     return (
       <TableHead>
         <TableRow>
-          <TableCell padding="checkbox" />
           {rows.map(
             (row) => (
               <TableCell
@@ -119,7 +126,7 @@ class EnhancedTableHead extends React.Component {
                 <Tooltip
                   title="Sort"
                   placement={row.numeric ? "bottom-end" : "bottom-start"}
-                  enterDelay={300}
+                  enterDelay={200}
                 >
                   <TableSortLabel
                     active={orderBy === row.id}
@@ -182,11 +189,20 @@ class StatsTable extends React.Component {
   }
   state = {
     order: "asc",
-    orderBy: "calories",
+    orderBy: "date",
     selected: [],
     value: 0,
     data: [],
+    filteredDateData: [],
+    filteredDateDataRange: [],
+    filteredDateDataMonth: [],
+    filteredSearchData: [],
+    date0: new Date(),
+    date1: new Date(),
+    date2: new Date(),
+    month: new Date(),
     isLoaded: false,
+    searchKW: "",
     page: 0,
     rowsPerPage: 10,
   };
@@ -209,7 +225,22 @@ class StatsTable extends React.Component {
     }
     this.setState({ selected: [] });
   };
-
+  handleExport = (toExport, name) => {
+    const workSheet = XLXS.utils.json_to_sheet(toExport);
+    workSheet["!cols"] = [];
+    workSheet["!cols"][0] = { hidden: true };
+    workSheet["!cols"][1] = { hidden: true };
+    workSheet["!cols"][4] = { hidden: true };
+    workSheet["!cols"][5] = { hidden: true };
+    workSheet["!cols"][7] = { hidden: true };
+    workSheet["!cols"][11] = { hidden: true };
+    workSheet["!cols"][12] = { hidden: true };
+    workSheet["!cols"][14] = { hidden: true };
+    const workBook = XLXS.utils.book_new();
+    XLXS.utils.book_append_sheet(workBook, workSheet, "Token Data");
+    // XLXS.write(workBook, { bookType: "xlsx", type: "binary" });
+    XLXS.writeFile(workBook, `${name}.xlsx`);
+  };
   handleClick = (event, id) => {
     const { selected } = this.state;
     const selectedIndex = selected.indexOf(id);
@@ -230,11 +261,23 @@ class StatsTable extends React.Component {
 
     this.setState({ selected: newSelected });
   };
-
+  toUTCDate = (inp) => {
+    return (
+      inp.getUTCFullYear() +
+      "-" +
+      ("0" + (inp.getUTCMonth() + 1)).slice(-2) +
+      "-" +
+      ("0" + inp.getUTCDate()).slice(-2)
+    );
+  };
   handleChangePage = (event, page) => {
     this.setState({ page });
   };
-
+  filteredKWdata = (toFilter) => {
+    return toFilter.filter((el) =>
+      el.name.toLowerCase().includes(this.state.searchKW.toLowerCase())
+    );
+  };
   handleChangeRowsPerPage = (event) => {
     this.setState({ rowsPerPage: event.target.value });
   };
@@ -244,35 +287,51 @@ class StatsTable extends React.Component {
   isSelected = (id) => this.state.selected.indexOf(id) !== -1;
 
   componentDidMount() {
-    const { history } = this.props;
     const requestOptions = {
-      method: "GET",
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("euprimeShort")}`,
+        Authorization: `Bearer ${localStorage.getItem("userTokenStaff")}`,
       },
+      body: JSON.stringify({ specification: "all" }),
     };
-    fetch("/api/getCampaigns/", requestOptions)
-      .then((response) => response.json())
-      .then((datalog) => {
-        let newData = [];
-        if (datalog.data) {
-          newData = datalog.data.map((el) => {
-            return {
-              name: el.name,
-              credits: parseInt(el.noOfCredits),
-              date: el.date,
-              type: el.campaignType.plan,
-              status: el.campaignStatus,
-            };
-          });
-        }
-        this.setState({ data: newData, isLoaded: true });
-        // } else {
-        //   console.log(datalog);
-        //   //   this.props.enqueueSnackbar("Session expired, re-logging in.");
-        //   //   history.push("/signin");
-        // }
+
+    fetch(api_endpoint1 + "/apis/getTokens/", requestOptions)
+      .then((response) => {
+        if (response.status == 200) return response.json();
+        else throw new Error("Failed to fetch slots, try again later");
+      })
+      .then((datagg) => {
+        let filterOneDay, filterMonth, filterRange;
+        filterOneDay = datagg.filter(
+          (el) =>
+            new Date(el.date).setHours(0, 0, 0, 0) ===
+            this.state.date0.setHours(0, 0, 0, 0)
+        );
+        filterRange = datagg.filter(
+          (el) =>
+            new Date(el.date).setHours(0, 0, 0, 0) <=
+              this.state.date2.setHours(0, 0, 0, 0) &&
+            new Date(el.date).setHours(0, 0, 0, 0) >=
+              this.state.date1.setHours(0, 0, 0, 0)
+        );
+        filterMonth = datagg.filter(
+          (el) =>
+            new Date(el.date).getMonth() === this.state.month.getMonth() &&
+            new Date(el.date).getFullYear() === this.state.month.getFullYear()
+        );
+        this.setState({
+          data: datagg,
+          isLoaded: true,
+          filteredSearchData: datagg,
+          filteredDateData: filterOneDay,
+          filteredDateDataRange: filterRange,
+          filteredDateDataMonth: filterMonth,
+        });
+      })
+      .catch((err) => {
+        this.setState({ isLoaded: true });
+        console.log(err);
       });
   }
 
@@ -280,425 +339,1025 @@ class StatsTable extends React.Component {
     const { classes } = this.props;
     const { value } = this.state;
     const { data, order, orderBy, selected, rowsPerPage, page } = this.state;
-    const emptyRows =
-      rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
+    let filteredSearchData = this.filteredKWdata(data);
+    let fsDataDate = this.filteredKWdata(this.state.filteredDateData);
+    let fsDataDateRange = this.filteredKWdata(this.state.filteredDateDataRange);
+    let fsDataMonth = this.filteredKWdata(this.state.filteredDateDataMonth);
 
+    let emptyRows;
+    let toExport;
+    let fileName = "Token Data- ";
+    if (value == 0) {
+      emptyRows =
+        rowsPerPage -
+        Math.min(rowsPerPage, filteredSearchData.length - page * rowsPerPage);
+      toExport = data;
+      fileName += "All time";
+    } else if (value == 1) {
+      emptyRows =
+        rowsPerPage -
+        Math.min(rowsPerPage, fsDataDate.length - page * rowsPerPage);
+      toExport = this.state.filteredDateData;
+      fileName += this.toUTCDate(this.state.date0);
+    } else if (value == 2) {
+      emptyRows =
+        rowsPerPage -
+        Math.min(rowsPerPage, fsDataDateRange.length - page * rowsPerPage);
+      toExport = this.state.filteredDateDataRange;
+      fileName += this.toUTCDate(this.state.date1);
+      fileName += " to ";
+      fileName += this.toUTCDate(this.state.date2);
+    } else {
+      emptyRows =
+        rowsPerPage -
+        Math.min(rowsPerPage, fsDataMonth.length - page * rowsPerPage);
+      toExport = this.state.filteredDateDataMonth;
+      fileName += `${
+        this.state.month.getMonth() + 1
+      }-${this.state.month.getFullYear()}`;
+    }
     return this.state.isLoaded ? (
-      <Box
-        sx={{
-          backgroundColor: "background.default",
-          minHeight: "100%",
-          py: 3,
-        }}
-      >
-        <Container maxWidth={false} style={{ padding: 0 }}>
-          <Box style={{ marginTop: "10px" }}>
-            <Box sx={{ mt: 3 }}>
-              <Card>
-                <CardContent
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "auto 1fr",
-                    gridGap: "20px",
-                  }}
-                >
-                  <Typography
-                    align="center"
-                    variant="h3"
-                    style={{ margin: "auto" }}
-                  >
-                    Select Campaign to see Statistics
-                  </Typography>
-                  <Box sx={{ minWidth: "100%" }}>
-                    <TextField
-                      fullWidth
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <SvgIcon fontSize="small" color="action">
-                              <SearchIcon />
-                            </SvgIcon>
-                          </InputAdornment>
-                        ),
-                      }}
-                      placeholder="Find Campaign"
-                      variant="outlined"
-                    />
-                  </Box>
-                </CardContent>
-              </Card>
-            </Box>
-          </Box>{" "}
-          <Tabs
-            value={value}
-            onChange={this.handleChange}
-            indicatorColor="primary"
-            textColor="primary"
-            scrollable
-            scrollButtons="auto"
+      <div style={{ display: "grid" }}>
+        <Box
+          sx={{
+            backgroundColor: "background.default",
+            minHeight: "90%",
+          }}
+          style={{ display: "grid" }}
+        >
+          <Container
+            maxWidth={false}
+            style={{
+              padding: 0,
+              width: "80%",
+              justifySelf: "center",
+            }}
           >
-            <Tab label="All" {...a11yProps(0)} />
-            <Tab label="Pending" {...a11yProps(1)} />
-            <Tab label="Active" {...a11yProps(2)} />
-            <Tab label="Completed" {...a11yProps(3)} />
-          </Tabs>
-          {value == 0 && (
-            <Box>
-              <Paper className={classes.root}>
-                <div className={classes.tableWrapper}>
-                  <Table className={classes.table} aria-labelledby="tableTitle">
-                    <EnhancedTableHead
-                      numSelected={selected.length}
-                      order={order}
-                      orderBy={orderBy}
-                      onSelectAllClick={this.handleSelectAllClick}
-                      onRequestSort={this.handleRequestSort}
-                      rowCount={data.length}
-                    />
-                    <TableBody>
-                      {stableSort(data, getSorting(order, orderBy))
-                        .slice(
-                          page * rowsPerPage,
-                          page * rowsPerPage + rowsPerPage
-                        )
-                        .map((n) => {
-                          const isSelected = this.isSelected(n.id);
-                          return (
-                            <ExpandableTableRow
-                              hover
-                              role="checkbox"
-                              aria-checked={isSelected}
-                              tabIndex={-1}
-                              key={n.id}
-                              selected={isSelected}
-                              key={data.name}
-                              expandComponent={
-                                <TableCell colSpan="6">
-                                  {/* <div>Plan type</div> */}
-                                </TableCell>
-                              }
-                            >
-                              <TableCell
-                                component="th"
-                                scope="row"
-                                padding="none"
-                              >
-                                {n.name}
-                              </TableCell>
-                              <TableCell align="right">{n.credits}</TableCell>
-                              <TableCell align="right">{n.date}</TableCell>{" "}
-                              <TableCell align="right">{n.type}</TableCell>{" "}
-                              <TableCell align="right">
-                                <Chip
-                                  color="primary"
-                                  label={n.status}
-                                  size="small"
-                                />
-                              </TableCell>
-                            </ExpandableTableRow>
-                          );
-                        })}
-                      {emptyRows > 0 && (
-                        <TableRow style={{ height: 49 * emptyRows }}>
-                          <TableCell colSpan={6} />
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
-                </div>
-                <TablePagination
-                  rowsPerPageOptions={[5, 10, 25, 30]}
-                  component="div"
-                  count={data.length}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  backIconButtonProps={{
-                    "aria-label": "Previous Page",
-                  }}
-                  nextIconButtonProps={{
-                    "aria-label": "Next Page",
-                  }}
-                  onPageChange={this.handleChangePage}
-                  onRowsPerPageChange={this.handleChangeRowsPerPage}
-                />
-              </Paper>
+            <Box style={{ marginTop: "10px" }}>
+              <Box sx={{ mt: 3 }}>
+                <Card>
+                  <CardContent
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "auto 1fr auto",
+                      gridGap: "20px",
+                    }}
+                  >
+                    <Typography
+                      align="center"
+                      variant="h3"
+                      style={{ margin: "auto" }}
+                    >
+                      Token Details
+                    </Typography>
+                    <Box sx={{ minWidth: "100%" }}>
+                      <TextField
+                        fullWidth
+                        onChange={(e) => {
+                          this.setState({ searchKW: e.target.value });
+                        }}
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <SvgIcon fontSize="medium" color="action">
+                                {" "}
+                                <SearchIcon />
+                              </SvgIcon>
+                            </InputAdornment>
+                          ),
+                        }}
+                        placeholder="Find Token by Beneficiary Name"
+                        variant="outlined"
+                      />
+                    </Box>
+                    <Button
+                      color="primary"
+                      variant="contained"
+                      style={{ fontWeight: "bold", borderRadius: "20px" }}
+                      onClick={() => {
+                        this.handleExport(toExport, fileName);
+                      }}
+                    >
+                      <GetAppOutlinedIcon />
+                      Export
+                    </Button>
+                  </CardContent>
+                </Card>
+              </Box>
             </Box>
-          )}
-          {value == 1 && (
-            <Box>
-              <Paper className={classes.root}>
-                <div className={classes.tableWrapper}>
-                  <Table className={classes.table} aria-labelledby="tableTitle">
-                    <EnhancedTableHead
-                      numSelected={selected.length}
-                      order={order}
-                      orderBy={orderBy}
-                      onSelectAllClick={this.handleSelectAllClick}
-                      onRequestSort={this.handleRequestSort}
-                      rowCount={
-                        data.filter((obj) => {
-                          return obj.campaignStatus == "Pending";
-                        }).length
-                      }
-                    />
-                    <TableBody>
-                      {stableSort(
-                        data.filter((obj) => {
-                          return obj.status == "Pending";
-                        }),
-                        getSorting(order, orderBy)
-                      )
-                        .slice(
-                          page * rowsPerPage,
-                          page * rowsPerPage + rowsPerPage
+            <Tabs
+              value={value}
+              onChange={this.handleChange}
+              indicatorColor="primary"
+              textColor="primary"
+              scrollable
+              scrollButtons="auto"
+            >
+              <Tab label="All" {...a11yProps(0)} />
+              <Tab label="By Date" {...a11yProps(1)} />
+              <Tab label="By Range" {...a11yProps(2)} />
+              <Tab label="By Month" {...a11yProps(3)} />
+            </Tabs>
+            {value == 0 && (
+              <Box>
+                <Paper className={classes.root}>
+                  <div className={classes.tableWrapper}>
+                    <Table
+                      className={classes.table}
+                      aria-labelledby="tableTitle"
+                    >
+                      <EnhancedTableHead
+                        numSelected={selected.length}
+                        order={order}
+                        orderBy={orderBy}
+                        onSelectAllClick={this.handleSelectAllClick}
+                        onRequestSort={this.handleRequestSort}
+                        rowCount={filteredSearchData.length}
+                      />
+                      <TableBody>
+                        {stableSort(
+                          filteredSearchData,
+                          getSorting(order, orderBy)
                         )
-                        .map((n) => {
-                          const isSelected = this.isSelected(n.id);
-                          return (
-                            <ExpandableTableRow
-                              hover
-                              role="checkbox"
-                              aria-checked={isSelected}
-                              tabIndex={-1}
-                              key={n.id}
-                              selected={isSelected}
-                              key={data.name}
-                              expandComponent={
-                                <TableCell colSpan="6">
-                                  <div>Plan type</div>
-                                </TableCell>
-                              }
-                            >
-                              <TableCell
-                                component="th"
-                                scope="row"
-                                padding="none"
+                          .slice(
+                            page * rowsPerPage,
+                            page * rowsPerPage + rowsPerPage
+                          )
+                          .map((n) => {
+                            const isSelected = this.isSelected(n.id);
+                            return (
+                              <ExpandableTableRow
+                                hover
+                                role="checkbox"
+                                aria-checked={isSelected}
+                                tabIndex={-1}
+                                selected={isSelected}
+                                key={`${n.beneficiary}_${n.date}`}
+                                expandComponent={
+                                  <TableCell colSpan="6">
+                                    {/* <div>Plan type</div> */}
+                                  </TableCell>
+                                }
                               >
-                                {n.name} gg
-                              </TableCell>
-                              <TableCell align="right">{n.credits}</TableCell>
-                              <TableCell align="right">{n.date}</TableCell>
-                              <TableCell align="right">{n.type}</TableCell>
-                              <TableCell align="right">
-                                <Chip
-                                  color="primary"
-                                  label={n.status}
-                                  size="small"
-                                />
-                              </TableCell>
-                            </ExpandableTableRow>
-                          );
-                        })}
-                      {emptyRows > 0 && (
-                        <TableRow style={{ height: 49 * emptyRows }}>
-                          <TableCell colSpan={6} />
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
-                </div>
-                <TablePagination
-                  rowsPerPageOptions={[5, 10, 25, 30]}
-                  component="div"
-                  count={data.length}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  backIconButtonProps={{
-                    "aria-label": "Previous Page",
-                  }}
-                  nextIconButtonProps={{
-                    "aria-label": "Next Page",
-                  }}
-                  onPageChange={this.handleChangePage}
-                  onRowsPerPageChange={this.handleChangeRowsPerPage}
-                />
-              </Paper>
-            </Box>
-          )}
-          {value == 2 && (
-            <Box>
-              <Paper className={classes.root}>
-                <div className={classes.tableWrapper}>
-                  <Table className={classes.table} aria-labelledby="tableTitle">
-                    <EnhancedTableHead
-                      numSelected={selected.length}
-                      order={order}
-                      orderBy={orderBy}
-                      onSelectAllClick={this.handleSelectAllClick}
-                      onRequestSort={this.handleRequestSort}
-                      rowCount={
-                        data.filter((obj) => {
-                          return obj.status == "Pending";
-                        }).length
-                      }
-                    />
-                    <TableBody>
-                      {stableSort(
-                        data.filter((obj) => {
-                          return obj.campaignStatus == "Ongoing";
-                        }),
-                        getSorting(order, orderBy)
-                      )
-                        .slice(
-                          page * rowsPerPage,
-                          page * rowsPerPage + rowsPerPage
-                        )
-                        .map((n) => {
-                          const isSelected = this.isSelected(n.id);
-                          return (
-                            <ExpandableTableRow
-                              hover
-                              role="checkbox"
-                              aria-checked={isSelected}
-                              tabIndex={-1}
-                              key={n.id}
-                              selected={isSelected}
-                              key={data.name}
-                              expandComponent={
-                                <TableCell colSpan="6">
-                                  <div>Plan type</div>
+                                <TableCell
+                                  component="th"
+                                  scope="row"
+                                  style={{
+                                    paddingTop: "9px",
+                                    paddingBottom: "9px",
+                                  }}
+                                >
+                                  {n.token_number}
                                 </TableCell>
-                              }
-                            >
-                              <TableCell
-                                component="th"
-                                scope="row"
-                                padding="none"
-                              >
-                                {n.name}
-                              </TableCell>
-                              <TableCell align="right">{n.credits}</TableCell>
-                              <TableCell align="right">{n.date}</TableCell>
-                              <TableCell align="right">{n.type}</TableCell>
-                              <TableCell align="right">
-                                <Chip
-                                  color="primary"
-                                  label={n.status}
-                                  size="small"
-                                />
-                              </TableCell>
-                            </ExpandableTableRow>
-                          );
-                        })}
-                      {emptyRows > 0 && (
-                        <TableRow style={{ height: 49 * emptyRows }}>
-                          <TableCell colSpan={6} />
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
-                </div>
-                <TablePagination
-                  rowsPerPageOptions={[5, 10, 25, 30]}
-                  component="div"
-                  count={data.length}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  backIconButtonProps={{
-                    "aria-label": "Previous Page",
-                  }}
-                  nextIconButtonProps={{
-                    "aria-label": "Next Page",
-                  }}
-                  onPageChange={this.handleChangePage}
-                  onRowsPerPageChange={this.handleChangeRowsPerPage}
-                />
-              </Paper>
-            </Box>
-          )}
-          {value == 3 && (
-            <Box>
-              <Paper className={classes.root}>
-                <div className={classes.tableWrapper}>
-                  <Table className={classes.table} aria-labelledby="tableTitle">
-                    <EnhancedTableHead
-                      numSelected={selected.length}
-                      order={order}
-                      orderBy={orderBy}
-                      onSelectAllClick={this.handleSelectAllClick}
-                      onRequestSort={this.handleRequestSort}
-                      rowCount={
-                        data.filter((obj) => {
-                          return obj.campaignStatus == "Pending";
-                        }).length
-                      }
-                    />
-                    <TableBody>
-                      {stableSort(
-                        data.filter((obj) => {
-                          return obj.status == "Completed";
-                        }),
-                        getSorting(order, orderBy)
-                      )
-                        .slice(
-                          page * rowsPerPage,
-                          page * rowsPerPage + rowsPerPage
-                        )
-                        .map((n) => {
-                          const isSelected = this.isSelected(n.id);
-                          return (
-                            <ExpandableTableRow
-                              hover
-                              role="checkbox"
-                              aria-checked={isSelected}
-                              tabIndex={-1}
-                              key={n.id}
-                              selected={isSelected}
-                              key={data.name}
-                              expandComponent={
-                                <TableCell colSpan="6">
-                                  <div>Plan type</div>
+                                <TableCell
+                                  align="left"
+                                  style={{
+                                    paddingTop: "9px",
+                                    paddingBottom: "9px",
+                                  }}
+                                >
+                                  {n.date}
                                 </TableCell>
-                              }
+                                <TableCell
+                                  align="right"
+                                  style={{
+                                    paddingTop: "9px",
+                                    paddingBottom: "9px",
+                                  }}
+                                >
+                                  {n.name}
+                                </TableCell>{" "}
+                                <TableCell
+                                  align="right"
+                                  style={{
+                                    paddingTop: "9px",
+                                    paddingBottom: "9px",
+                                  }}
+                                >
+                                  {n.beneficiary}
+                                </TableCell>{" "}
+                                <TableCell
+                                  align="right"
+                                  style={{
+                                    paddingTop: "9px",
+                                    paddingBottom: "9px",
+                                  }}
+                                >
+                                  {parseInt(n.age) < 45 ? (
+                                    <Chip
+                                      className={classes.chip}
+                                      style={{
+                                        fontSize: "14px",
+                                        fontWeight: "bold",
+                                        color: "#ffffff",
+                                      }}
+                                      label="18-45"
+                                      color="primary"
+                                    />
+                                  ) : (
+                                    <Chip
+                                      className={classes.chip}
+                                      style={{
+                                        fontSize: "14px",
+                                        fontWeight: "bold",
+                                        color: "#ffffff",
+                                        background: "#a617f2",
+                                      }}
+                                      label="45+"
+                                    />
+                                  )}
+                                </TableCell>
+                                <TableCell
+                                  align="right"
+                                  style={{
+                                    paddingTop: "9px",
+                                    paddingBottom: "9px",
+                                  }}
+                                >
+                                  {n.vaccine === "covaxin" ? (
+                                    <Chip
+                                      className={classes.chip}
+                                      style={{
+                                        background: "#f2ca17",
+                                        color: "#ffffff",
+                                        fontSize: "14px",
+                                        fontWeight: "bold",
+                                      }}
+                                      label="COVAXIN"
+                                    />
+                                  ) : (
+                                    <Chip
+                                      className={classes.chip}
+                                      style={{
+                                        fontSize: "14px",
+                                        fontWeight: "bold",
+                                        color: "#ffffff",
+                                        background: "#f2174f",
+                                      }}
+                                      label="COVISHIELD"
+                                    />
+                                  )}
+                                </TableCell>
+                                <TableCell
+                                  align="right"
+                                  style={{
+                                    paddingTop: "9px",
+                                    paddingBottom: "9px",
+                                  }}
+                                >
+                                  <Chip
+                                    className={classes.chip}
+                                    style={{
+                                      background:
+                                        n.dose === "dose2"
+                                          ? "#1fd451"
+                                          : "#d4241f",
+                                      color: "#ffffff",
+                                      fontSize: "14px",
+                                      fontWeight: "bold",
+                                    }}
+                                    label={
+                                      n.dose === "dose2" ? "Dose 2" : "Dose 1"
+                                    }
+                                  />
+                                </TableCell>
+                              </ExpandableTableRow>
+                            );
+                          })}
+                        {emptyRows > 0 && (
+                          <TableRow style={{ height: 51 * emptyRows }}>
+                            <TableCell
+                              colSpan={7}
+                              style={{
+                                textAlign: "center",
+                                fontSize: "1.2rem",
+                              }}
                             >
-                              <TableCell
-                                component="th"
-                                scope="row"
-                                padding="none"
+                              {filteredSearchData.length == 0 &&
+                                "No Results found with given filters"}
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </TableBody>
+                    </Table>
+                  </div>
+                  <TablePagination
+                    rowsPerPageOptions={[5, 10]}
+                    component="div"
+                    count={filteredSearchData.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    backIconButtonProps={{
+                      "aria-label": "Previous Page",
+                    }}
+                    nextIconButtonProps={{
+                      "aria-label": "Next Page",
+                    }}
+                    onPageChange={this.handleChangePage}
+                    onRowsPerPageChange={this.handleChangeRowsPerPage}
+                  />
+                </Paper>
+              </Box>
+            )}
+            {value == 1 && (
+              <Box>
+                <Paper className={classes.root}>
+                  <div className={classes.tableWrapper}>
+                    <Table
+                      className={classes.table}
+                      aria-labelledby="tableTitle"
+                    >
+                      <EnhancedTableHead
+                        numSelected={selected.length}
+                        order={order}
+                        orderBy={orderBy}
+                        onSelectAllClick={this.handleSelectAllClick}
+                        onRequestSort={this.handleRequestSort}
+                        rowCount={fsDataDate.length}
+                      />
+                      <TableBody>
+                        {stableSort(fsDataDate, getSorting(order, orderBy))
+                          .slice(
+                            page * rowsPerPage,
+                            page * rowsPerPage + rowsPerPage
+                          )
+                          .map((n) => {
+                            const isSelected = this.isSelected(n.id);
+                            return (
+                              <ExpandableTableRow
+                                hover
+                                role="checkbox"
+                                aria-checked={isSelected}
+                                tabIndex={-1}
+                                selected={isSelected}
+                                key={`${n.beneficiary}_${n.date}`}
+                                expandComponent={
+                                  <TableCell colSpan="6">
+                                    {/* <div>Plan type</div> */}
+                                  </TableCell>
+                                }
                               >
-                                {n.name}
-                              </TableCell>
-                              <TableCell align="right">{n.credits}</TableCell>
-                              <TableCell align="right">{n.date}</TableCell>
-                              <TableCell align="right">{n.type}</TableCell>
-                              <TableCell align="right">
-                                <Chip
-                                  color="primary"
-                                  label={n.status}
-                                  size="small"
-                                />
-                              </TableCell>
-                            </ExpandableTableRow>
-                          );
-                        })}
-                      {emptyRows > 0 && (
-                        <TableRow style={{ height: 49 * emptyRows }}>
-                          <TableCell colSpan={6} />
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
-                </div>
-                <TablePagination
-                  rowsPerPageOptions={[5, 10, 25, 30]}
-                  component="div"
-                  count={data.length}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  backIconButtonProps={{
-                    "aria-label": "Previous Page",
-                  }}
-                  nextIconButtonProps={{
-                    "aria-label": "Next Page",
-                  }}
-                  onPageChange={this.handleChangePage}
-                  onRowsPerPageChange={this.handleChangeRowsPerPage}
-                />
-              </Paper>
-            </Box>
-          )}
-        </Container>
-      </Box>
+                                <TableCell
+                                  component="th"
+                                  scope="row"
+                                  style={{
+                                    paddingTop: "9px",
+                                    paddingBottom: "9px",
+                                  }}
+                                >
+                                  {n.token_number}
+                                </TableCell>
+                                <TableCell
+                                  align="left"
+                                  style={{
+                                    paddingTop: "9px",
+                                    paddingBottom: "9px",
+                                  }}
+                                >
+                                  {n.date}
+                                </TableCell>
+                                <TableCell
+                                  align="right"
+                                  style={{
+                                    paddingTop: "9px",
+                                    paddingBottom: "9px",
+                                  }}
+                                >
+                                  {n.name}
+                                </TableCell>{" "}
+                                <TableCell
+                                  align="right"
+                                  style={{
+                                    paddingTop: "9px",
+                                    paddingBottom: "9px",
+                                  }}
+                                >
+                                  {n.beneficiary}
+                                </TableCell>{" "}
+                                <TableCell
+                                  align="right"
+                                  style={{
+                                    paddingTop: "9px",
+                                    paddingBottom: "9px",
+                                  }}
+                                >
+                                  {parseInt(n.age) < 45 ? (
+                                    <Chip
+                                      className={classes.chip}
+                                      style={{
+                                        fontSize: "14px",
+                                        fontWeight: "bold",
+                                        color: "#ffffff",
+                                      }}
+                                      label="18-45"
+                                      color="primary"
+                                    />
+                                  ) : (
+                                    <Chip
+                                      className={classes.chip}
+                                      style={{
+                                        fontSize: "14px",
+                                        fontWeight: "bold",
+                                        color: "#ffffff",
+                                        background: "#a617f2",
+                                      }}
+                                      label="45+"
+                                    />
+                                  )}
+                                </TableCell>
+                                <TableCell
+                                  align="right"
+                                  style={{
+                                    paddingTop: "9px",
+                                    paddingBottom: "9px",
+                                  }}
+                                >
+                                  {n.vaccine === "covaxin" ? (
+                                    <Chip
+                                      className={classes.chip}
+                                      style={{
+                                        background: "#f2ca17",
+                                        color: "#ffffff",
+                                        fontSize: "14px",
+                                        fontWeight: "bold",
+                                      }}
+                                      label="COVAXIN"
+                                    />
+                                  ) : (
+                                    <Chip
+                                      className={classes.chip}
+                                      style={{
+                                        fontSize: "14px",
+                                        fontWeight: "bold",
+                                        color: "#ffffff",
+                                        background: "#f2174f",
+                                      }}
+                                      label="COVISHIELD"
+                                    />
+                                  )}
+                                </TableCell>
+                                <TableCell
+                                  align="right"
+                                  style={{
+                                    paddingTop: "9px",
+                                    paddingBottom: "9px",
+                                  }}
+                                >
+                                  <Chip
+                                    className={classes.chip}
+                                    style={{
+                                      background:
+                                        n.dose === "dose2"
+                                          ? "#1fd451"
+                                          : "#d4241f",
+                                      color: "#ffffff",
+                                      fontSize: "14px",
+                                      fontWeight: "bold",
+                                    }}
+                                    label={
+                                      n.dose === "dose2" ? "Dose 2" : "Dose 1"
+                                    }
+                                  />
+                                </TableCell>
+                              </ExpandableTableRow>
+                            );
+                          })}
+                        {emptyRows > 0 && (
+                          <TableRow style={{ height: 51 * emptyRows }}>
+                            <TableCell
+                              colSpan={7}
+                              style={{
+                                textAlign: "center",
+                                fontSize: "1.2rem",
+                              }}
+                            >
+                              {fsDataDate.length == 0 &&
+                                "No Results found with given filters"}
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </TableBody>
+                    </Table>
+                  </div>
+                  <TablePagination
+                    rowsPerPageOptions={[5, 10]}
+                    component="div"
+                    count={fsDataDate.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    backIconButtonProps={{
+                      "aria-label": "Previous Page",
+                    }}
+                    nextIconButtonProps={{
+                      "aria-label": "Next Page",
+                    }}
+                    onPageChange={this.handleChangePage}
+                    onRowsPerPageChange={this.handleChangeRowsPerPage}
+                  />
+                </Paper>
+              </Box>
+            )}
+            {value == 2 && (
+              <Box>
+                <Paper className={classes.root}>
+                  <div className={classes.tableWrapper}>
+                    <Table
+                      className={classes.table}
+                      aria-labelledby="tableTitle"
+                    >
+                      <EnhancedTableHead
+                        numSelected={selected.length}
+                        order={order}
+                        orderBy={orderBy}
+                        onSelectAllClick={this.handleSelectAllClick}
+                        onRequestSort={this.handleRequestSort}
+                        rowCount={fsDataDateRange.length}
+                      />
+                      <TableBody>
+                        {stableSort(fsDataDateRange, getSorting(order, orderBy))
+                          .slice(
+                            page * rowsPerPage,
+                            page * rowsPerPage + rowsPerPage
+                          )
+                          .map((n) => {
+                            const isSelected = this.isSelected(n.id);
+                            return (
+                              <ExpandableTableRow
+                                hover
+                                role="checkbox"
+                                aria-checked={isSelected}
+                                tabIndex={-1}
+                                selected={isSelected}
+                                key={`${n.beneficiary}_${n.date}`}
+                                expandComponent={
+                                  <TableCell colSpan="6">
+                                    {/* <div>Plan type</div> */}
+                                  </TableCell>
+                                }
+                              >
+                                <TableCell
+                                  component="th"
+                                  scope="row"
+                                  style={{
+                                    paddingTop: "9px",
+                                    paddingBottom: "9px",
+                                  }}
+                                >
+                                  {n.token_number}
+                                </TableCell>
+                                <TableCell
+                                  align="left"
+                                  style={{
+                                    paddingTop: "9px",
+                                    paddingBottom: "9px",
+                                  }}
+                                >
+                                  {n.date}
+                                </TableCell>
+                                <TableCell
+                                  align="right"
+                                  style={{
+                                    paddingTop: "9px",
+                                    paddingBottom: "9px",
+                                  }}
+                                >
+                                  {n.name}
+                                </TableCell>{" "}
+                                <TableCell
+                                  align="right"
+                                  style={{
+                                    paddingTop: "9px",
+                                    paddingBottom: "9px",
+                                  }}
+                                >
+                                  {n.beneficiary}
+                                </TableCell>{" "}
+                                <TableCell
+                                  align="right"
+                                  style={{
+                                    paddingTop: "9px",
+                                    paddingBottom: "9px",
+                                  }}
+                                >
+                                  {parseInt(n.age) < 45 ? (
+                                    <Chip
+                                      className={classes.chip}
+                                      style={{
+                                        fontSize: "14px",
+                                        fontWeight: "bold",
+                                        color: "#ffffff",
+                                      }}
+                                      label="18-45"
+                                      color="primary"
+                                    />
+                                  ) : (
+                                    <Chip
+                                      className={classes.chip}
+                                      style={{
+                                        fontSize: "14px",
+                                        fontWeight: "bold",
+                                        color: "#ffffff",
+                                        background: "#a617f2",
+                                      }}
+                                      label="45+"
+                                    />
+                                  )}
+                                </TableCell>
+                                <TableCell
+                                  align="right"
+                                  style={{
+                                    paddingTop: "9px",
+                                    paddingBottom: "9px",
+                                  }}
+                                >
+                                  {n.vaccine === "covaxin" ? (
+                                    <Chip
+                                      className={classes.chip}
+                                      style={{
+                                        background: "#f2ca17",
+                                        color: "#ffffff",
+                                        fontSize: "14px",
+                                        fontWeight: "bold",
+                                      }}
+                                      label="COVAXIN"
+                                    />
+                                  ) : (
+                                    <Chip
+                                      className={classes.chip}
+                                      style={{
+                                        fontSize: "14px",
+                                        fontWeight: "bold",
+                                        color: "#ffffff",
+                                        background: "#f2174f",
+                                      }}
+                                      label="COVISHIELD"
+                                    />
+                                  )}
+                                </TableCell>
+                                <TableCell
+                                  align="right"
+                                  style={{
+                                    paddingTop: "9px",
+                                    paddingBottom: "9px",
+                                  }}
+                                >
+                                  <Chip
+                                    className={classes.chip}
+                                    style={{
+                                      background:
+                                        n.dose === "dose2"
+                                          ? "#1fd451"
+                                          : "#d4241f",
+                                      color: "#ffffff",
+                                      fontSize: "14px",
+                                      fontWeight: "bold",
+                                    }}
+                                    label={
+                                      n.dose === "dose2" ? "Dose 2" : "Dose 1"
+                                    }
+                                  />
+                                </TableCell>
+                              </ExpandableTableRow>
+                            );
+                          })}
+                        {emptyRows > 0 && (
+                          <TableRow style={{ height: 51 * emptyRows }}>
+                            <TableCell
+                              colSpan={7}
+                              style={{
+                                textAlign: "center",
+                                fontSize: "1.2rem",
+                              }}
+                            >
+                              {fsDataDateRange.length == 0 &&
+                                "No Results found with given filters"}
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </TableBody>
+                    </Table>
+                  </div>
+                  <TablePagination
+                    rowsPerPageOptions={[5, 10]}
+                    component="div"
+                    count={fsDataDateRange.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    backIconButtonProps={{
+                      "aria-label": "Previous Page",
+                    }}
+                    nextIconButtonProps={{
+                      "aria-label": "Next Page",
+                    }}
+                    onPageChange={this.handleChangePage}
+                    onRowsPerPageChange={this.handleChangeRowsPerPage}
+                  />
+                </Paper>
+              </Box>
+            )}
+            {value == 3 && (
+              <Box>
+                <Paper className={classes.root}>
+                  <div className={classes.tableWrapper}>
+                    <Table
+                      className={classes.table}
+                      aria-labelledby="tableTitle"
+                    >
+                      <EnhancedTableHead
+                        numSelected={selected.length}
+                        order={order}
+                        orderBy={orderBy}
+                        onSelectAllClick={this.handleSelectAllClick}
+                        onRequestSort={this.handleRequestSort}
+                        rowCount={fsDataMonth.length}
+                      />
+                      <TableBody>
+                        {stableSort(fsDataMonth, getSorting(order, orderBy))
+                          .slice(
+                            page * rowsPerPage,
+                            page * rowsPerPage + rowsPerPage
+                          )
+                          .map((n) => {
+                            const isSelected = this.isSelected(n.id);
+                            return (
+                              <ExpandableTableRow
+                                hover
+                                role="checkbox"
+                                aria-checked={isSelected}
+                                tabIndex={-1}
+                                selected={isSelected}
+                                key={`${n.beneficiary}_${n.date}`}
+                                expandComponent={
+                                  <TableCell colSpan="6">
+                                    {/* <div>Plan type</div> */}
+                                  </TableCell>
+                                }
+                              >
+                                <TableCell
+                                  component="th"
+                                  scope="row"
+                                  style={{
+                                    paddingTop: "9px",
+                                    paddingBottom: "9px",
+                                  }}
+                                >
+                                  {n.token_number}
+                                </TableCell>
+                                <TableCell
+                                  align="left"
+                                  style={{
+                                    paddingTop: "9px",
+                                    paddingBottom: "9px",
+                                  }}
+                                >
+                                  {n.date}
+                                </TableCell>
+                                <TableCell
+                                  align="right"
+                                  style={{
+                                    paddingTop: "9px",
+                                    paddingBottom: "9px",
+                                  }}
+                                >
+                                  {n.name}
+                                </TableCell>{" "}
+                                <TableCell
+                                  align="right"
+                                  style={{
+                                    paddingTop: "9px",
+                                    paddingBottom: "9px",
+                                  }}
+                                >
+                                  {n.beneficiary}
+                                </TableCell>{" "}
+                                <TableCell
+                                  align="right"
+                                  style={{
+                                    paddingTop: "9px",
+                                    paddingBottom: "9px",
+                                  }}
+                                >
+                                  {parseInt(n.age) < 45 ? (
+                                    <Chip
+                                      className={classes.chip}
+                                      style={{
+                                        fontSize: "14px",
+                                        fontWeight: "bold",
+                                        color: "#ffffff",
+                                      }}
+                                      label="18-45"
+                                      color="primary"
+                                    />
+                                  ) : (
+                                    <Chip
+                                      className={classes.chip}
+                                      style={{
+                                        fontSize: "14px",
+                                        fontWeight: "bold",
+                                        color: "#ffffff",
+                                        background: "#a617f2",
+                                      }}
+                                      label="45+"
+                                    />
+                                  )}
+                                </TableCell>
+                                <TableCell
+                                  align="right"
+                                  style={{
+                                    paddingTop: "9px",
+                                    paddingBottom: "9px",
+                                  }}
+                                >
+                                  {n.vaccine === "covaxin" ? (
+                                    <Chip
+                                      className={classes.chip}
+                                      style={{
+                                        background: "#f2ca17",
+                                        color: "#ffffff",
+                                        fontSize: "14px",
+                                        fontWeight: "bold",
+                                      }}
+                                      label="COVAXIN"
+                                    />
+                                  ) : (
+                                    <Chip
+                                      className={classes.chip}
+                                      style={{
+                                        fontSize: "14px",
+                                        fontWeight: "bold",
+                                        color: "#ffffff",
+                                        background: "#f2174f",
+                                      }}
+                                      label="COVISHIELD"
+                                    />
+                                  )}
+                                </TableCell>
+                                <TableCell
+                                  align="right"
+                                  style={{
+                                    paddingTop: "9px",
+                                    paddingBottom: "9px",
+                                  }}
+                                >
+                                  <Chip
+                                    className={classes.chip}
+                                    style={{
+                                      background:
+                                        n.dose === "dose2"
+                                          ? "#1fd451"
+                                          : "#d4241f",
+                                      color: "#ffffff",
+                                      fontSize: "14px",
+                                      fontWeight: "bold",
+                                    }}
+                                    label={
+                                      n.dose === "dose2" ? "Dose 2" : "Dose 1"
+                                    }
+                                  />
+                                </TableCell>
+                              </ExpandableTableRow>
+                            );
+                          })}
+                        {emptyRows > 0 && (
+                          <TableRow style={{ height: 51 * emptyRows }}>
+                            <TableCell
+                              colSpan={7}
+                              style={{
+                                textAlign: "center",
+                                fontSize: "1.2rem",
+                              }}
+                            >
+                              {fsDataMonth.length == 0 &&
+                                "No Results found with given filters"}
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </TableBody>
+                    </Table>
+                  </div>
+                  <TablePagination
+                    rowsPerPageOptions={[5, 10]}
+                    component="div"
+                    count={fsDataMonth.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    backIconButtonProps={{
+                      "aria-label": "Previous Page",
+                    }}
+                    nextIconButtonProps={{
+                      "aria-label": "Next Page",
+                    }}
+                    onPageChange={this.handleChangePage}
+                    onRowsPerPageChange={this.handleChangeRowsPerPage}
+                  />
+                </Paper>
+              </Box>
+            )}
+          </Container>
+        </Box>
+        {this.state.value == 1 && (
+          <div style={{ margin: "10px", justifySelf: "center" }}>
+            The data is filtered according to Date:{" "}
+          </div>
+        )}
+        {this.state.value == 1 && (
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <DatePicker
+              format="yyyy-MM-dd"
+              value={this.state.date0}
+              disableFuture
+              onChange={(date) => {
+                let temp = data.filter((el) => {
+                  console.log(new Date(el.date).getTime(), date.getTime());
+                  return (
+                    new Date(el.date).setHours(0, 0, 0, 0) ===
+                    date.setHours(0, 0, 0, 0)
+                  );
+                });
+
+                this.setState({ date0: date, filteredDateData: temp });
+              }}
+              style={{ margin: "10px", justifySelf: "center", width: "150px" }}
+              className="forDate"
+            />
+          </MuiPickersUtilsProvider>
+        )}
+        {this.state.value == 2 && (
+          <div style={{ margin: "10px", justifySelf: "center" }}>
+            The data is filtered according to range of Dates:{" "}
+          </div>
+        )}
+        {this.state.value == 2 && (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 0.5fr 1fr",
+              justifySelf: "center",
+            }}
+            className="forDate"
+          >
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <DatePicker
+                format="yyyy-MM-dd"
+                value={this.state.date1}
+                onChange={(date) => {
+                  let temp = data.filter(
+                    (el) =>
+                      new Date(el.date).setHours(0, 0, 0, 0) <=
+                        this.state.date2.setHours(0, 0, 0, 0) &&
+                      new Date(el.date).setHours(0, 0, 0, 0) >=
+                        date.setHours(0, 0, 0, 0)
+                  );
+                  this.setState({ date1: date, filteredDateDataRange: temp });
+                }}
+                style={{ margin: "10px", width: "150px" }}
+              />
+            </MuiPickersUtilsProvider>
+            <div style={{ margin: "10px", textAlign: "center" }}>to</div>
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <DatePicker
+                format="yyyy-MM-dd"
+                value={this.state.date2}
+                onChange={(date) => {
+                  let temp = data.filter(
+                    (el) =>
+                      new Date(el.date).setHours(0, 0, 0, 0) <=
+                        date.setHours(0, 0, 0, 0) &&
+                      new Date(el.date).setHours(0, 0, 0, 0) >=
+                        this.state.date1.setHours(0, 0, 0, 0)
+                  );
+                  this.setState({ date2: date, filteredDateDataRange: temp });
+                }}
+                style={{ margin: "10px", width: "150px", textAlign: "center" }}
+              />
+            </MuiPickersUtilsProvider>
+          </div>
+        )}
+        {this.state.value == 3 && (
+          <div style={{ margin: "10px", justifySelf: "center" }}>
+            The data is filtered according to Month:{" "}
+          </div>
+        )}
+        {this.state.value == 3 && (
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <DatePicker
+              views={["year", "month"]}
+              value={this.state.month}
+              disableFuture
+              onChange={(date) => {
+                let temp = data.filter(
+                  (el) =>
+                    new Date(el.date).getMonth() === date.getMonth() &&
+                    new Date(el.date).getFullYear() === date.getFullYear()
+                );
+                this.setState({ month: date, filteredDateDataMonth: temp });
+              }}
+              style={{ margin: "10px", justifySelf: "center", width: "150px" }}
+              className="forDate"
+            />
+          </MuiPickersUtilsProvider>
+        )}
+      </div>
     ) : (
       <Loader
         type="Oval"

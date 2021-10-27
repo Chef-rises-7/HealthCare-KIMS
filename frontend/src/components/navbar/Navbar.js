@@ -40,6 +40,7 @@ const Navbar = (props) => {
         <Toolbar>
           <Avatar src="/logo192.png" style={{ marginRight: "5px" }} />
           <Typography variant="h6"> Vaccination Slot Booking Portal</Typography>
+          <div style={{ marginLeft: "20px" }} />
           {props.statsTab ? (
             <Tabs
               value={props.currTab}
@@ -56,17 +57,19 @@ const Navbar = (props) => {
           ) : (
             ""
           )}
-          <div style={{ flexGrow: 1 }}></div>
+          <div style={{ flexGrow: 1 }} />
           <IconButton
             edge="end"
             color="inherit"
             onClick={() => {
               localStorage.setItem("phoneNo", "");
               localStorage.setItem("userToken", "");
+              localStorage.setItem("userTokenStaff", "");
               props.history.replace("/signinotp");
             }}
           >
             <ExitApp />
+            <Typography variant="h6">Logout</Typography>
           </IconButton>
         </Toolbar>
       </AppBar>
