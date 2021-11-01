@@ -22,6 +22,7 @@ import {
   CardHeader,
   Divider,
 } from "@material-ui-new/core";
+import { useTranslation } from 'react-i18next';
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 const phoneNoExp = /^[6-9]\d{9}$/;
@@ -69,6 +70,8 @@ const Login = (props) => {
   const [isLoading, setLoading] = React.useState(true);
   const [isLoading2, setLoading2] = React.useState(true);
   const [slotInfo, setSlotInfo] = React.useState([]);
+  const { t } = useTranslation(["signinotp"]);
+
   React.useEffect(() => {
     const requestOptions = {
       method: "GET",
@@ -203,7 +206,7 @@ const Login = (props) => {
                     <form onSubmit={handleSubmit}>
                       <Box sx={{ mb: 3 }}>
                         <Typography color="textPrimary" variant="h2">
-                          Sign in
+                          {t('signinotp:sign_in')}
                         </Typography>
                         <Typography
                           color="textSecondary"

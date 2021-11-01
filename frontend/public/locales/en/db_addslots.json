@@ -1,0 +1,18 @@
+{
+    "add_slots" : "Add Slots (for today)",
+    "slot_inst" : "Select the appropriate tags to add slots for today.",
+    "required" : "Required",
+    "select_vaccine" : "Select Vaccine",
+    "select_dose" : "Select Dose",
+    "select_age" : "Select Age Group",
+    "number_slots_slots" : "Number of Slots",
+    "for_date" : "For Date:",
+    "add_slots" : "ADD SLOT(S)",
+    "slot_tags" : "Slot Tags",
+    "covishield" : "Covishield",
+    "covaxin" : "Covaxin",
+    "dose_1" : "Dose 1",
+    "dose_2" : "Dose 2",
+    "18-45" : "18-45",
+    "45+" : "45+"
+}

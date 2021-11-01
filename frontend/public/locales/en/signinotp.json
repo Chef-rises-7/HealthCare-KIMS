@@ -1,0 +1,19 @@
+{
+    "sign_in" : "Sign In",
+    "otp_instruction"  : "An OTP will be sent to your mobile number for verification",
+    "phone_number"  : "Phone Number",
+    "phone_number_required" : "Phone number is required",
+    "get_otp" : "Get Otp",
+    "not_reg_cowin"  : "Haven't registered on Co-WIN?",
+    "register_here"  : "Register here",
+    "staff_login" : "Staff Login",
+    "available_slots" : "Available Slots",
+    "update_warning" : "The numbers might update during the booking procedure.",
+    "slot_tags" : "Slot Tags",
+    "covishield" : "Covishield",
+    "covaxin" : "Covaxin",
+    "dose_1" : "Dose 1",
+    "dose_2" : "Dose 2",
+    "18-45" : "18-45",
+    "45+" : "45+"
+}

@@ -1,0 +1,36 @@
+{
+    "header": {
+        "title": "Vaccination Slot Booking Portal",
+        "statistics": "STATISTICS",
+        "add_slots": "ADD SLOTS",
+        "logout": "LOGOUT"
+    },
+    "search": {
+        "token_details": "Token Details",
+        "placeholder": "Find Token by Beneficiary Name",
+        "export": "Export"
+    },
+    "all": "ALL",
+    "by_date": {
+        "name": "BY DATE",
+        "title": "The data is filtered according to Date:"
+    },
+    "by_range": {
+        "name": "BY RANGE",
+        "title": "The data is filtered according to range of Dates:",
+        "to": "to"
+    },
+    "by_month": {
+        "name": "BY MONTH",
+        "title": "The data is filtered according to Month:"
+    },
+    "token_no": "Token No.",
+    "date": "Date",
+    "name": "Name",
+    "ref_id": "Reference ID",
+    "age_group": "Age Group",
+    "vaccine": "Vaccine",
+    "dose_no": "Dose No.",
+    "rows_per_page": "Rows per page:",
+    "of": "of"
+}
