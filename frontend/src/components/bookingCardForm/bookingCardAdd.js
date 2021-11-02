@@ -34,10 +34,12 @@ import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import EventAvailableIcon from "@material-ui/icons/EventAvailable";
 import { makeStyles } from "@material-ui/core/styles";
 import Chip from "@material-ui-new/core/Chip";
+import { useTranslation } from 'react-i18next';
 const BookingCardAdd = (props) => {
   //const navigate = useNavigate();
   const { match, history } = props;
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const { t, i18n } = useTranslation(["alt_flow"]);
   let formikref = React.useRef(null);
   const {
     name,
@@ -115,7 +117,7 @@ const BookingCardAdd = (props) => {
             }}
           >
             <div style={{ textAlign: "center", fontSize: "2rem" }}>
-              Add one more
+              {t("alt_flow:add_one_more")}
             </div>
             <AddCircleIcon
               style={{

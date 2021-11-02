@@ -8,6 +8,8 @@ import "./Navbar.css";
 import ExitApp from "@material-ui-new/icons/ExitToApp";
 import { Typography } from "@material-ui/core";
 
+import { useTranslation } from 'react-i18next';
+
 const useStyles = makeStyles((theme) => ({
   rootx: {
     flexGrow: 1,
@@ -34,12 +36,15 @@ const useStyles = makeStyles((theme) => ({
 
 const Navbar = (props) => {
   const classes = useStyles();
+
+  const { t } = useTranslation(["db_statistics"]);
+
   return (
     <div className={classes.rootx}>
       <AppBar position="static" style={{ backgroundColor: "#6360db" }}>
         <Toolbar>
           <Avatar src="/logo192.png" style={{ marginRight: "5px" }} />
-          <Typography variant="h6"> Vaccination Slot Booking Portal</Typography>
+          <Typography variant="h6"> {t('db_statistics:header.title')}</Typography>
           <div style={{ marginLeft: "20px" }} />
           {props.statsTab ? (
             <Tabs
@@ -49,10 +54,10 @@ const Navbar = (props) => {
             >
               <Tab
                 inkBarStyle={{ background: "#ffffff" }}
-                label="STATISTICS"
+                label={t('db_statistics:header.statistics')}
                 className="fullheight"
               />
-              <Tab label="ADD SLOTS" className="fullheight" />
+              <Tab label={t('db_statistics:header.add_slots')} className="fullheight" />
             </Tabs>
           ) : (
             ""
@@ -69,7 +74,7 @@ const Navbar = (props) => {
             }}
           >
             <ExitApp />
-            <Typography variant="h6">Logout</Typography>
+            <Typography variant="h6">{t('db_statistics:header.logout')}</Typography>
           </IconButton>
         </Toolbar>
       </AppBar>

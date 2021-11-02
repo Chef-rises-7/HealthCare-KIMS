@@ -1,36 +1,36 @@
 {
     "header": {
-        "title": "Vaccination Slot Booking Portal",
-        "statistics": "STATISTICS",
-        "add_slots": "ADD SLOTS",
-        "logout": "LOGOUT"
+      "title": "टीकाकरण स्लॉट बुकिंग पोर्टल",
+      "statistics": " आंकड़े",
+      "add_slots": " स्लॉट जोड़ें",
+      "logout": " लॉग आउट"
     },
     "search": {
-        "token_details": "Token Details",
-        "placeholder": "Find Token by Beneficiary Name",
-        "export": "Export"
+      "token_details": " टोकन विवरण",
+      "placeholder": " लाभार्थी के नाम से टोकन खोजें",
+      "export": " निर्यात"
     },
-    "all": "ALL",
+    "all": " सब",
     "by_date": {
-        "name": "BY DATE",
-        "title": "The data is filtered according to Date:"
+      "name": " तिथि के अनुसार",
+      "title": " दिनांक के अनुसार डेटा फ़िल्टर किया जाता है:"
     },
     "by_range": {
-        "name": "BY RANGE",
-        "title": "The data is filtered according to range of Dates:",
-        "to": "to"
+      "name": " रेंज के अनुसार",
+      "title": " डेटा को तिथियों की श्रेणी के अनुसार फ़िल्टर किया जाता है:",
+      "to": " प्रति"
     },
     "by_month": {
-        "name": "BY MONTH",
-        "title": "The data is filtered according to Month:"
+      "name": " महीने से",
+      "title": " डेटा महीने के अनुसार फ़िल्टर किया जाता है:"
     },
-    "token_no": "Token No.",
-    "date": "Date",
-    "name": "Name",
-    "ref_id": "Reference ID",
-    "age_group": "Age Group",
-    "vaccine": "Vaccine",
-    "dose_no": "Dose No.",
-    "rows_per_page": "Rows per page:",
-    "of": "of"
-}
+    "token_no": " टोकन नंबर",
+    "date": " दिनांक",
+    "name": " नाम",
+    "ref_id": " संदर्भ पहचान पत्र",
+    "age_group": " आयु वर्ग",
+    "vaccine": " टीका",
+    "dose_no": " खुराक संख्या",
+    "rows_per_page": " प्रति पृष्ठ पंक्तियाँ:",
+    "of": " का"
+  }

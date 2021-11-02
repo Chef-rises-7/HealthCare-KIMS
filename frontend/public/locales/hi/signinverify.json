@@ -1,10 +1,9 @@
 {
-    "verify_otp" : "Verify Otp",
-    "otp_sent" : "An OTP was sent to",
-    "change" : "Change",
-    "enter_otp" : "ENTER OTP",
-    "verify_otp" : "VERIFY OTP",
-    "resend_otp" : "RENSEND OTP",
-    "not_registered" : "Haven't registered on Co-WIN",
-    "register here" : "Register Here"
-}
+    "verify_otp": "ओटीपी सत्यापित करें",
+    "otp_sent": " एक ओटीपी भेजा गया था",
+    "change": " परिवर्तन",
+    "enter_otp": " ओटीपी दर्ज करें",
+    "resend_otp": " फिर से भेजें ओटीपी",
+    "not_registered": " Co-WIN . पर पंजीकृत नहीं है",
+    "register_here": " यहां रजिस्टर करें"
+  }

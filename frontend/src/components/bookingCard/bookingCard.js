@@ -32,12 +32,20 @@ import PersonIcon from "@material-ui/icons/Person";
 import EventAvailableIcon from "@material-ui/icons/EventAvailable";
 import { makeStyles } from "@material-ui/core/styles";
 import Chip from "@material-ui-new/core/Chip";
+
+import { useTranslation } from 'react-i18next';
+
+
 const BookingCard = (props) => {
   //name,birth_year, ageGrp,vaccination_status
   //const navigate = useNavigate();
   const { match, history } = props;
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   let formikref = React.useRef(null);
+
+  const { t } = useTranslation(["slotbooking"]);
+
+
   const {
     name,
     photo_id_type,
@@ -139,7 +147,7 @@ const BookingCard = (props) => {
             }}
           >
             <EventAvailableIcon style={{ marginRight: "5px" }} />
-            {"  "}Year of Birth: {props.birth_year}
+            {"  "}{t("slotbooking:year_of_birth")} {props.birth_year}
           </div>
           {props.ageGrp === "18to45" ? (
             <Chip
@@ -174,14 +182,14 @@ const BookingCard = (props) => {
             }}
             label={
               props.vaccination_status === "Not Vaccinated"
-                ? "Dose 1"
-                : "Dose 2"
+                ? t("slotbooking:dose_1")
+                : t("slotbooking:dose_2")
             }
           />
           <Divider style={{ marginTop: "5px" }} variant="middle" />
           <FormControl className={classes.formControl}>
             <InputLabel id="demo-simple-select-label">
-              Select Vaccine
+            {t("slotbooking:select_vaccine")}
             </InputLabel>
             <Select
               labelId="demo-simple-select-label"
@@ -190,8 +198,8 @@ const BookingCard = (props) => {
               onChange={handleChangeVaccine}
               disabled={!checked}
             >
-              <MenuItem value={"Covishield"}>Covishield</MenuItem>
-              <MenuItem value={"Covaxin"}>Covaxin</MenuItem>
+              <MenuItem value={"Covishield"}>{t("slotbooking:covishield")}</MenuItem>
+              <MenuItem value={"Covaxin"}>{t("slotbooking:covaxin")}</MenuItem>
             </Select>
           </FormControl>
         </div>

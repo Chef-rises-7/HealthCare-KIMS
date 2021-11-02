@@ -35,6 +35,14 @@ import { makeStyles } from "@material-ui/core/styles";
 import Chip from "@material-ui-new/core/Chip";
 import Navbar from "../navbar/Navbar";
 import { CardHeader } from "@material-ui/core";
+
+import { useTranslation } from 'react-i18next';
+
+import {Howl, Howler} from 'howler';
+import audio_hi from "../../audio/hi/select_vaccine.mp3"
+import audio_en from "../../audio/en/select_vaccine.mp3" 
+
+
 const SlotBooking = (props) => {
   //const navigate = useNavigate();
   const { match, history } = props;
@@ -45,6 +53,8 @@ const SlotBooking = (props) => {
     { name: "Omkar", birth_year: 1960, vaccination_status: "Not Vaccinated" },
   ]);
   const [isChecked, setChecked] = React.useState([]);
+
+  const { t, i18n } = useTranslation(["slotbooking","snack_bar","swal"]);
 
   const useStyles = makeStyles((theme) => ({
     root: {
@@ -90,7 +100,7 @@ const SlotBooking = (props) => {
         leastOne = true;
         if (ben.vaccine === "") {
           enqueueSnackbar(
-            "Please choose a vaccine for each selected beneficiary",
+            t('snack_bar:choose_vaccine'),
             3000
           );
           flag = 1;
@@ -102,7 +112,7 @@ const SlotBooking = (props) => {
     });
     if (!leastOne) {
       flag = 1;
-      enqueueSnackbar("Please select atleast one beneficiary", 3000);
+      enqueueSnackbar(t('snack_bar:select_ben'), 3000);
     }
     let reqBody = {
       beneficiaries: benArr,
@@ -120,13 +130,13 @@ const SlotBooking = (props) => {
     console.log(reqBody);
     if (flag == 0) {
       Swal.fire({
-        title: "Are you sure?",
-        text: "You won't be able to revert this!",
+        title: t("swal:slot_booking_1.title"),
+        text: t("swal:slot_booking_1.text"),
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, Book tokens!",
+        confirmButtonText: t("swal:slot_booking_1.confirmButtonText"),
       })
         .then((result) => {
           if (result.isConfirmed) {
@@ -155,13 +165,40 @@ const SlotBooking = (props) => {
           console.log(err);
           Swal.fire({
             icon: "error",
-            title: "Oops...",
-            text: "Token already booked for one or more beneficiaries!",
+            title: t("swal:slot_booking_2.title"),
+            text: t("swal:slot_booking_2.text"),
           });
           //   enqueueSnackbar(err, 3000);
         });
     }
   };
+
+  React.useEffect(() => {
+    console.log(i18n);
+    var play;
+    if(i18n.language =='en'){
+      play = new Howl({
+        src: audio_en,
+        html5: true
+      });      
+    }
+    else if(i18n.language =='hi'){
+      play = new Howl({
+        src: audio_hi,
+        html5: true
+      });  
+    }
+    else{
+
+    }
+    let timer = setTimeout(()=>{
+      play.play();
+    },1000);
+    return () => {
+      play.stop();
+      clearTimeout(timer);
+    }
+  },[])
 
   React.useEffect(() => {
     if (!props.location.state) {
@@ -229,8 +266,8 @@ const SlotBooking = (props) => {
                 />
               </div>
               <CardHeader
-                title="Available Slots"
-                subheader="The numbers might update during the booking procedure."
+                title={t("slotbooking:available_slots")}
+                subheader={t("slotbooking:update_warning")}
               />
             </div>
             <Divider />
@@ -262,8 +299,8 @@ const SlotBooking = (props) => {
           </Card>
           <Card style={{ margin: "20px" }}>
             <CardHeader
-              title="Book Slots"
-              subheader="Select required beneficiaries and proceed to book"
+              title={t("slotbooking:book_slots")}
+              subheader={t("slotbooking:select_proceed")}
             />
             <Divider />
             <CardContent>
@@ -313,7 +350,7 @@ const SlotBooking = (props) => {
                     handleBook();
                   }}
                 >
-                  Book Slot(s)
+                  {t("slotbooking:book_slots")}
                 </Button>
               </Box>
             </CardContent>

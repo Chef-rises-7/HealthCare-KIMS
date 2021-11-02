@@ -1,0 +1,23 @@
+{
+    "available_slots" : "Available Slots",
+    "update_warning" : "The numbers might update during the booking procedure.",
+    "slot_tags" : "Slot Tags",
+    "covishield" : "Covishield",
+    "covaxin" : "Covaxin",
+    "dose_1" : "Dose 1",
+    "dose_2" : "Dose 2",
+    "18-45" : "18-45",
+    "45+" : "45+",
+    "book_slots" : "Book Slots",
+    "failed_warning" : "Failed to fetch beneficiaries, please enter the details manually, else try again later.",
+    "name" : "Name",
+    "name_war" : "Name is required",
+    "ref_id" : "Reference ID",
+    "ref_war"  : "Reference ID is required",
+    "select_vacc" : "Select Vaccine",
+    "select_dose" : "Select Dose",
+    "birth_year" : "Birth Year",
+    "birth_war" : "Birth Year is required",
+    "remove" : "REMOVE",
+    "add_one_more" :"Add one more"
+}

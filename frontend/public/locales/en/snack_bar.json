@@ -1,0 +1,12 @@
+{
+    "generating_otp": "Generating OTP...",
+    "verify_otp": "Verifying OTP...",
+    "session_expire": "Session expired, please login again.",
+    "invalid_secret": "Invalid Secret Code, please try again",
+    "choose_vaccine": "Please choose a vaccine for each selected beneficiary",
+    "select_ben": "Please select atleast one beneficiary",
+    "generate_pdf": "Generating PDF, please wait.",
+    "login": "Logging in...",
+    "fill_all_details": "Please fill all details",
+    "maxi": "Maximum 4 tokens allowed at a time"
+}

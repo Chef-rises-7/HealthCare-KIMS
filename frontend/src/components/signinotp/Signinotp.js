@@ -23,6 +23,10 @@ import {
   Divider,
 } from "@material-ui-new/core";
 import { useTranslation } from 'react-i18next';
+import {Howl, Howler} from 'howler';
+// import audio_hi from "../../audio/hi/signin_otp.mp3"
+// import audio_en from "../../audio/en/signin_otp.mp3" 
+
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 const phoneNoExp = /^[6-9]\d{9}$/;
@@ -32,9 +36,10 @@ const HandleLogin = (
   enqueueSnackbar,
   closeSnackbar,
   phoneNo,
-  formikref
+  formikref,
+  t
 ) => {
-  enqueueSnackbar("Generating OTP...", { autoHideDuration: 3000 });
+  enqueueSnackbar(t('snack_bar:generating_otp'), { autoHideDuration: 3000 });
   const requestOptions = {
     method: "POST",
     headers: {
@@ -70,7 +75,7 @@ const Login = (props) => {
   const [isLoading, setLoading] = React.useState(true);
   const [isLoading2, setLoading2] = React.useState(true);
   const [slotInfo, setSlotInfo] = React.useState([]);
-  const { t } = useTranslation(["signinotp"]);
+  const { t } = useTranslation(["signinotp","snack_bar"]);
 
   React.useEffect(() => {
     const requestOptions = {
@@ -130,6 +135,9 @@ const Login = (props) => {
     } else setLoading(false);
   }, []);
   let formikref = React.useRef(null);
+
+
+
   return (
     <>
       {!isLoading && !isLoading2 ? (
@@ -180,7 +188,7 @@ const Login = (props) => {
                   }}
                   validationSchema={Yup.object().shape({
                     phoneNo: Yup.string()
-                      .required("Phone number is required")
+                      .required(t("signinotp:phone_number_required"))
                       .matches(phoneNoExp, "Invalid phone number"),
                   })}
                   onSubmit={({ phoneNo }) => {
@@ -190,7 +198,8 @@ const Login = (props) => {
                       enqueueSnackbar,
                       closeSnackbar,
                       phoneNo,
-                      formikref
+                      formikref,
+                      t
                     );
                   }}
                 >
@@ -213,8 +222,7 @@ const Login = (props) => {
                           gutterBottom
                           variant="body2"
                         >
-                          An OTP will be sent to your mobile number for
-                          verification{" "}
+                          {t("signinotp:otp_instruction")}{" "}
                         </Typography>
                       </Box>
                       <TextField
@@ -225,7 +233,8 @@ const Login = (props) => {
                             ? touched.phoneNo && errors.phoneNo
                             : "\u00a0"
                         }
-                        label="Phone number"
+                        // label="Phone number"
+                        label  = {t("signinotp:phone_number")}
                         margin="normal"
                         name="phoneNo"
                         onBlur={handleBlur}
@@ -242,7 +251,7 @@ const Login = (props) => {
                           type="submit"
                           variant="contained"
                         >
-                          Get OTP
+                          {t("signinotp:get_otp")}
                         </Button>
                       </Box>
                       <Typography
@@ -250,12 +259,12 @@ const Login = (props) => {
                         variant="body1"
                         style={{ marginTop: "10px" }}
                       >
-                        Haven't registered on Co-WIN?{" "}
+                        {t("signinotp:not_reg_cowin")}{" "}
                         <a
                           href="https://selfregistration.sandbox.cowin.gov.in"
                           target="_blank"
                         >
-                          Register here
+                          {t("signinotp:register_here")}
                         </a>
                       </Typography>
                       <Typography
@@ -269,7 +278,7 @@ const Login = (props) => {
                           to="/signinstaff"
                           variant="body1"
                         >
-                          Staff Login
+                          {t("signinotp:staff_login")}
                         </Link>
                       </Typography>
                     </form>
@@ -280,8 +289,8 @@ const Login = (props) => {
           </Card>
           <Card style={{ margin: "20px", width: "90%", alignSelf: "center" }}>
             <CardHeader
-              title="Available Slots"
-              subheader="The numbers might update during the booking procedure."
+              title= {t("signinotp:available_slots")}
+              subheader={t("signinotp:update_warning")}
             />
             <Divider />
             <CardContent>

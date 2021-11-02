@@ -14,5 +14,7 @@
     "dose_1" : "Dose 1",
     "dose_2" : "Dose 2",
     "18-45" : "18-45",
-    "45+" : "45+"
+    "45+" : "45+",
+    "title": "Remaining Slots (For Today)",
+    "sub_title": "The numbers might update while you are on this page."
 }

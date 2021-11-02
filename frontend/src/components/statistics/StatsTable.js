@@ -42,6 +42,11 @@ import Paper from "@material-ui-new/core/Paper";
 import { withSnackbar } from "notistack";
 import { DataSaverOff } from "@material-ui/icons";
 
+import { withTranslation } from 'react-i18next';
+import {Howl, Howler} from 'howler';
+import audio_hi from "../../audio/hi/dashboard.mp3"
+import audio_en from "../../audio/en/dashboard.mp3" 
+
 function a11yProps(index) {
   return {
     id: `scrollable-auto-tab-${index}`,
@@ -206,6 +211,12 @@ class StatsTable extends React.Component {
     page: 0,
     rowsPerPage: 10,
   };
+  timer;
+  play;
+
+
+ 
+  
 
   handleRequestSort = (event, property) => {
     const orderBy = property;
@@ -286,7 +297,29 @@ class StatsTable extends React.Component {
   };
   isSelected = (id) => this.state.selected.indexOf(id) !== -1;
 
+
   componentDidMount() {
+    
+    if(this.props.i18n.language =='en'){
+      this.play = new Howl({
+        src: audio_en,
+        html5: true
+      });      
+    }
+    else if(this.props.i18n.language =='hi'){
+      this.play = new Howl({
+        src: audio_hi,
+        html5: true
+      });  
+    }
+    else{
+
+    }
+    this.timer = setTimeout(()=>{
+      this.play.play();
+    },1000);
+
+
     const requestOptions = {
       method: "POST",
       headers: {
@@ -334,6 +367,13 @@ class StatsTable extends React.Component {
         console.log(err);
       });
   }
+
+  componentWillUnmount() {
+    this.play.stop();
+    clearTimeout(this.timer);
+  }
+
+  
 
   render() {
     const { classes } = this.props;
@@ -408,7 +448,7 @@ class StatsTable extends React.Component {
                       variant="h3"
                       style={{ margin: "auto" }}
                     >
-                      Token Details
+                      {this.props.t('db_statistics:search.token_details')}
                     </Typography>
                     <Box sx={{ minWidth: "100%" }}>
                       <TextField
@@ -426,7 +466,7 @@ class StatsTable extends React.Component {
                             </InputAdornment>
                           ),
                         }}
-                        placeholder="Find Token by Beneficiary Name"
+                        placeholder={this.props.t('db_statistics:search.placeholder')}
                         variant="outlined"
                       />
                     </Box>
@@ -439,7 +479,7 @@ class StatsTable extends React.Component {
                       }}
                     >
                       <GetAppOutlinedIcon />
-                      Export
+                      {this.props.t('db_statistics:search.export')}
                     </Button>
                   </CardContent>
                 </Card>
@@ -453,10 +493,10 @@ class StatsTable extends React.Component {
               scrollable
               scrollButtons="auto"
             >
-              <Tab label="All" {...a11yProps(0)} />
-              <Tab label="By Date" {...a11yProps(1)} />
-              <Tab label="By Range" {...a11yProps(2)} />
-              <Tab label="By Month" {...a11yProps(3)} />
+              <Tab label={(this.props.t("db_statistics:all"))} {...a11yProps(0)} />
+              <Tab label={(this.props.t("db_statistics:by_date.name"))} {...a11yProps(1)} />
+              <Tab label={(this.props.t("db_statistics:by_range.name"))} {...a11yProps(2)} />
+              <Tab label={(this.props.t("db_statistics:by_month.name"))} {...a11yProps(3)} />
             </Tabs>
             {value == 0 && (
               <Box>
@@ -1257,7 +1297,7 @@ class StatsTable extends React.Component {
         </Box>
         {this.state.value == 1 && (
           <div style={{ margin: "10px", justifySelf: "center" }}>
-            The data is filtered according to Date:{" "}
+            {this.props.t('db_statistics:by_date.title')}{" "}
           </div>
         )}
         {this.state.value == 1 && (
@@ -1284,7 +1324,7 @@ class StatsTable extends React.Component {
         )}
         {this.state.value == 2 && (
           <div style={{ margin: "10px", justifySelf: "center" }}>
-            The data is filtered according to range of Dates:{" "}
+            {this.props.t('db_statistics:by_range.title')}{" "}
           </div>
         )}
         {this.state.value == 2 && (
@@ -1335,7 +1375,7 @@ class StatsTable extends React.Component {
         )}
         {this.state.value == 3 && (
           <div style={{ margin: "10px", justifySelf: "center" }}>
-            The data is filtered according to Month:{" "}
+            {this.props.t('db_statistics:by_month.title')}{" "}
           </div>
         )}
         {this.state.value == 3 && (
@@ -1381,4 +1421,4 @@ StatsTable.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(withSnackbar(StatsTable));
+export default withTranslation(["db_statistics"])(withStyles(styles)(withSnackbar(StatsTable)));

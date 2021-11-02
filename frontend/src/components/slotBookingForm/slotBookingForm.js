@@ -38,6 +38,8 @@ import Navbar from "../navbar/Navbar";
 import { CardHeader } from "@material-ui/core";
 import BookingCardForm from "../bookingCardForm/bookingCardForm";
 import BookingCardAdd from "../bookingCardForm/bookingCardAdd";
+import { useTranslation } from 'react-i18next';
+
 const SlotBookingForm = (props) => {
   //const navigate = useNavigate();
   const { match, history } = props;
@@ -49,6 +51,7 @@ const SlotBookingForm = (props) => {
   const [ageGrp, setAgeGrp] = React.useState([""]);
   const [doseNo, setDoseNo] = React.useState([""]);
   const [slotInfo, setSlotInfo] = React.useState([]);
+  const { t, i18n } = useTranslation(["swal","alt_flow","snack_bar"]);
 
   const handleBook = () => {
     let doseObj = {};
@@ -65,7 +68,7 @@ const SlotBookingForm = (props) => {
         doseNo[index] === "" ||
         userName[index] === ""
       ) {
-        enqueueSnackbar("Please fill all the details", 2500);
+        enqueueSnackbar(t("snack_bar:fill_all_details"), 2500);
         flag = 1;
       }
       benObj["beneficiary_reference_id"] = refs;
@@ -77,7 +80,7 @@ const SlotBookingForm = (props) => {
     });
     if (!leastOne) {
       flag = 1;
-      enqueueSnackbar("Please select atleast one beneficiary", 3000);
+      enqueueSnackbar(t("snack_bar:select_ben"), 3000);
     }
     let reqBody = {
       beneficiaries: benArr,
@@ -95,13 +98,13 @@ const SlotBookingForm = (props) => {
     console.log(reqBody);
     if (flag == 0) {
       Swal.fire({
-        title: "Are you sure?",
-        text: "You won't be able to revert this!",
+        title: t("swal:slot_booking_1.title"),
+        text: t("swal:slot_booking_1.text"),
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, Book tokens!",
+        confirmButtonText: t("swal:slot_booking_1.confirmButtonText"),
       })
         .then((result) => {
           if (result.isConfirmed) {
@@ -130,8 +133,8 @@ const SlotBookingForm = (props) => {
           console.log(err);
           Swal.fire({
             icon: "error",
-            title: "Oops...",
-            text: "Token already booked for one or more beneficiaries!",
+            title: t("swal:slot_booking_2.title"),
+            text: t("swal:slot_booking_2.text"),
           });
           //   enqueueSnackbar(err, 3000);
         });
@@ -172,7 +175,7 @@ const SlotBookingForm = (props) => {
       setDoseNo([...doseNo, ""]);
       console.log(userName.length);
     } else {
-      enqueueSnackbar("Maximum 4 tokens allowed at a time", 2000);
+      enqueueSnackbar(t("snack_bar:maxi"), 2000);
     }
   };
 
@@ -262,8 +265,8 @@ const SlotBookingForm = (props) => {
         <div style={{ margin: "0 auto", width: "80%" }}>
           <Card style={{ margin: "20px" }}>
             <CardHeader
-              title="Available Slots"
-              subheader="The numbers might update during the booking procedure."
+              title={t("alt_flow:available_slots")}
+              subheader={t("alt_flow:update_warning")}
             />
             <Divider />
             <CardContent>
@@ -292,8 +295,8 @@ const SlotBookingForm = (props) => {
           </Card>
           <Card style={{ margin: "20px" }}>
             <CardHeader
-              title="Book Slots"
-              subheader="Failed to fetch beneficiaries, please enter the details manually, else try again later."
+              title={t("alt_flow:book_slots")}
+              subheader={t("alt_flow:failed_warning")}
             />
             <Divider />
             <CardContent>
@@ -348,7 +351,7 @@ const SlotBookingForm = (props) => {
                     // history.push("/confirmPage");
                   }}
                 >
-                  Book Slot(s)
+                  {t("alt_flow:book_slots")}
                 </Button>
               </Box>
             </CardContent>

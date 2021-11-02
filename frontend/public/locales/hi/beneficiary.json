@@ -1,26 +1,26 @@
 {
-    "portal_title": "Vaccination Slot Booking Portal",
-    "logout": "Logout",
+    "portal_title": "टीकाकरण स्लॉट बुकिंग पोर्टल",
+    "logout": "लॉग आउट",
     "active": {
-        "title": "Your Active Slots",
-        "sub_title": "Download the QR Code for the following slots",
-        "token": "Token number(s):",
-        "date": "Date of Slot:",
-        "beneficiaries": "Beneficiaries",
-        "download": "DOWNLOAD"
+      "title": " आपके सक्रिय स्लॉट",
+      "sub_title": " निम्नलिखित स्लॉट के लिए क्यूआर कोड डाउनलोड करें",
+      "token": " टोकन नंबर:",
+      "date": " स्लॉट की तिथि:",
+      "beneficiaries": " लाभार्थियों",
+      "download": " डाउनलोड"
     },
     "register": {
-        "title": "Beneficiaries registered with this Account",
-        "sub_title": "Please verify the beneficiary details",
-        "dose1": "Dose-1",
-        "dose2": "Dose-2",
-        "birth": "Year of Birth:",
-        "photo": "Photo ID:",
-        "id_number": "ID Number:" 
+      "title": " इस खाते से पंजीकृत लाभार्थी",
+      "sub_title": " कृपया लाभार्थी विवरण सत्यापित करें",
+      "dose1": " खुराक-1",
+      "dose2": " खुराक-2",
+      "birth": " जन्म का साल:",
+      "photo": " फोटो पहचान पत्र:",
+      "id_number": " आईडी नंबर:"
     },
     "secret": {
-        "title": "Secret Code",
-        "sub_title": "Last four digit of reference ID",
-        "verify_details": "VERIFY DETAILS"
+      "title": " गुप्त संकेत",
+      "sub_title": " संदर्भ आईडी के अंतिम चार अंक",
+      "verify_details": " विवरण सत्यापित करें"
     }
-}
+  }

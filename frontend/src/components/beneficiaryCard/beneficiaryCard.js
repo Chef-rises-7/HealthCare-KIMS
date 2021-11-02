@@ -26,6 +26,10 @@ import PersonIcon from "@material-ui/icons/Person";
 import EventAvailableIcon from "@material-ui/icons/EventAvailable";
 import { makeStyles } from "@material-ui/core/styles";
 import Chip from "@material-ui-new/core/Chip";
+
+import { useTranslation } from 'react-i18next';
+
+
 const BeneficiaryCard = (props) => {
   const { match, history } = props;
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -78,6 +82,8 @@ const BeneficiaryCard = (props) => {
   };
 
   const classes = useStyles();
+
+  const { t } = useTranslation(["beneficiary"]);
   return (
     <>
       <div className={classes.root}>
@@ -131,7 +137,7 @@ const BeneficiaryCard = (props) => {
                     fontSize: "12px",
                     fontWeight: "bold",
                   }}
-                  label="Dose-1"
+                  label={t("beneficiary:register.dose1")}
                   icon={
                     props.isDose1 ? (
                       <CheckOutlinedIcon style={{ color: "#ffffff" }} />
@@ -148,7 +154,7 @@ const BeneficiaryCard = (props) => {
                     fontSize: "12px",
                     fontWeight: "bold",
                   }}
-                  label="Dose-2"
+                  label={t("beneficiary:register.dose2")}
                   icon={
                     props.isDose2 ? (
                       <CheckOutlinedIcon style={{ color: "#ffffff" }} />
@@ -172,7 +178,7 @@ const BeneficiaryCard = (props) => {
             }}
           >
             <EventAvailableIcon style={{ marginRight: "5px" }} />
-            {"  "}Year of Birth: {props.birth_year}
+            {"  "}{t("beneficiary:register.birth")} {props.birth_year}
           </div>
 
           <div
@@ -184,7 +190,7 @@ const BeneficiaryCard = (props) => {
             }}
           >
             <ContactMailIcon style={{ marginRight: "5px" }} />
-            {"  "} Photo ID: {props.photo_id_type}
+            {"  "} {t("beneficiary:register.photo")} {props.photo_id_type}
           </div>
           <div
             style={{
@@ -195,7 +201,7 @@ const BeneficiaryCard = (props) => {
             }}
           >
             <VerifiedUserOutlinedIcon style={{ marginRight: "5px" }} />
-            {"  "} ID Number: {props.photo_id_number}
+            {"  "} {t("beneficiary:register.id_number")} {props.photo_id_number}
           </div>
         </div>
         <Divider variant="middle" />

@@ -29,10 +29,12 @@ import PersonIcon from "@material-ui/icons/Person";
 import EventAvailableIcon from "@material-ui/icons/EventAvailable";
 import { makeStyles } from "@material-ui/core/styles";
 import Chip from "@material-ui-new/core/Chip";
+import { useTranslation } from 'react-i18next';
 const AvailableSlots = (props) => {
   //const navigate = useNavigate();
   const { match, history } = props;
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const { t } = useTranslation(["signinotp"]);
   let formikref = React.useRef(null);
   const {
     name,
@@ -89,7 +91,7 @@ const AvailableSlots = (props) => {
                 <ConfirmationNumberOutlinedIcon
                   style={{ marginRight: "5px" }}
                 />
-                Slot Tags:
+                {t("signinotp:slot_tags")}
               </div>
               <div
                 style={{
@@ -130,7 +132,7 @@ const AvailableSlots = (props) => {
                       fontSize: "12px",
                       fontWeight: "bold",
                     }}
-                    label="COVAXIN"
+                    label={t("signinotp:covaxin")}
                   />
                 ) : (
                   <Chip
@@ -141,7 +143,7 @@ const AvailableSlots = (props) => {
                       color: "#ffffff",
                       background: "#f2174f",
                     }}
-                    label="COVISHIELD"
+                    label={t("signinotp:covishield")}
                   />
                 )}
                 <Chip
@@ -152,7 +154,7 @@ const AvailableSlots = (props) => {
                     fontSize: "12px",
                     fontWeight: "bold",
                   }}
-                  label={props.dose_choice === "dose1" ? "Dose 1" : "Dose 2"}
+                  label={props.dose_choice === "dose1" ? t("signinotp:dose_1") : t("signinotp:dose_2")}
                 />
               </div>
             </Grid>
