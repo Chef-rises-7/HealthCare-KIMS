@@ -1,12 +1,17 @@
 import { Link as RouterLink } from "react-router-dom";
 import * as Yup from "yup";
 import { useSnackbar } from "notistack";
+import Swal from "sweetalert2";
 import { Formik } from "formik";
 import Image from "material-ui-image";
 import useSWR from "swr";
 import Loader from "react-loader-spinner";
 import React from "react";
+import PhoneIcon from "@material-ui/icons/Phone";
 import AvailableSlots from "../availableSlots/availableSlots";
+import "intro.js/introjs.css";
+import { Steps } from "intro.js-react";
+import Navbar from "../navbar/Navbar";
 
 import { api_endpoint, api_key, api_endpoint1, secret } from "../constants";
 import {
@@ -69,6 +74,47 @@ const Login = (props) => {
   const [isLoading, setLoading] = React.useState(true);
   const [isLoading2, setLoading2] = React.useState(true);
   const [slotInfo, setSlotInfo] = React.useState([]);
+  const [boolSteps, setBoolSteps] = React.useState(true);
+  const [steps, setSteps] = React.useState([
+    {
+      element: ".step0",
+      intro:
+        "All the available number of slots with proper tags are listed here",
+    },
+    {
+      element: ".step1",
+      intro: "Enter your 10-digit mobile number to generate OTP",
+    },
+    {
+      element: ".step2",
+      intro: "Click this and wait for the OTP to arrive on your phone",
+    },
+    {
+      element: ".step3",
+      intro:
+        "Alternatively you can manually book the slots by filling your details by clicking here",
+    },
+  ]);
+  React.useEffect(() => {
+    if (!isLoading && !isLoading2)
+      Swal.fire({
+        title: "Choose Language",
+        showDenyButton: true,
+        showCancelButton: true,
+        confirmButtonText: "English",
+        denyButtonText: "ಕನ್ನಡ",
+        cancelButtonText: "हिंदी",
+      }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          //English
+        } else if (result.isDenied) {
+          //Kannada
+        } else if (result.isDismissed) {
+          //hindi
+        }
+      });
+  }, [isLoading, isLoading2]);
   React.useEffect(() => {
     const requestOptions = {
       method: "GET",
@@ -130,183 +176,233 @@ const Login = (props) => {
   return (
     <>
       {!isLoading && !isLoading2 ? (
-        <div
-          style={{
-            display: "grid",
-            minHeight: "99vh",
-            justifyContent: "center",
-            alignContent: "center",
-            gridTemplateColumns: "0.9fr 1.1fr",
-            justifyItems: "center",
-          }}
-        >
-          <Card
+        <div>
+          {" "}
+          <Navbar {...props} disableLogout={true} />
+          <div
             style={{
-              width: "450px",
-              alignSelf: "center",
+              display: "grid",
+              minHeight: "99vh",
+              justifyContent: "center",
+              alignContent: "center",
+              gridTemplateColumns: "0.8fr 1.2fr",
+              justifyItems: "center",
             }}
           >
-            <CardContent>
-              <Container
-                maxWidth="sm"
-                style={{
-                  display: "grid",
-                  justifyContent: "center",
-                  alignContent: "center",
-                }}
-              >
-                <Image
+            <Card
+              style={{
+                width: "450px",
+                alignSelf: "center",
+              }}
+            >
+              <CardContent>
+                <Container
+                  maxWidth="sm"
                   style={{
-                    backgroundColor: "#f4f6f8",
-                    width: "200px",
-                    height: "200px",
-                    paddingTop: 0,
-                    margin: "auto",
-                  }}
-                  imageStyle={{
-                    width: "200px",
-                    height: "200px",
-                    margin: "auto",
-                  }}
-                  src="/logo512.png"
-                />
-                <Formik
-                  innerRef={formikref}
-                  initialValues={{
-                    phoneNo: "",
-                  }}
-                  validationSchema={Yup.object().shape({
-                    phoneNo: Yup.string()
-                      .required("Phone number is required")
-                      .matches(phoneNoExp, "Invalid phone number"),
-                  })}
-                  onSubmit={({ phoneNo }) => {
-                    console.log(formikref);
-                    HandleLogin(
-                      history,
-                      enqueueSnackbar,
-                      closeSnackbar,
-                      phoneNo,
-                      formikref
-                    );
+                    display: "grid",
+                    justifyContent: "center",
+                    alignContent: "center",
                   }}
                 >
-                  {({
-                    errors,
-                    handleBlur,
-                    handleChange,
-                    handleSubmit,
-                    isSubmitting,
-                    touched,
-                    values,
-                  }) => (
-                    <form onSubmit={handleSubmit}>
-                      <Box sx={{ mb: 3 }}>
-                        <Typography color="textPrimary" variant="h2">
-                          Sign in
-                        </Typography>
-                        <Typography
-                          color="textSecondary"
-                          gutterBottom
-                          variant="body2"
-                        >
-                          An OTP will be sent to your mobile number for
-                          verification{" "}
-                        </Typography>
-                      </Box>
-                      <TextField
-                        error={Boolean(touched.phoneNo && errors.phoneNo)}
-                        fullWidth
-                        helperText={
-                          Boolean(touched.phoneNo && errors.phoneNo)
-                            ? touched.phoneNo && errors.phoneNo
-                            : "\u00a0"
-                        }
-                        label="Phone number"
-                        margin="normal"
-                        name="phoneNo"
-                        onBlur={handleBlur}
-                        onChange={handleChange}
-                        value={values.phoneNo}
-                        variant="outlined"
-                      />
-                      <Box sx={{ py: 2 }}>
-                        <Button
-                          color="primary"
-                          disabled={isSubmitting}
-                          fullWidth
-                          size="large"
-                          type="submit"
-                          variant="contained"
-                        >
-                          Get OTP
-                        </Button>
-                      </Box>
-                      <Typography
-                        color="textSecondary"
-                        variant="body1"
-                        style={{ marginTop: "10px" }}
-                      >
-                        Haven't registered on Co-WIN?{" "}
-                        <a
-                          href="https://selfregistration.sandbox.cowin.gov.in"
-                          target="_blank"
-                        >
-                          Register here
-                        </a>
-                      </Typography>
-                      <Typography
-                        color="textSecondary"
-                        gutterBottom
-                        variant="body1"
-                        style={{ marginTop: "10px" }}
-                      >
-                        <Link
-                          component={RouterLink}
-                          to="/signinstaff"
-                          variant="body1"
-                        >
-                          Staff Login
-                        </Link>
-                      </Typography>
-                    </form>
-                  )}
-                </Formik>
-              </Container>
-            </CardContent>
-          </Card>
-          <Card style={{ margin: "20px", width: "90%", alignSelf: "center" }}>
-            <CardHeader
-              title="Available Slots"
-              subheader="The numbers might update during the booking procedure."
-            />
-            <Divider />
-            <CardContent>
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fill, minmax(255px, 1fr))",
-                  gridColumnGap: "25px",
-                  gridRowGap: "2px",
-                  padding: "10px",
-                }}
-              >
-                {slotInfo.map((slot) => (
-                  <AvailableSlots
-                    vaccine={slot.vaccine}
-                    ageGrp={slot.age_group}
-                    dose_choice={slot.dose_choice}
-                    available={
-                      parseInt(slot.availability) - parseInt(slot.booked) > 0
-                        ? parseInt(slot.availability) - parseInt(slot.booked)
-                        : 0
-                    }
+                  <Image
+                    style={{
+                      backgroundColor: "#f4f6f8",
+                      width: "200px",
+                      height: "200px",
+                      paddingTop: 0,
+                      margin: "auto",
+                    }}
+                    imageStyle={{
+                      width: "200px",
+                      height: "200px",
+                      margin: "auto",
+                    }}
+                    src="/logo512.png"
                   />
-                ))}
-              </div>
-            </CardContent>
-            <Divider />
-          </Card>
+                  <Formik
+                    innerRef={formikref}
+                    initialValues={{
+                      phoneNo: "",
+                    }}
+                    validationSchema={Yup.object().shape({
+                      phoneNo: Yup.string()
+                        .required("Phone number is required")
+                        .matches(phoneNoExp, "Invalid phone number"),
+                    })}
+                    onSubmit={({ phoneNo }) => {
+                      console.log(formikref);
+                      HandleLogin(
+                        history,
+                        enqueueSnackbar,
+                        closeSnackbar,
+                        phoneNo,
+                        formikref
+                      );
+                    }}
+                  >
+                    {({
+                      errors,
+                      handleBlur,
+                      handleChange,
+                      handleSubmit,
+                      isSubmitting,
+                      touched,
+                      values,
+                    }) => (
+                      <form onSubmit={handleSubmit}>
+                        <Box sx={{ mb: 3 }}>
+                          <Typography color="textPrimary" variant="h2">
+                            Sign in
+                          </Typography>
+                          <Typography
+                            color="textSecondary"
+                            gutterBottom
+                            variant="body2"
+                          >
+                            An OTP will be sent to your mobile number for
+                            verification{" "}
+                          </Typography>
+                        </Box>
+                        <TextField
+                          className="step1"
+                          error={Boolean(touched.phoneNo && errors.phoneNo)}
+                          fullWidth
+                          helperText={
+                            Boolean(touched.phoneNo && errors.phoneNo)
+                              ? touched.phoneNo && errors.phoneNo
+                              : "\u00a0"
+                          }
+                          label="Phone number"
+                          margin="normal"
+                          name="phoneNo"
+                          onBlur={handleBlur}
+                          onChange={handleChange}
+                          InputProps={{
+                            startAdornment: <PhoneIcon />,
+                          }}
+                          value={values.phoneNo}
+                          variant="outlined"
+                        />
+                        <Box sx={{ py: 2 }}>
+                          <Button
+                            color="primary"
+                            disabled={isSubmitting}
+                            fullWidth
+                            size="large"
+                            type="submit"
+                            variant="contained"
+                            className="step2"
+                          >
+                            Get OTP
+                          </Button>
+                        </Box>
+                        <Divider />
+                        <div style={{ textAlign: "center", margin: "5px" }}>
+                          OR
+                        </div>
+
+                        <Box sx={{ py: 2 }}>
+                          <Button
+                            color="primary"
+                            fullWidth
+                            size="large"
+                            type="submit"
+                            variant="contained"
+                            className="step3"
+                            onClick={() => {
+                              if (
+                                !Boolean(touched.phoneNo && errors.phoneNo) &&
+                                values.phoneNo !== ""
+                              ) {
+                                history.push({
+                                  pathname: "/slotBookingForm",
+                                  state: {
+                                    fromApp: true,
+                                    phoneNo: values.phoneNo,
+                                  },
+                                });
+                              } else
+                                enqueueSnackbar(
+                                  "Please enter a valid phone number",
+                                  1500
+                                );
+                            }}
+                          >
+                            Book Slots Manually
+                          </Button>
+                        </Box>
+                      </form>
+                    )}
+                  </Formik>
+
+                  <Divider />
+                  <Typography
+                    color="textSecondary"
+                    variant="body1"
+                    style={{ marginTop: "10px" }}
+                  >
+                    Haven't registered on Co-WIN?{" "}
+                    <a
+                      href="https://selfregistration.sandbox.cowin.gov.in"
+                      target="_blank"
+                    >
+                      Register here
+                    </a>
+                  </Typography>
+                  <Typography
+                    color="textSecondary"
+                    gutterBottom
+                    variant="body1"
+                    style={{ marginTop: "10px" }}
+                  >
+                    <Link
+                      component={RouterLink}
+                      to="/signinstaff"
+                      variant="body1"
+                    >
+                      Staff Login
+                    </Link>
+                  </Typography>
+                </Container>
+              </CardContent>
+            </Card>
+            <Card
+              style={{ margin: "20px", width: "90%", alignSelf: "center" }}
+              className="step0"
+            >
+              <CardHeader
+                title="Available Slots"
+                subheader="The numbers might update during the booking procedure."
+              />
+              <Divider />
+              <CardContent>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns:
+                      "repeat(auto-fill, minmax(275px, 1fr))",
+                    gridColumnGap: "25px",
+                    gridRowGap: "2px",
+                    padding: "10px",
+                  }}
+                >
+                  {slotInfo.map((slot) => (
+                    <AvailableSlots
+                      vaccine={slot.vaccine}
+                      ageGrp={slot.age_group}
+                      dose_choice={slot.dose_choice}
+                      available={
+                        parseInt(slot.availability) - parseInt(slot.booked) > 0
+                          ? parseInt(slot.availability) - parseInt(slot.booked)
+                          : 0
+                      }
+                    />
+                  ))}
+                </div>
+              </CardContent>
+              <Divider />
+            </Card>
+          </div>
         </div>
       ) : (
         <Loader

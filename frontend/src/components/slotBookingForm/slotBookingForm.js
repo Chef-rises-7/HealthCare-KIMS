@@ -257,7 +257,7 @@ const SlotBookingForm = (props) => {
   const classes = useStyles();
   return (
     <>
-      <Navbar />
+      <Navbar {...props} />
       {!isLoading ? (
         <div style={{ margin: "0 auto", width: "80%" }}>
           <Card style={{ margin: "20px" }}>
@@ -271,8 +271,9 @@ const SlotBookingForm = (props) => {
                 style={{
                   display: "grid",
                   gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-                  gridColumnGap: "20px",
-                  gridRowGap: "20px",
+                  gridColumnGap: "15px",
+                  gridRowGap: "15px",
+                  padding: "10px",
                 }}
               >
                 {slotInfo.map((slot) => (
@@ -293,7 +294,7 @@ const SlotBookingForm = (props) => {
           <Card style={{ margin: "20px" }}>
             <CardHeader
               title="Book Slots"
-              subheader="Failed to fetch beneficiaries, please enter the details manually, else try again later."
+              subheader="You can manually enter the details to book a slot."
             />
             <Divider />
             <CardContent>

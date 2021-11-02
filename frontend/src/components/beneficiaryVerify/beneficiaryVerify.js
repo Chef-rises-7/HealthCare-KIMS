@@ -4,7 +4,7 @@ import { useSnackbar } from "notistack";
 import { Formik } from "formik";
 import useSWR from "swr";
 import { jsPDF } from "jspdf";
-
+import Swal from "sweetalert2";
 import React from "react";
 import { api_endpoint, api_endpoint1 } from "../constants";
 import Loader from "react-loader-spinner";
@@ -340,10 +340,13 @@ const BeneficiaryVerify = (props) => {
                         },
                       });
                     else {
-                      enqueueSnackbar(
-                        "Invalid Secret Code, please try again",
-                        2300
-                      );
+                      Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: "Incorrect secret code!",
+                        footer:
+                          '<p>Find your code by logging in  <a href="https://selfregistration.cowin.gov.in/" target="_blank">here</a></p>',
+                      });
                     }
                   }}
                 >

@@ -16,7 +16,7 @@ import SlotBooking from "./components/slotBooking/slotBooking";
 import ConfirmationPage from "./components/confirmationPage/confirmationPage";
 import SlotBookingForm from "./components/slotBookingForm/slotBookingForm";
 
-function App() {
+const App = () => {
   return (
     <SnackbarProvider maxSnack={1}>
       <ThemeProvider theme={theme}>
@@ -29,7 +29,7 @@ function App() {
           />
           <Route
             exact
-            path="/signinstaff" // for staff login, not configured yet
+            path="/signinstaff" // for staff login,
             render={(props) => <SigninStaff {...props} />}
           />
           <Route
@@ -39,7 +39,7 @@ function App() {
           />
           <Route
             exact
-            path="/dashboard" // for data visualisation, not configured yet
+            path="/dashboard" // for data visualisation
             render={(props) => <Statistics {...props} />}
           />
           <Route
@@ -68,6 +68,6 @@ function App() {
       </ThemeProvider>
     </SnackbarProvider>
   );
-}
+};
 
 export default App;

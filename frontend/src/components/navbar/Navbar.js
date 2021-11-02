@@ -1,10 +1,20 @@
 import React from "react";
-import { AppBar, Tabs, Tab } from "@material-ui-new/core";
+import {
+  AppBar,
+  Tabs,
+  Tab,
+  Menu,
+  MenuItem,
+  Button,
+} from "@material-ui-new/core";
 import { makeStyles } from "@material-ui-new/styles";
 import Toolbar from "@material-ui-new/core/Toolbar";
 import IconButton from "@material-ui-new/core/IconButton";
 import Avatar from "@material-ui-new/core/Avatar";
 import "./Navbar.css";
+import TranslateIcon from "@material-ui/icons/Translate";
+import VolumeUp from "@material-ui/icons/VolumeUp";
+import VolumeDown from "@material-ui/icons/VolumeDown";
 import ExitApp from "@material-ui-new/icons/ExitToApp";
 import { Typography } from "@material-ui/core";
 
@@ -34,6 +44,15 @@ const useStyles = makeStyles((theme) => ({
 
 const Navbar = (props) => {
   const classes = useStyles();
+  const [anchorEl, setanchorEl] = React.useState(null);
+  const [anchorEl2, setanchorEl2] = React.useState(null);
+
+  const handleClickAnchor = (event) => {
+    setanchorEl(event.currentTarget);
+  };
+  const handleClickAnchor2 = (event) => {
+    setanchorEl2(event.currentTarget);
+  };
   return (
     <div className={classes.rootx}>
       <AppBar position="static" style={{ backgroundColor: "#6360db" }}>
@@ -61,16 +80,99 @@ const Navbar = (props) => {
           <IconButton
             edge="end"
             color="inherit"
-            onClick={() => {
-              localStorage.setItem("phoneNo", "");
-              localStorage.setItem("userToken", "");
-              localStorage.setItem("userTokenStaff", "");
-              props.history.replace("/signinotp");
+            onClick={handleClickAnchor2}
+            style={{ marginRight: "10px" }}
+          >
+            <VolumeUp style={{ marginRight: "5px" }} />
+            <Typography variant="h6">Audio</Typography>
+          </IconButton>
+          <IconButton
+            edge="end"
+            color="inherit"
+            onClick={handleClickAnchor}
+            style={{ marginRight: "10px" }}
+          >
+            <TranslateIcon style={{ marginRight: "5px" }} />
+            <Typography variant="h6">English</Typography>
+          </IconButton>
+          <Menu
+            id="menu-appbar2"
+            keepMounted
+            anchorEl={anchorEl2}
+            getContentAnchorEl={null}
+            anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+            transformOrigin={{ vertical: "top", horizontal: "center" }}
+            open={Boolean(anchorEl2)}
+            onClose={() => {
+              setanchorEl2(null);
             }}
           >
-            <ExitApp />
-            <Typography variant="h6">Logout</Typography>
-          </IconButton>
+            <MenuItem
+              onClick={() => {
+                setanchorEl2(null); //
+              }}
+            >
+              On
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                setanchorEl2(null);
+              }}
+            >
+              Off
+            </MenuItem>
+          </Menu>
+          <Menu
+            id="menu-appbar"
+            keepMounted
+            anchorEl={anchorEl}
+            getContentAnchorEl={null}
+            anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+            transformOrigin={{ vertical: "top", horizontal: "center" }}
+            open={Boolean(anchorEl)}
+            onClose={() => {
+              setanchorEl(null);
+            }}
+          >
+            <MenuItem
+              onClick={() => {
+                setanchorEl(null);
+              }}
+            >
+              English
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                setanchorEl(null);
+              }}
+            >
+              ಕನ್ನಡ
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                setanchorEl(null);
+              }}
+            >
+              हिंदी
+            </MenuItem>
+          </Menu>
+          {!props.disableLogout ? (
+            <IconButton
+              edge="end"
+              color="inherit"
+              onClick={() => {
+                localStorage.setItem("phoneNo", "");
+                localStorage.setItem("userToken", "");
+                localStorage.setItem("userTokenStaff", "");
+                props.history.replace("/signinotp");
+              }}
+            >
+              <ExitApp style={{ marginRight: "5px" }} />
+              <Typography variant="h6">Logout</Typography>
+            </IconButton>
+          ) : (
+            ""
+          )}
         </Toolbar>
       </AppBar>
     </div>
