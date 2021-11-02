@@ -19,6 +19,11 @@ import {
   CardContent,
 } from "@material-ui-new/core";
 
+import { useTranslation } from 'react-i18next';
+import {Howl, Howler} from 'howler';
+import audio_hi from "../../audio/hi/staff_login.mp3"
+import audio_en from "../../audio/en/staff_login.mp3" 
+
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 const phoneNoExp = /^[6-9]\d{9}$/;
 
@@ -28,9 +33,10 @@ const HandleLogin = (
   closeSnackbar,
   staffId,
   password,
-  formikref
+  formikref,
+  t
 ) => {
-  enqueueSnackbar("Logging in...", { autoHideDuration: 3000 });
+  enqueueSnackbar(t('snack_bar:login'), { autoHideDuration: 3000 });
   const requestOptions = {
     method: "POST",
     headers: {
@@ -64,6 +70,34 @@ const HandleLogin = (
 
 const Login = (props) => {
   //const navigate = useNavigate();
+  const { t, i18n } = useTranslation(["staff_signin","snack_bar"]);
+
+  React.useEffect(() => {
+    console.log(i18n);
+    var play;
+    if(i18n.language =='en'){
+      play = new Howl({
+        src: audio_en,
+        html5: true
+      });      
+    }
+    else if(i18n.language =='hi'){
+      play = new Howl({
+        src: audio_hi,
+        html5: true
+      });  
+    }
+    else{
+
+    }
+    let timer = setTimeout(()=>{
+      play.play();
+    },1000);
+    return () => {
+      play.stop();
+      clearTimeout(timer);
+    }
+  },[])
 
   const { match, history } = props;
   React.useEffect(() => {
@@ -120,8 +154,8 @@ const Login = (props) => {
                   phoneNo: "",
                 }}
                 validationSchema={Yup.object().shape({
-                  staffId: Yup.string().required("Staff ID is required"),
-                  password: Yup.string().required("Please enter a password"),
+                  staffId: Yup.string().required(t("staff_signin:staff_validation")),
+                  password: Yup.string().required(t("staff_signin:pass_validation")),
                 })}
                 onSubmit={({ staffId, password }) => {
                   console.log(formikref);
@@ -131,7 +165,8 @@ const Login = (props) => {
                     closeSnackbar,
                     staffId,
                     password,
-                    formikref
+                    formikref,
+                    t
                   );
                 }}
               >
@@ -147,14 +182,14 @@ const Login = (props) => {
                   <form onSubmit={handleSubmit}>
                     <Box sx={{ mb: 3 }}>
                       <Typography color="textPrimary" variant="h2">
-                        Sign in
+                      {t("staff_signin:sign_in")}
                       </Typography>
                       <Typography
                         color="textSecondary"
                         gutterBottom
                         variant="body2"
                       >
-                        Please Sign In with your Staff credentials to continue..{" "}
+                        {t("staff_signin:title")}{" "}
                       </Typography>
                     </Box>
                     <TextField
@@ -166,7 +201,7 @@ const Login = (props) => {
                           ? touched.staffId && errors.staffId
                           : "\u00a0"
                       }
-                      label="Staff Id"
+                      label={t("staff_signin:staff_id")}
                       margin="normal"
                       name="staffId"
                       onBlur={handleBlur}
@@ -183,7 +218,7 @@ const Login = (props) => {
                           ? touched.password && errors.password
                           : "\u00a0"
                       }
-                      label="Password"
+                      label={t("staff_signin:password")}
                       margin="normal"
                       type="password"
                       name="password"
@@ -201,7 +236,7 @@ const Login = (props) => {
                         type="submit"
                         variant="contained"
                       >
-                        SIGN IN
+                        {t("staff_signin:sign_in")}
                       </Button>
                     </Box>
                     <Typography
@@ -209,7 +244,7 @@ const Login = (props) => {
                       variant="body1"
                       style={{ marginTop: "10px" }}
                     >
-                      Forgot Password? Please contact Admin.
+                      {t("staff_signin:forgot_password")}
                     </Typography>
                   </form>
                 )}

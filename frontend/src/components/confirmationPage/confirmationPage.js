@@ -28,6 +28,11 @@ import {
   Divider,
 } from "@material-ui-new/core";
 
+import { useTranslation } from "react-i18next";
+import { Howl, Howler } from "howler";
+import audio_hi from "../../audio/hi/token_success.mp3";
+import audio_en from "../../audio/en/token_success.mp3";
+
 import ClearOutlinedIcon from "@material-ui/icons/ClearOutlined";
 import BeneficiaryCard from "../beneficiaryCard/beneficiaryCard";
 import CheckOutlinedIcon from "@material-ui/icons/CheckOutlined";
@@ -45,6 +50,36 @@ const ConfirmationPage = (props) => {
   const { match, history } = props;
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const [isLoading, setLoading] = React.useState(true);
+
+  const { t, i18n } = useTranslation([
+    "slotbooking",
+    "snack_bar",
+    "confirmpage",
+  ]);
+
+  React.useEffect(() => {
+    console.log(i18n);
+    var play;
+    if (i18n.language == "en") {
+      play = new Howl({
+        src: audio_en,
+        html5: true,
+      });
+    } else if (i18n.language == "hi") {
+      play = new Howl({
+        src: audio_hi,
+        html5: true,
+      });
+    } else {
+    }
+    let timer = setTimeout(() => {
+      play.play();
+    }, 1000);
+    return () => {
+      play.stop();
+      clearTimeout(timer);
+    };
+  }, []);
 
   React.useEffect(() => {
     if (!props.location.state) {
@@ -78,7 +113,7 @@ const ConfirmationPage = (props) => {
     },
   }));
   const downloadQRCode = (arr, payload) => {
-    enqueueSnackbar("Generating PDF, please wait.");
+    enqueueSnackbar(t("snack_bar:generate_pdf"));
 
     // const qrCodeURL = document
     //   .getElementById("qrCodeEl")
@@ -178,7 +213,7 @@ const ConfirmationPage = (props) => {
                 />
               </div>
               <CardHeader
-                title="Your slots have been booked!"
+                title={t("confirmpage:slot_bookd_confirmation")}
                 subheader="Please download the QR Code"
               />
             </div>

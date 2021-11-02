@@ -1,14 +1,17 @@
-import React from "react";
+import React,{Suspense} from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter as Router } from "react-router-dom";
+import './i18n';
 
 ReactDOM.render(
-  <Router>
-    <App />
-  </Router>,
+  <Suspense fallback={null}>
+    <Router>
+      <App />
+    </Router>
+  </Suspense>,
   document.querySelector("#root")
 );
 

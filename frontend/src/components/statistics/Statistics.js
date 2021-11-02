@@ -4,11 +4,14 @@ import React from "react";
 import Addslots from "./Addslots";
 import StatsTable from "./StatsTable";
 
+
+
 const Statistics = (props) => {
   const [currTab, selectTab] = React.useState(0);
   const handleChange = (event, newValue) => {
     selectTab(newValue);
   };
+  
   React.useEffect(() => {
     console.log(props.location);
     if (!props.location.state) {

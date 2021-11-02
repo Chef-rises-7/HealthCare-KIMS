@@ -1,0 +1,26 @@
+{
+    "portal_title": "Vaccination Slot Booking Portal",
+    "logout": "Logout",
+    "active": {
+        "title": "Your Active Slots",
+        "sub_title": "Download the QR Code for the following slots",
+        "token": "Token number(s):",
+        "date": "Date of Slot:",
+        "beneficiaries": "Beneficiaries",
+        "download": "DOWNLOAD"
+    },
+    "register": {
+        "title": "Beneficiaries registered with this Account",
+        "sub_title": "Please verify the beneficiary details",
+        "dose1": "Dose-1",
+        "dose2": "Dose-2",
+        "birth": "Year of Birth:",
+        "photo": "Photo ID:",
+        "id_number": "ID Number:" 
+    },
+    "secret": {
+        "title": "Secret Code",
+        "sub_title": "Last four digit of reference ID",
+        "verify_details": "VERIFY DETAILS"
+    }
+}

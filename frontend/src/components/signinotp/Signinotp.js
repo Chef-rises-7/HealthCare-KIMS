@@ -27,6 +27,10 @@ import {
   CardHeader,
   Divider,
 } from "@material-ui-new/core";
+import { useTranslation } from "react-i18next";
+import { Howl, Howler } from "howler";
+import audio_hi from "../../audio/hi/signin.mp3";
+import audio_en from "../../audio/en/signin.mp3";
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 const phoneNoExp = /^[6-9]\d{9}$/;
@@ -36,9 +40,10 @@ const HandleLogin = (
   enqueueSnackbar,
   closeSnackbar,
   phoneNo,
-  formikref
+  formikref,
+  t
 ) => {
-  enqueueSnackbar("Generating OTP...", { autoHideDuration: 3000 });
+  enqueueSnackbar(t("snack_bar:generating_otp"), { autoHideDuration: 3000 });
   const requestOptions = {
     method: "POST",
     headers: {
@@ -95,6 +100,7 @@ const Login = (props) => {
         "Alternatively you can manually book the slots by filling your details by clicking here",
     },
   ]);
+  const { t, i18n } = useTranslation(["signinotp", "snack_bar"]);
   React.useEffect(() => {
     if (!isLoading && !isLoading2)
       Swal.fire({
@@ -107,14 +113,26 @@ const Login = (props) => {
       }).then((result) => {
         /* Read more about isConfirmed, isDenied below */
         if (result.isConfirmed) {
-          //English
+          i18n.changeLanguage("en");
+          const play = new Howl({
+            src: audio_en,
+            html5: true,
+          });
+          play.play();
         } else if (result.isDenied) {
-          //Kannada
+          i18n.changeLanguage("kn");
         } else if (result.isDismissed) {
+          i18n.changeLanguage("hi");
+          const play = new Howl({
+            src: audio_hi,
+            html5: true,
+          });
           //hindi
+          play.play();
         }
       });
   }, [isLoading, isLoading2]);
+
   React.useEffect(() => {
     const requestOptions = {
       method: "GET",
@@ -173,6 +191,7 @@ const Login = (props) => {
     } else setLoading(false);
   }, []);
   let formikref = React.useRef(null);
+
   return (
     <>
       {!isLoading && !isLoading2 ? (
@@ -226,7 +245,7 @@ const Login = (props) => {
                     }}
                     validationSchema={Yup.object().shape({
                       phoneNo: Yup.string()
-                        .required("Phone number is required")
+                        .required(t("signinotp:phone_number_required"))
                         .matches(phoneNoExp, "Invalid phone number"),
                     })}
                     onSubmit={({ phoneNo }) => {
@@ -236,7 +255,8 @@ const Login = (props) => {
                         enqueueSnackbar,
                         closeSnackbar,
                         phoneNo,
-                        formikref
+                        formikref,
+                        t
                       );
                     }}
                   >
@@ -252,19 +272,17 @@ const Login = (props) => {
                       <form onSubmit={handleSubmit}>
                         <Box sx={{ mb: 3 }}>
                           <Typography color="textPrimary" variant="h2">
-                            Sign in
+                            {t("signinotp:sign_in")}
                           </Typography>
                           <Typography
                             color="textSecondary"
                             gutterBottom
                             variant="body2"
                           >
-                            An OTP will be sent to your mobile number for
-                            verification{" "}
+                            {t("signinotp:otp_instruction")}{" "}
                           </Typography>
                         </Box>
                         <TextField
-                          className="step1"
                           error={Boolean(touched.phoneNo && errors.phoneNo)}
                           fullWidth
                           helperText={
@@ -272,15 +290,16 @@ const Login = (props) => {
                               ? touched.phoneNo && errors.phoneNo
                               : "\u00a0"
                           }
-                          label="Phone number"
+                          // label="Phone number"
+                          label={t("signinotp:phone_number")}
                           margin="normal"
                           name="phoneNo"
                           onBlur={handleBlur}
                           onChange={handleChange}
+                          value={values.phoneNo}
                           InputProps={{
                             startAdornment: <PhoneIcon />,
                           }}
-                          value={values.phoneNo}
                           variant="outlined"
                         />
                         <Box sx={{ py: 2 }}>
@@ -291,16 +310,14 @@ const Login = (props) => {
                             size="large"
                             type="submit"
                             variant="contained"
-                            className="step2"
                           >
-                            Get OTP
+                            {t("signinotp:get_otp")}
                           </Button>
                         </Box>
                         <Divider />
                         <div style={{ textAlign: "center", margin: "5px" }}>
                           OR
                         </div>
-
                         <Box sx={{ py: 2 }}>
                           <Button
                             color="primary"
@@ -328,51 +345,47 @@ const Login = (props) => {
                                 );
                             }}
                           >
-                            Book Slots Manually
+                            {t("signinotp:book_slots_manual")}
                           </Button>
                         </Box>
+                        <Divider />
+                        <Typography
+                          color="textSecondary"
+                          variant="body1"
+                          style={{ marginTop: "10px" }}
+                        >
+                          {t("signinotp:not_reg_cowin")}{" "}
+                          <a
+                            href="https://selfregistration.sandbox.cowin.gov.in"
+                            target="_blank"
+                          >
+                            {t("signinotp:register_here")}
+                          </a>
+                        </Typography>
+                        <Typography
+                          color="textSecondary"
+                          gutterBottom
+                          variant="body1"
+                          style={{ marginTop: "10px" }}
+                        >
+                          <Link
+                            component={RouterLink}
+                            to="/signinstaff"
+                            variant="body1"
+                          >
+                            {t("signinotp:staff_login")}
+                          </Link>
+                        </Typography>
                       </form>
                     )}
                   </Formik>
-
-                  <Divider />
-                  <Typography
-                    color="textSecondary"
-                    variant="body1"
-                    style={{ marginTop: "10px" }}
-                  >
-                    Haven't registered on Co-WIN?{" "}
-                    <a
-                      href="https://selfregistration.sandbox.cowin.gov.in"
-                      target="_blank"
-                    >
-                      Register here
-                    </a>
-                  </Typography>
-                  <Typography
-                    color="textSecondary"
-                    gutterBottom
-                    variant="body1"
-                    style={{ marginTop: "10px" }}
-                  >
-                    <Link
-                      component={RouterLink}
-                      to="/signinstaff"
-                      variant="body1"
-                    >
-                      Staff Login
-                    </Link>
-                  </Typography>
                 </Container>
               </CardContent>
             </Card>
-            <Card
-              style={{ margin: "20px", width: "90%", alignSelf: "center" }}
-              className="step0"
-            >
+            <Card style={{ margin: "20px", width: "90%", alignSelf: "center" }}>
               <CardHeader
-                title="Available Slots"
-                subheader="The numbers might update during the booking procedure."
+                title={t("signinotp:available_slots")}
+                subheader={t("signinotp:update_warning")}
               />
               <Divider />
               <CardContent>
@@ -380,7 +393,7 @@ const Login = (props) => {
                   style={{
                     display: "grid",
                     gridTemplateColumns:
-                      "repeat(auto-fill, minmax(275px, 1fr))",
+                      "repeat(auto-fill, minmax(255px, 1fr))",
                     gridColumnGap: "25px",
                     gridRowGap: "2px",
                     padding: "10px",

@@ -33,6 +33,13 @@ import Select from "@material-ui/core/Select";
 import Loader from "react-loader-spinner";
 import { makeStyles } from "@material-ui/core/styles";
 import { CardHeader } from "@material-ui/core";
+
+import { useTranslation } from 'react-i18next';
+import {Howl, Howler} from 'howler';
+import audio_hi from "../../audio/hi/add_slots.mp3"
+import audio_en from "../../audio/en/add_slots.mp3" 
+
+
 const Addslots = (props) => {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const [isLoading, setLoading] = React.useState(true);
@@ -43,6 +50,9 @@ const Addslots = (props) => {
   const [vaccNo, setVaccNo] = React.useState("0");
   const [isLoading2, setLoading2] = React.useState(true);
   const [dateInp, setDate] = React.useState(new Date());
+
+  const { t, i18n } = useTranslation(["db_addslots","snack_bar","swal"]);
+
 
   const handleVaccName = (event) => {
     setVaccName(event.target.value);
@@ -65,6 +75,33 @@ const Addslots = (props) => {
       ("0" + inp.getUTCDate()).slice(-2)
     );
   };
+
+  React.useEffect(() => {
+    console.log(i18n);
+    var play;
+    if(i18n.language =='en'){
+      play = new Howl({
+        src: audio_en,
+        html5: true
+      });      
+    }
+    else if(i18n.language =='hi'){
+      play = new Howl({
+        src: audio_hi,
+        html5: true
+      });  
+    }
+    else{
+
+    }
+    let timer = setTimeout(()=>{
+      play.play();
+    },1000);
+    return () => {
+      play.stop();
+      clearTimeout(timer);
+    }
+  },[])
 
   const addUpSlots = () => {
     let allVal = true;
@@ -90,13 +127,13 @@ const Addslots = (props) => {
     };
     if (allVal && posVal) {
       Swal.fire({
-        title: "Are you sure?",
-        text: "You won't be able to revert this!",
+        title: t("swal:add_slots_1.title"),
+        text: t("swal:add_slots_1.text"),
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, add slots!",
+        confirmButtonText: t("swal:add_slots_1.confirmButtonText"),
       })
         .then((result) => {
           if (result.isConfirmed) {
@@ -114,21 +151,21 @@ const Addslots = (props) => {
           setSlotInfo(res.data);
           Swal.fire({
             icon: "success",
-            title: "Success...",
-            text: "Slots added successfully",
+            title: t("swal:add_slots_2.title"),
+            text: t("swal:add_slots_2.text"),
           });
         })
         .catch((err) => {
           console.log(err);
           Swal.fire({
             icon: "error",
-            title: "Oops...",
-            text: "Can't update slots, try again later!",
+            title: t("swal:add_slots_3.title"),
+            text: t("swal:add_slots_3.text"),
           });
           //   enqueueSnackbar(err, 3000);
         });
     } else {
-      enqueueSnackbar("Please fill all details", 2000);
+      enqueueSnackbar(t('snack_bar:fill_all_details'), 2000);
     }
   };
   const useStyles = makeStyles((theme) => ({
@@ -228,8 +265,8 @@ const Addslots = (props) => {
           >
             <div style={{ display: "grid" }}>
               <CardHeader
-                title="Add Slots (for today)"
-                subheader="Select the appropriate tags to add slots for today."
+                title={t("db_addslots:add_slots")}
+                subheader={t("db_addslots:slot_inst")}
               />
             </div>
             <Divider />
@@ -244,34 +281,34 @@ const Addslots = (props) => {
                 }}
               >
                 <FormControl className={classes.formControl}>
-                  <InputLabel id="vacc">Select Vaccine</InputLabel>
+                  <InputLabel id="vacc">{t("db_addslots:select_vaccine")}</InputLabel>
                   <Select
                     labelId="vacc"
                     id="vaccsel"
                     value={vaccname}
                     onChange={handleVaccName}
                   >
-                    <MenuItem value={"Covishield"}>Covishield</MenuItem>
-                    <MenuItem value={"Covaxin"}>Covaxin</MenuItem>
+                    <MenuItem value={"Covishield"}>{t("db_addslots:covishield")}</MenuItem>
+                    <MenuItem value={"Covaxin"}>{t("db_addslots:covaxin")}</MenuItem>
                   </Select>
-                  <FormHelperText>Required</FormHelperText>
+                  <FormHelperText>{t("db_addslots:required")}</FormHelperText>
                 </FormControl>
 
                 <FormControl className={classes.formControl}>
-                  <InputLabel id="dose">Select Dose</InputLabel>
+                  <InputLabel id="dose">{t("db_addslots:select_dose")}</InputLabel>
                   <Select
                     labelId="dose"
                     id="dosesel"
                     value={doseNo}
                     onChange={handleDoseNo}
                   >
-                    <MenuItem value={"Dose1"}>Dose 1</MenuItem>
-                    <MenuItem value={"Dose2"}>Dose 2</MenuItem>
+                    <MenuItem value={"Dose1"}>{t("db_addslots:dose_1")}</MenuItem>
+                    <MenuItem value={"Dose2"}>{t("db_addslots:dose_2")}</MenuItem>
                   </Select>
-                  <FormHelperText>Required</FormHelperText>
+                  <FormHelperText>{t("db_addslots:required")}</FormHelperText>
                 </FormControl>
                 <FormControl className={classes.formControl}>
-                  <InputLabel id="agegrp">Select Age Group</InputLabel>
+                  <InputLabel id="agegrp">{t("db_addslots:select_age")}</InputLabel>
                   <Select
                     labelId="agegrp"
                     id="agegrpsel"
@@ -281,12 +318,12 @@ const Addslots = (props) => {
                     <MenuItem value={"18to45"}>18-45</MenuItem>
                     <MenuItem value={"45plus"}>45+</MenuItem>
                   </Select>
-                  <FormHelperText>Required</FormHelperText>
+                  <FormHelperText>{t("db_addslots:required")}</FormHelperText>
                 </FormControl>
                 <TextField
                   style={{ marginBottom: "10px" }}
                   id="standard-number"
-                  label="Number of Slots"
+                  label={t("db_addslots:number_slots_slots")}
                   type="number"
                   InputLabelProps={{
                     shrink: true,
@@ -304,7 +341,7 @@ const Addslots = (props) => {
                       alignItems: "center",
                     }}
                   >
-                    For Date:
+                    {t("db_addslots:for_date")}
                   </div>
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <DatePicker
@@ -347,7 +384,7 @@ const Addslots = (props) => {
                     addUpSlots();
                   }}
                 >
-                  Add Slot(s)
+                  {t("db_addslots:add_slots")}
                 </Button>
               </Box>
             </CardContent>
@@ -355,8 +392,8 @@ const Addslots = (props) => {
           <Card style={{ margin: "20px", width: "90%", alignSelf: "center" }}>
             <div style={{ display: "grid" }}>
               <CardHeader
-                title="Remaining Slots (For Today)"
-                subheader="The numbers might update while you are on this page."
+                title={t("db_addslots:title")}
+                subheader={t("db_addslots:sub_title")}
               />
             </div>
             <Divider />

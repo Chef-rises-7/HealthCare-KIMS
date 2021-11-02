@@ -18,6 +18,8 @@ import VolumeDown from "@material-ui/icons/VolumeDown";
 import ExitApp from "@material-ui-new/icons/ExitToApp";
 import { Typography } from "@material-ui/core";
 
+import { useTranslation } from "react-i18next";
+
 const useStyles = makeStyles((theme) => ({
   rootx: {
     flexGrow: 1,
@@ -53,12 +55,18 @@ const Navbar = (props) => {
   const handleClickAnchor2 = (event) => {
     setanchorEl2(event.currentTarget);
   };
+
+  const { t, i18n } = useTranslation(["db_statistics"]);
+
   return (
     <div className={classes.rootx}>
       <AppBar position="static" style={{ backgroundColor: "#6360db" }}>
         <Toolbar>
           <Avatar src="/logo192.png" style={{ marginRight: "5px" }} />
-          <Typography variant="h6"> Vaccination Slot Booking Portal</Typography>
+          <Typography variant="h6">
+            {" "}
+            {t("db_statistics:header.title")}
+          </Typography>
           <div style={{ marginLeft: "20px" }} />
           {props.statsTab ? (
             <Tabs
@@ -68,10 +76,13 @@ const Navbar = (props) => {
             >
               <Tab
                 inkBarStyle={{ background: "#ffffff" }}
-                label="STATISTICS"
+                label={t("db_statistics:header.statistics")}
                 className="fullheight"
               />
-              <Tab label="ADD SLOTS" className="fullheight" />
+              <Tab
+                label={t("db_statistics:header.add_slots")}
+                className="fullheight"
+              />
             </Tabs>
           ) : (
             ""
@@ -93,7 +104,7 @@ const Navbar = (props) => {
             style={{ marginRight: "10px" }}
           >
             <TranslateIcon style={{ marginRight: "5px" }} />
-            <Typography variant="h6">English</Typography>
+            <Typography variant="h6">Language</Typography>
           </IconButton>
           <Menu
             id="menu-appbar2"
@@ -136,6 +147,7 @@ const Navbar = (props) => {
           >
             <MenuItem
               onClick={() => {
+                i18n.changeLanguage("en");
                 setanchorEl(null);
               }}
             >
@@ -143,6 +155,7 @@ const Navbar = (props) => {
             </MenuItem>
             <MenuItem
               onClick={() => {
+                i18n.changeLanguage("kn");
                 setanchorEl(null);
               }}
             >
@@ -150,6 +163,7 @@ const Navbar = (props) => {
             </MenuItem>
             <MenuItem
               onClick={() => {
+                i18n.changeLanguage("hi");
                 setanchorEl(null);
               }}
             >
@@ -168,7 +182,9 @@ const Navbar = (props) => {
               }}
             >
               <ExitApp style={{ marginRight: "5px" }} />
-              <Typography variant="h6">Logout</Typography>
+              <Typography variant="h6">
+                {t("db_statistics:header.logout")}
+              </Typography>
             </IconButton>
           ) : (
             ""

@@ -18,11 +18,15 @@ import {
   Card,
   CardContent,
 } from "@material-ui-new/core";
+import silence from "../../audio/silence.mp3"
 import { api_endpoint } from "../constants";
+import { useTranslation } from 'react-i18next';
+import {Howl, Howler} from 'howler';
+import audio_hi from "../../audio/hi/otp.mp3"
+import audio_en from "../../audio/en/otp.mp3" 
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 const otpExp = /^\d{6}$/;
-
 const HandleOTP = (
   history,
   enqueueSnackbar,
@@ -31,10 +35,11 @@ const HandleOTP = (
   OTP,
   setErr,
   formikref,
-  phoneNo
+  phoneNo,
+  t
 ) => {
   setErr("\u00a0");
-  enqueueSnackbar("Verifying OTP...");
+  enqueueSnackbar(t('snack_bar:verify_otp'));
   const requestOptions = {
     method: "POST",
     headers: {
@@ -86,10 +91,11 @@ const HandleOTPResend = (
   phoneNo,
   setErr,
   setTxn,
-  setSeconds
+  setSeconds,
+  t
 ) => {
   setErr("\u00a0");
-  enqueueSnackbar("Generating OTP...");
+  enqueueSnackbar(t('snack_bar:generating_otp'));
   const requestOptions = {
     method: "POST",
     headers: {
@@ -120,11 +126,40 @@ const LoginVerify = (props) => {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const { match, history } = props;
   const [seconds, setSeconds] = React.useState(181);
+  const { t ,i18n} = useTranslation(["signinverify","snack_bar"]);
   //   const [txnId, settxnID] = React.useState(""); // do it in useeffect
   //   const [phoneNo, setPhoneNo] = React.useState("");
 
   const [txnId, settxnID] = React.useState(""); // do it in useeffect
   const [phoneNo, setPhoneNo] = React.useState("");
+
+  React.useEffect(() => {
+    console.log(i18n);
+    var play;
+    if(i18n.language =='en'){
+      play = new Howl({
+        src: audio_en,
+        html5: true
+      });      
+    }
+    else if(i18n.language =='hi'){
+      play = new Howl({
+        src: audio_hi,
+        html5: true
+      });  
+    }
+    else{
+
+    }
+    let timer = setTimeout(()=>{
+      play.play();
+    },1000);
+    return () => {
+      play.stop();
+      clearTimeout(timer);
+    }
+  },[])
+
 
   React.useEffect(() => {
     if (!props.location.state) {
@@ -198,7 +233,8 @@ const LoginVerify = (props) => {
                     OTP,
                     setErr,
                     formikref,
-                    phoneNo
+                    phoneNo,
+                    t
                   );
 
                   console.log(formikref);
@@ -217,16 +253,16 @@ const LoginVerify = (props) => {
                   <form onSubmit={handleSubmit}>
                     <Box sx={{ mb: 3 }}>
                       <Typography color="textPrimary" variant="h2">
-                        Verify OTP
+                        {t("signinverify:verify_otp")}
                       </Typography>
                       <Typography
                         color="textSecondary"
                         gutterBottom
                         variant="body2"
                       >
-                        An OTP was sent to {phoneNo}{" "}
+                        {t("signinverify:otp_sent")} {phoneNo}{" "}
                         <Link component={RouterLink} to="/signin" variant="h6">
-                          (change)
+                          ({t("signinverify:change")})
                         </Link>
                       </Typography>
                     </Box>
@@ -241,7 +277,7 @@ const LoginVerify = (props) => {
                       FormHelperTextProps={{
                         style: { color: "red", fontSize: "0.8rem" },
                       }}
-                      label="Enter OTP"
+                      label={t("signinverify:enter_otp")}
                       margin="normal"
                       name="OTP"
                       onBlur={handleBlur}
@@ -258,7 +294,7 @@ const LoginVerify = (props) => {
                         type="submit"
                         variant="contained"
                       >
-                        Verify OTP
+                        {t("signinverify:verify_otp")}
                       </Button>
                     </Box>
                     <Box sx={{ py: 1 }}>
@@ -275,11 +311,12 @@ const LoginVerify = (props) => {
                             phoneNo,
                             setErr,
                             settxnID,
-                            setSeconds
+                            setSeconds,
+                            t
                           );
                         }}
                       >
-                        Resend OTP {seconds > 0 ? `(${seconds} sec)` : ""}
+                        {t("signinverify:resend_otp")} {seconds > 0 ? `(${seconds} sec)` : ""}
                       </Button>
                     </Box>
                     <Typography
@@ -287,12 +324,12 @@ const LoginVerify = (props) => {
                       variant="body1"
                       style={{ marginTop: "10px" }}
                     >
-                      Haven't registered on Co-WIN?{" "}
+                      {t("signinverify:not_registered")}?{" "}
                       <a
                         href="https://selfregistration.sandbox.cowin.gov.in"
                         target="_blank"
                       >
-                        (Register here)
+                        ({t("signinverify:register_here")})
                       </a>
                     </Typography>
                   </form>

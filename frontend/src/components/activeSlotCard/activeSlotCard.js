@@ -29,11 +29,13 @@ import PersonIcon from "@material-ui/icons/Person";
 import EventAvailableIcon from "@material-ui/icons/EventAvailable";
 import { makeStyles } from "@material-ui/core/styles";
 import Chip from "@material-ui-new/core/Chip";
+import { useTranslation } from 'react-i18next';
 const ActiveSlotCard = (props) => {
   //benNo,date, tokenIds, genPdf
   //const navigate = useNavigate();
   const { match, history } = props;
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const { t } = useTranslation(["beneficiary"]);
   let formikref = React.useRef(null);
   const {
     name,
@@ -97,7 +99,7 @@ const ActiveSlotCard = (props) => {
                 <ConfirmationNumberOutlinedIcon
                   style={{ marginRight: "5px" }}
                 />
-                Token number(s): {props.tokenIds}
+                {t("beneficiary:active.token")} {props.tokenIds}
               </div>
             </Grid>
           </Grid>
@@ -113,7 +115,7 @@ const ActiveSlotCard = (props) => {
             }}
           >
             <EventAvailableIcon style={{ marginRight: "5px" }} />
-            {"  "}Date of Slot: {props.date}
+            {"  "}{t("beneficiary:active.date")} {props.date}
           </div>
 
           <div
@@ -125,7 +127,7 @@ const ActiveSlotCard = (props) => {
             }}
           >
             <PeopleAltOutlinedIcon style={{ marginRight: "5px" }} />
-            Beneficiaries ({props.benNo})
+            {t("beneficiary:active.beneficiaries")} ({props.benNo})
           </div>
         </div>
         <Divider variant="middle" />
@@ -140,7 +142,7 @@ const ActiveSlotCard = (props) => {
               }}
             >
               <GetAppOutlinedIcon />
-              Download
+              {t("beneficiary:active.download")}
             </Button>
           </div>
         </div>

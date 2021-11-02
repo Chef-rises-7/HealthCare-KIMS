@@ -224,10 +224,10 @@ def verifyToken(request):
 
 @api_view(['POST'])
 @transaction.atomic(durable=True)
-@precheck([DOSE_1,DOSE_2,AGE_GROUP_18_TO_45,AGE_GROUP_45_PLUS,COVISHIELD,COVAXIN,AVAILABILITY])
+@precheck([DOSE_1,DOSE_2,AGE_GROUP_18_TO_45,AGE_GROUP_45_PLUS,COVISHIELD,COVAXIN,AVAILABILITY,DATE])
 def addAndUpdateSlots(request): #Adds a Slot if not present or Update it for the current day.
     # token = request.COOKIES.get('jwt')
-    print(request.headers)
+    # print(request.headers)
     token = request.headers["Authorization"][7:]
 
     try:
@@ -237,6 +237,7 @@ def addAndUpdateSlots(request): #Adds a Slot if not present or Update it for the
 
     dose_choice = ""
     data = request.data
+    print(data)
     if data[DOSE_1]: # Determine dose choice for the slot.
         dose_choice = DOSE_1
     else:
@@ -257,14 +258,14 @@ def addAndUpdateSlots(request): #Adds a Slot if not present or Update it for the
         vaccine = COVAXIN
     try:
 
-        slot = Slot.objects.filter(vaccine=vaccine,dose_choice=dose_choice,age_group=age_group,date = date.today())
+        slot = Slot.objects.filter(vaccine=vaccine,dose_choice=dose_choice,age_group=age_group,date = data[DATE])
         if len(slot):
             slot[0].availability = data[AVAILABILITY]
             slot[0].save()
         else:
             new_slot = Slot()
             new_slot.vaccine = vaccine
-            new_slot.date = datetime.today()
+            new_slot.date = data[DATE]
             new_slot.dose_choice = dose_choice
             new_slot.age_group = age_group
             new_slot.availability = data[AVAILABILITY]
@@ -273,7 +274,7 @@ def addAndUpdateSlots(request): #Adds a Slot if not present or Update it for the
 
             new_slot.save()
 
-        slots = Slot.objects.filter(date=date.today())
+        slots = Slot.objects.filter(date=data[DATE])
         data = SlotSerializer(slots, many=True).data
         
         return Response({'action': "Add Slots",

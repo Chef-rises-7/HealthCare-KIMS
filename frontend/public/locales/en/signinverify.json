@@ -1,0 +1,9 @@
+{
+    "verify_otp" : "Verify Otp",
+    "otp_sent" : "An OTP was sent to",
+    "change" : "Change",
+    "enter_otp" : "ENTER OTP",
+    "resend_otp" : "RENSEND OTP",
+    "not_registered" : "Haven't registered on Co-WIN",
+    "register here" : "Register Here"
+}

@@ -34,6 +34,14 @@ import { makeStyles } from "@material-ui/core/styles";
 import Chip from "@material-ui-new/core/Chip";
 import Navbar from "../navbar/Navbar";
 import { CardHeader } from "@material-ui/core";
+
+import { useTranslation } from 'react-i18next';
+
+import {Howl, Howler} from 'howler';
+import audio_hi from "../../audio/hi/secret_code.mp3"
+import audio_en from "../../audio/en/secret_code.mp3" 
+
+
 const BeneficiaryVerify = (props) => {
   //const navigate = useNavigate();
   const { match, history } = props;
@@ -43,6 +51,8 @@ const BeneficiaryVerify = (props) => {
   const [benData, setBenData] = React.useState([]);
   const [activeSlot, setActiveSlot] = React.useState([]);
   const [benCode, setBenCode] = React.useState("");
+
+  const { t, i18n } = useTranslation(["beneficiary","snack_bar"]);
 
   const downloadQRCode = (arr, payload) => {
     enqueueSnackbar("Generating PDF, please wait.");
@@ -139,6 +149,33 @@ const BeneficiaryVerify = (props) => {
   }));
 
   React.useEffect(() => {
+    console.log(i18n);
+    var play;
+    if(i18n.language =='en'){
+      play = new Howl({
+        src: audio_en,
+        html5: true
+      });      
+    }
+    else if(i18n.language =='hi'){
+      play = new Howl({
+        src: audio_hi,
+        html5: true
+      });  
+    }
+    else{
+
+    }
+    let timer = setTimeout(()=>{
+      play.play();
+    },1000);
+    return () => {
+      play.stop();
+      clearTimeout(timer);
+    }
+  },[])
+
+  React.useEffect(() => {
     //props.location.state.tokenId
     console.log(props.location);
     //Authorization: "Bearer " + props.location.state.tokenId,
@@ -157,7 +194,7 @@ const BeneficiaryVerify = (props) => {
       .then((response) => {
         if (response.status == 200) return response.json();
         else if (response.status == 401) {
-          enqueueSnackbar("Session expired, please login again.", 1500);
+          enqueueSnackbar(t("snack_bar:session_expire"), 1500);
           history.replace("/signinotp");
           return [];
         } else
@@ -208,8 +245,8 @@ const BeneficiaryVerify = (props) => {
           {activeSlot.message === "Beneficiaries Found" ? (
             <Card style={{ margin: "20px" }}>
               <CardHeader
-                title="Your Active Slots"
-                subheader="Download the QR Code for the following slots"
+                title={t("beneficiary:active.title")}
+                subheader={t("beneficiary:active.sub_title")}
               />
               <Divider />
               <CardContent>
@@ -250,8 +287,8 @@ const BeneficiaryVerify = (props) => {
           )}
           <Card style={{ margin: "20px" }}>
             <CardHeader
-              title="Beneficiaries registered with this Account"
-              subheader="Please verify the beneficiary details"
+              title={t("beneficiary:register.title")}
+              subheader={t("beneficiary:register.sub_title")}
             />
             <Divider />
             <CardContent>
@@ -283,8 +320,8 @@ const BeneficiaryVerify = (props) => {
               </div>
               <Divider />
               <CardHeader
-                title=" Secret Code"
-                subheader="Last four digit of reference ID"
+                title={t("beneficiary:secret.title")}
+                subheader={t("beneficiary:secret.sub_title")}
               />
               <Divider />
 
@@ -342,15 +379,16 @@ const BeneficiaryVerify = (props) => {
                     else {
                       Swal.fire({
                         icon: "error",
-                        title: "Oops...",
-                        text: "Incorrect secret code!",
+                        title: "Error",
+                        text: `${t('snack_bar:invalid_secret')}`,
                         footer:
                           '<p>Find your code by logging in  <a href="https://selfregistration.cowin.gov.in/" target="_blank">here</a></p>',
                       });
+
                     }
                   }}
                 >
-                  Verify Details
+                  {t("beneficiary:secret.verify_details")}
                 </Button>
                 {/* <Button
                   color="primary"

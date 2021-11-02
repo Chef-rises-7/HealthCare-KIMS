@@ -34,10 +34,12 @@ import PersonIcon from "@material-ui/icons/Person";
 import EventAvailableIcon from "@material-ui/icons/EventAvailable";
 import { makeStyles } from "@material-ui/core/styles";
 import Chip from "@material-ui-new/core/Chip";
+import { useTranslation } from 'react-i18next';
 const BookingCardForm = (props) => {
   //const navigate = useNavigate();
   const { match, history } = props;
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const { t, i18n } = useTranslation(["alt_flow"]);
   let formikref = React.useRef(null);
   const {
     name,
@@ -145,10 +147,10 @@ const BookingCardForm = (props) => {
                     fullWidth
                     helperText={
                       Boolean(props.valUser === "")
-                        ? "Name is required"
+                        ? t("alt_flow:name_war")
                         : "\u00a0"
                     }
-                    label="Name"
+                    label={t("alt_flow:name")}
                     margin="normal"
                     onChange={handleChangeName}
                     value={props.valUser}
@@ -172,10 +174,10 @@ const BookingCardForm = (props) => {
                     fullWidth
                     helperText={
                       Boolean(props.valRef === "")
-                        ? "Reference ID is required"
+                        ? t("alt_flow:ref_war")
                         : "\u00a0"
-                    }
-                    label="Reference ID"
+                    }r
+                    label={t("alt_flow:ref_id")}
                     margin="normal"
                     onChange={handleRefID}
                     value={props.valRef}
@@ -194,15 +196,15 @@ const BookingCardForm = (props) => {
               className={classes.formControl}
               error={Boolean(props.valVacc === "")}
             >
-              <InputLabel id="vacc">Select Vaccine</InputLabel>
+              <InputLabel id="vacc">{t("alt_flow:select_vacc")}</InputLabel>
               <Select
                 labelId="vacc"
                 id="vaccsel"
                 value={props.valVacc}
                 onChange={handleChangeVaccine}
               >
-                <MenuItem value={"covishield"}>Covishield</MenuItem>
-                <MenuItem value={"covaxin"}>Covaxin</MenuItem>
+                <MenuItem value={"covishield"}>{t("alt_flow:covishield")}</MenuItem>
+                <MenuItem value={"covaxin"}>{t("alt_flow:covaxin")}</MenuItem>
               </Select>
             </FormControl>
           </div>
@@ -211,15 +213,15 @@ const BookingCardForm = (props) => {
               className={classes.formControl}
               error={Boolean(props.valDose === "")}
             >
-              <InputLabel id="dose">Select Dose</InputLabel>
+              <InputLabel id="dose">{t("alt_flow:select_dose")}</InputLabel>
               <Select
                 labelId="dose"
                 id="dosesel"
                 value={props.valDose}
                 onChange={handlesetDose}
               >
-                <MenuItem value={"dose1"}>Dose 1</MenuItem>
-                <MenuItem value={"dose2"}>Dose 2</MenuItem>
+                <MenuItem value={"dose1"}>{t("alt_flow:dose_1")}</MenuItem>
+                <MenuItem value={"dose2"}>{t("alt_flow:dose_2")}</MenuItem>
               </Select>
             </FormControl>
           </div>
@@ -231,10 +233,10 @@ const BookingCardForm = (props) => {
               fullWidth
               helperText={
                 Boolean(props.valAge === "")
-                  ? "Birth Year is required"
+                  ? t("alt_flow:birth_war")
                   : "\u00a0"
               }
-              label="Birth Year"
+              label={t("alt_flow:birth_year")}
               margin="normal"
               onChange={handlesetAgeGrp}
               value={props.valAge}
@@ -267,7 +269,7 @@ const BookingCardForm = (props) => {
               }}
             >
               <DeleteIcon />
-              Remove
+              {t("alt_flow:remove")}
             </Button>
           </div>
         </div>
