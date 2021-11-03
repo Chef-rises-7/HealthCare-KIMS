@@ -2,12 +2,12 @@
     "slot_bookd_confirmation" : "Your slots have been booked!",
     "donwload_qr_code" : "Please download the QR Code",
     "token_details" : "Token details",
-    "reference _id" : "Reference ID",
+    "reference_id" : "Reference ID",
     "token_number" : "Token Number",
     "date" : "Date",
     "token_qr_code" : "Token QR Code",
     "download" : "Download",
-    "post_booking_instruction" : "Download",
+    "post_booking_instruction" : "Post booking instructions:",
     "post_inst_1" : "Please download the given QR code and show it at the vaccination center when asked.",
     "post_inst_2" : "This QR code could be downloaded from the Beneficiary Verification page as well and is valid for today only."
 }

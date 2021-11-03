@@ -40,6 +40,10 @@ import BookingCardForm from "../bookingCardForm/bookingCardForm";
 import BookingCardAdd from "../bookingCardForm/bookingCardAdd";
 import { useTranslation } from 'react-i18next';
 
+import {Howl, Howler} from 'howler';
+import audio_hi from "../../audio/hi/manual_token.mp3"
+import audio_en from "../../audio/en/manual_token.mp3" 
+
 const SlotBookingForm = (props) => {
   //const navigate = useNavigate();
   const { match, history } = props;
@@ -52,6 +56,36 @@ const SlotBookingForm = (props) => {
   const [doseNo, setDoseNo] = React.useState([""]);
   const [slotInfo, setSlotInfo] = React.useState([]);
   const { t, i18n } = useTranslation(["swal","alt_flow","snack_bar"]);
+
+  React.useEffect(() => {
+    console.log(i18n);
+    var play;
+    if(i18n.language =='en'){
+      play = new Howl({
+        src: audio_en,
+        html5: true
+      });      
+    }
+    else if(i18n.language =='hi'){
+      play = new Howl({
+        src: audio_hi,
+        html5: true
+      });  
+    }
+    else{
+
+    }
+    let timer = setTimeout(()=>{
+      if(props.audio) {
+        play.play();
+      }
+      
+    },1000);
+    return () => {
+      play.stop();
+      clearTimeout(timer);
+    }
+  },[])
 
   const handleBook = () => {
     let doseObj = {};

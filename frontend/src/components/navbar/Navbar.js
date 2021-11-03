@@ -95,7 +95,7 @@ const Navbar = (props) => {
             style={{ marginRight: "10px" }}
           >
             <VolumeUp style={{ marginRight: "5px" }} />
-            <Typography variant="h6">Audio</Typography>
+            <Typography variant="h6">{t('db_statistics:audio')}</Typography>
           </IconButton>
           <IconButton
             edge="end"
@@ -104,7 +104,7 @@ const Navbar = (props) => {
             style={{ marginRight: "10px" }}
           >
             <TranslateIcon style={{ marginRight: "5px" }} />
-            <Typography variant="h6">Language</Typography>
+            <Typography variant="h6">{t('db_statistics:language')}</Typography>
           </IconButton>
           <Menu
             id="menu-appbar2"
@@ -120,17 +120,19 @@ const Navbar = (props) => {
           >
             <MenuItem
               onClick={() => {
+                props.setAudio(true);
                 setanchorEl2(null); //
               }}
             >
-              On
+              {t('db_statistics:on')}
             </MenuItem>
             <MenuItem
               onClick={() => {
+                props.setAudio(false);
                 setanchorEl2(null);
               }}
             >
-              Off
+              {t('db_statistics:off')}
             </MenuItem>
           </Menu>
           <Menu

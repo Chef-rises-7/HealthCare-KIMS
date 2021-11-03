@@ -27,7 +27,13 @@ import PersonIcon from "@material-ui/icons/Person";
 import EventAvailableIcon from "@material-ui/icons/EventAvailable";
 import { makeStyles } from "@material-ui/core/styles";
 import Chip from "@material-ui-new/core/Chip";
+import { useTranslation } from "react-i18next";
 const GeneratedCard = (props) => {
+  const { t, i18n } = useTranslation([
+    "slotbooking",
+    "snack_bar",
+    "confirmpage",
+  ]);
   //const navigate = useNavigate();
   const { match, history } = props;
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -153,7 +159,7 @@ const GeneratedCard = (props) => {
             }}
           >
             <ContactMailIcon style={{ marginRight: "5px" }} />
-            {"  "} Reference ID: {props.beneficiary}
+            {"  "} {t("confirmpage:reference_id")} {props.beneficiary}
           </div>
           <div
             style={{
@@ -164,7 +170,7 @@ const GeneratedCard = (props) => {
             }}
           >
             <ConfirmationNumberOutlinedIcon style={{ marginRight: "5px" }} />
-            {"  "} Token Number: {props.token_number}
+            {"  "} {t("confirmpage:token_number")} {props.token_number}
           </div>
           <div
             style={{
@@ -175,7 +181,7 @@ const GeneratedCard = (props) => {
             }}
           >
             <EventAvailableIcon style={{ marginRight: "5px" }} />
-            {"  "} Date: {props.date}
+            {"  "} {t("confirmpage:date")} {props.date}
           </div>
         </div>
         <Divider variant="middle" />

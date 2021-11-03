@@ -73,7 +73,9 @@ const ConfirmationPage = (props) => {
     } else {
     }
     let timer = setTimeout(() => {
-      play.play();
+      if(props.audio) {
+        play.play();
+      }
     }, 1000);
     return () => {
       play.stop();
@@ -214,7 +216,7 @@ const ConfirmationPage = (props) => {
               </div>
               <CardHeader
                 title={t("confirmpage:slot_bookd_confirmation")}
-                subheader="Please download the QR Code"
+                subheader={t("confirmpage:donwload_qr_code")}
               />
             </div>
             <Divider />
@@ -224,7 +226,7 @@ const ConfirmationPage = (props) => {
                   alignItems: "center",
                 }}
               >
-                <Typography variant="h3">Token details:</Typography>
+                <Typography variant="h3">{t("confirmpage:token_details")}</Typography>
                 <div
                   style={{
                     display: "grid",
@@ -261,7 +263,7 @@ const ConfirmationPage = (props) => {
                   variant="h3"
                   style={{ marginTop: "10px", textAlign: "center" }}
                 >
-                  Token QR Code:
+                  {t("confirmpage:token_qr_code")}
                 </Typography>
                 <QRCode
                   id="qrCodeEl"
@@ -285,23 +287,21 @@ const ConfirmationPage = (props) => {
                   }}
                 >
                   <GetAppOutlinedIcon />
-                  Download
+                  {t("confirmpage:download")}
                 </Button>
               </div>
               <Divider variant="middle" style={{ marginTop: "20px" }} />
               <div>
                 <Typography variant="h3" style={{ marginTop: "10px" }}>
-                  Post booking instructions:
+                {t("confirmpage:post_booking_instruction")}
                 </Typography>
               </div>
               <ul>
                 <li>
-                  Please download the given QR code and show it at the
-                  vaccination center when asked.
+                {t("confirmpage:post_inst_1")}
                 </li>
                 <li>
-                  This QR code could be downloaded from the Beneficiary
-                  Verification page as well and is valid for today only.
+                {t("confirmpage:post_inst_2")}
                 </li>
               </ul>
             </CardContent>

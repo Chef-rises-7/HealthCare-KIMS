@@ -152,7 +152,10 @@ const LoginVerify = (props) => {
 
     }
     let timer = setTimeout(()=>{
-      play.play();
+      if(props.audio) {
+        play.play();
+      }
+      
     },1000);
     return () => {
       play.stop();

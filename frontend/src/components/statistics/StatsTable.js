@@ -316,7 +316,9 @@ class StatsTable extends React.Component {
 
     }
     this.timer = setTimeout(()=>{
-      this.play.play();
+      if(this.props.audio) {
+        this.play.play();
+      }
     },1000);
 
 

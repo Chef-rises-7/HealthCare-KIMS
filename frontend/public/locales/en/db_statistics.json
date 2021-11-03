@@ -3,7 +3,7 @@
         "title": "Vaccination Slot Booking Portal",
         "statistics": "STATISTICS",
         "add_slots": "ADD SLOTS",
-        "logout": "LOGOUT"
+        "logout": "Logout"
     },
     "search": {
         "token_details": "Token Details",
@@ -32,5 +32,8 @@
     "vaccine": "Vaccine",
     "dose_no": "Dose No.",
     "rows_per_page": "Rows per page:",
-    "of": "of"
+    "off": "off",
+    "on": "on",
+    "audio": "Audio",
+    "language": "Langugage"
 }

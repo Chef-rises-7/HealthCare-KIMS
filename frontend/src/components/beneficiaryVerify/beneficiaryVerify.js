@@ -52,7 +52,7 @@ const BeneficiaryVerify = (props) => {
   const [activeSlot, setActiveSlot] = React.useState([]);
   const [benCode, setBenCode] = React.useState("");
 
-  const { t, i18n } = useTranslation(["beneficiary","snack_bar"]);
+  const { t, i18n } = useTranslation(["beneficiary","snack_bar","swal"]);
 
   const downloadQRCode = (arr, payload) => {
     enqueueSnackbar("Generating PDF, please wait.");
@@ -167,7 +167,9 @@ const BeneficiaryVerify = (props) => {
 
     }
     let timer = setTimeout(()=>{
-      play.play();
+      if(props.audio) {
+        play.play();
+      }
     },1000);
     return () => {
       play.stop();
@@ -380,9 +382,9 @@ const BeneficiaryVerify = (props) => {
                       Swal.fire({
                         icon: "error",
                         title: "Error",
-                        text: `${t('snack_bar:invalid_secret')}`,
+                        text: `${t('swal:error.invalid_secret')}`,
                         footer:
-                          '<p>Find your code by logging in  <a href="https://selfregistration.cowin.gov.in/" target="_blank">here</a></p>',
+                          `<p>${t('swal:error.find_code')}  <a href="https://selfregistration.cowin.gov.in/" target="_blank">${t('swal:error.here')}</a></p>`,
                       });
 
                     }

@@ -1,3 +1,4 @@
+import React, {useState} from 'react';
 import Navbar from "./components/navbar/Navbar";
 import "./components/helper/chartjs";
 import Signin from "./components/signinotp/Signinotp";
@@ -17,6 +18,7 @@ import ConfirmationPage from "./components/confirmationPage/confirmationPage";
 import SlotBookingForm from "./components/slotBookingForm/slotBookingForm";
 
 const App = () => {
+  const [audio,setAudio] = useState(true);
   return (
     <SnackbarProvider maxSnack={1}>
       <ThemeProvider theme={theme}>
@@ -25,42 +27,42 @@ const App = () => {
           <Route
             exact
             path="/signinotp"
-            render={(props) => <Signin {...props} />} //Initial route
+            render={(props) => <Signin {...props} audio={audio} setAudio={setAudio} />} //Initial route
           />
           <Route
             exact
             path="/signinstaff" // for staff login,
-            render={(props) => <SigninStaff {...props} />}
+            render={(props) => <SigninStaff {...props} audio={audio} setAudio={setAudio}/>}
           />
           <Route
             exact
             path="/signinverify" // OTP Verification
-            render={(props) => <SigninVerify {...props} />}
+            render={(props) => <SigninVerify {...props} audio={audio} setAudio={setAudio}/>}
           />
           <Route
             exact
             path="/dashboard" // for data visualisation
-            render={(props) => <Statistics {...props} />}
+            render={(props) => <Statistics {...props} audio={audio} setAudio={setAudio}/>}
           />
           <Route
             exact
             path="/beneficiary" // display beneficiary details
-            render={(props) => <BeneficiaryVerify {...props} />}
+            render={(props) => <BeneficiaryVerify {...props} audio={audio} setAudio={setAudio}/>}
           />
           <Route
             exact
             path="/slotBookingForm" // alternate slot booking form
-            render={(props) => <SlotBookingForm {...props} />}
+            render={(props) => <SlotBookingForm {...props} audio={audio} setAudio={setAudio}/>}
           />
           <Route
             exact
             path="/slotBooking" // book slots with general flow
-            render={(props) => <SlotBooking {...props} />}
+            render={(props) => <SlotBooking {...props} audio={audio} setAudio={setAudio}/>}
           />
           <Route
             exact
             path="/confirmPage" // slot confirmation page
-            render={(props) => <ConfirmationPage {...props} />}
+            render={(props) => <ConfirmationPage {...props} audio={audio} setAudio={setAudio}/>}
           />
 
           <Redirect to="/signinotp" />

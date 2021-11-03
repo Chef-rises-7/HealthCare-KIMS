@@ -27,7 +27,7 @@ const Statistics = (props) => {
         currTab={currTab}
         {...props}
       />
-      {currTab == 0 ? <StatsTable /> : <Addslots />}
+      {currTab == 0 ? <StatsTable {...props}/> : <Addslots {...props}/>}
     </>
   );
 };
