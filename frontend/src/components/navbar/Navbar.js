@@ -62,7 +62,7 @@ const Navbar = (props) => {
     <div className={classes.rootx}>
       <AppBar position="static" style={{ backgroundColor: "#6360db" }}>
         <Toolbar>
-          <Avatar src="/logo192.png" style={{ marginRight: "5px" }} />
+          <Avatar src="/logo.png" style={{ marginRight: "5px" }} />
           <Typography variant="h6">
             {" "}
             {t("db_statistics:header.title")}
@@ -95,7 +95,7 @@ const Navbar = (props) => {
             style={{ marginRight: "10px" }}
           >
             <VolumeUp style={{ marginRight: "5px" }} />
-            <Typography variant="h6">{t('db_statistics:audio')}</Typography>
+            <Typography variant="h6">{t("db_statistics:audio")}</Typography>
           </IconButton>
           <IconButton
             edge="end"
@@ -104,7 +104,7 @@ const Navbar = (props) => {
             style={{ marginRight: "10px" }}
           >
             <TranslateIcon style={{ marginRight: "5px" }} />
-            <Typography variant="h6">{t('db_statistics:language')}</Typography>
+            <Typography variant="h6">{t("db_statistics:language")}</Typography>
           </IconButton>
           <Menu
             id="menu-appbar2"
@@ -124,7 +124,7 @@ const Navbar = (props) => {
                 setanchorEl2(null); //
               }}
             >
-              {t('db_statistics:on')}
+              {t("db_statistics:on")}
             </MenuItem>
             <MenuItem
               onClick={() => {
@@ -132,7 +132,7 @@ const Navbar = (props) => {
                 setanchorEl2(null);
               }}
             >
-              {t('db_statistics:off')}
+              {t("db_statistics:off")}
             </MenuItem>
           </Menu>
           <Menu

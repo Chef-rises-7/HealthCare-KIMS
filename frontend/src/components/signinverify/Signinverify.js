@@ -7,6 +7,8 @@ import { sha256 } from "js-sha256";
 import useSWR from "swr";
 import React from "react";
 import { api_key, secret } from "../constants";
+import Navbar from "../navbar/Navbar";
+
 import {
   Box,
   Button,
@@ -18,12 +20,11 @@ import {
   Card,
   CardContent,
 } from "@material-ui-new/core";
-import silence from "../../audio/silence.mp3"
 import { api_endpoint } from "../constants";
-import { useTranslation } from 'react-i18next';
-import {Howl, Howler} from 'howler';
-import audio_hi from "../../audio/hi/otp.mp3"
-import audio_en from "../../audio/en/otp.mp3" 
+import { useTranslation } from "react-i18next";
+import { Howl, Howler } from "howler";
+import audio_hi from "../../audio/hi/otp.mp3";
+import audio_en from "../../audio/en/otp.mp3";
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 const otpExp = /^\d{6}$/;
@@ -39,7 +40,7 @@ const HandleOTP = (
   t
 ) => {
   setErr("\u00a0");
-  enqueueSnackbar(t('snack_bar:verify_otp'));
+  enqueueSnackbar(t("snack_bar:verify_otp"));
   const requestOptions = {
     method: "POST",
     headers: {
@@ -95,7 +96,7 @@ const HandleOTPResend = (
   t
 ) => {
   setErr("\u00a0");
-  enqueueSnackbar(t('snack_bar:generating_otp'));
+  enqueueSnackbar(t("snack_bar:generating_otp"));
   const requestOptions = {
     method: "POST",
     headers: {
@@ -126,7 +127,7 @@ const LoginVerify = (props) => {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const { match, history } = props;
   const [seconds, setSeconds] = React.useState(181);
-  const { t ,i18n} = useTranslation(["signinverify","snack_bar"]);
+  const { t, i18n } = useTranslation(["signinverify", "snack_bar"]);
   //   const [txnId, settxnID] = React.useState(""); // do it in useeffect
   //   const [phoneNo, setPhoneNo] = React.useState("");
 
@@ -136,33 +137,28 @@ const LoginVerify = (props) => {
   React.useEffect(() => {
     console.log(i18n);
     var play;
-    if(i18n.language =='en'){
+    if (i18n.language == "en") {
       play = new Howl({
         src: audio_en,
-        html5: true
-      });      
-    }
-    else if(i18n.language =='hi'){
+        html5: true,
+      });
+    } else if (i18n.language == "hi") {
       play = new Howl({
         src: audio_hi,
-        html5: true
-      });  
+        html5: true,
+      });
+    } else {
     }
-    else{
-
-    }
-    let timer = setTimeout(()=>{
-      if(props.audio) {
+    let timer = setTimeout(() => {
+      if (props.audio) {
         play.play();
       }
-      
-    },1000);
+    }, 1000);
     return () => {
       play.stop();
       clearTimeout(timer);
-    }
-  },[])
-
+    };
+  }, []);
 
   React.useEffect(() => {
     if (!props.location.state) {
@@ -182,10 +178,11 @@ const LoginVerify = (props) => {
 
   return (
     <>
+      <Navbar {...props} disableLogout={true} />
       <div
         style={{
           display: "grid",
-          height: "102vh",
+          height: "90vh",
           justifyContent: "center",
           alignContent: "center",
         }}
@@ -202,18 +199,19 @@ const LoginVerify = (props) => {
             >
               <Image
                 style={{
-                  backgroundColor: "#f4f6f8",
+                  backgroundColor: "#ffffff",
                   width: "200px",
                   height: "200px",
                   paddingTop: 0,
                   margin: "auto",
+                  marginBottom: "5px",
                 }}
                 imageStyle={{
                   width: "200px",
                   height: "200px",
                   margin: "auto",
                 }}
-                src="/logo512.png"
+                src="/logo.png"
               />
               <Formik
                 innerRef={formikref}
@@ -319,7 +317,8 @@ const LoginVerify = (props) => {
                           );
                         }}
                       >
-                        {t("signinverify:resend_otp")} {seconds > 0 ? `(${seconds} sec)` : ""}
+                        {t("signinverify:resend_otp")}{" "}
+                        {seconds > 0 ? `(${seconds} sec)` : ""}
                       </Button>
                     </Box>
                     <Typography
@@ -329,7 +328,7 @@ const LoginVerify = (props) => {
                     >
                       {t("signinverify:not_registered")}?{" "}
                       <a
-                        href="https://selfregistration.sandbox.cowin.gov.in"
+                        href="https://selfregistration.cowin.gov.in"
                         target="_blank"
                       >
                         ({t("signinverify:register_here")})

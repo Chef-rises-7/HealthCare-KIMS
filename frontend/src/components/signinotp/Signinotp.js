@@ -201,7 +201,7 @@ const Login = (props) => {
           <div
             style={{
               display: "grid",
-              minHeight: "99vh",
+              minHeight: "90vh",
               justifyContent: "center",
               alignContent: "center",
               gridTemplateColumns: "0.8fr 1.2fr",
@@ -225,7 +225,7 @@ const Login = (props) => {
                 >
                   <Image
                     style={{
-                      backgroundColor: "#f4f6f8",
+                      backgroundColor: "#ffffff",
                       width: "200px",
                       height: "200px",
                       paddingTop: 0,
@@ -236,7 +236,7 @@ const Login = (props) => {
                       height: "200px",
                       margin: "auto",
                     }}
-                    src="/logo512.png"
+                    src="/logo.png"
                   />
                   <Formik
                     innerRef={formikref}

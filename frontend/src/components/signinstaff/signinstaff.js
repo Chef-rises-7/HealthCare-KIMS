@@ -19,10 +19,10 @@ import {
   CardContent,
 } from "@material-ui-new/core";
 
-import { useTranslation } from 'react-i18next';
-import {Howl, Howler} from 'howler';
-import audio_hi from "../../audio/hi/staff_login.mp3"
-import audio_en from "../../audio/en/staff_login.mp3" 
+import { useTranslation } from "react-i18next";
+import { Howl, Howler } from "howler";
+import audio_hi from "../../audio/hi/staff_login.mp3";
+import audio_en from "../../audio/en/staff_login.mp3";
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 const phoneNoExp = /^[6-9]\d{9}$/;
@@ -36,7 +36,7 @@ const HandleLogin = (
   formikref,
   t
 ) => {
-  enqueueSnackbar(t('snack_bar:login'), { autoHideDuration: 3000 });
+  enqueueSnackbar(t("snack_bar:login"), { autoHideDuration: 3000 });
   const requestOptions = {
     method: "POST",
     headers: {
@@ -70,36 +70,33 @@ const HandleLogin = (
 
 const Login = (props) => {
   //const navigate = useNavigate();
-  const { t, i18n } = useTranslation(["staff_signin","snack_bar"]);
+  const { t, i18n } = useTranslation(["staff_signin", "snack_bar"]);
 
   React.useEffect(() => {
     console.log(i18n);
     var play;
-    if(i18n.language =='en'){
+    if (i18n.language == "en") {
       play = new Howl({
         src: audio_en,
-        html5: true
-      });      
-    }
-    else if(i18n.language =='hi'){
+        html5: true,
+      });
+    } else if (i18n.language == "hi") {
       play = new Howl({
         src: audio_hi,
-        html5: true
-      });  
+        html5: true,
+      });
+    } else {
     }
-    else{
-
-    }
-    let timer = setTimeout(()=>{
-      if(props.audio) {
+    let timer = setTimeout(() => {
+      if (props.audio) {
         play.play();
       }
-    },1000);
+    }, 1000);
     return () => {
       play.stop();
       clearTimeout(timer);
-    }
-  },[])
+    };
+  }, []);
 
   const { match, history } = props;
   React.useEffect(() => {
@@ -142,13 +139,14 @@ const Login = (props) => {
                   height: "200px",
                   paddingTop: 0,
                   margin: "auto",
+                  marginBottom: "5px",
                 }}
                 imageStyle={{
                   width: "200px",
                   height: "200px",
                   margin: "auto",
                 }}
-                src="/logo512.png"
+                src="/logo.png"
               />
               <Formik
                 innerRef={formikref}
@@ -156,8 +154,12 @@ const Login = (props) => {
                   phoneNo: "",
                 }}
                 validationSchema={Yup.object().shape({
-                  staffId: Yup.string().required(t("staff_signin:staff_validation")),
-                  password: Yup.string().required(t("staff_signin:pass_validation")),
+                  staffId: Yup.string().required(
+                    t("staff_signin:staff_validation")
+                  ),
+                  password: Yup.string().required(
+                    t("staff_signin:pass_validation")
+                  ),
                 })}
                 onSubmit={({ staffId, password }) => {
                   console.log(formikref);
@@ -184,7 +186,7 @@ const Login = (props) => {
                   <form onSubmit={handleSubmit}>
                     <Box sx={{ mb: 3 }}>
                       <Typography color="textPrimary" variant="h2">
-                      {t("staff_signin:sign_in")}
+                        {t("staff_signin:sign_in")}
                       </Typography>
                       <Typography
                         color="textSecondary"

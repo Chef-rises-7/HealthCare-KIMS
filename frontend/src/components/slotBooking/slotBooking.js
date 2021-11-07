@@ -11,6 +11,7 @@ import ActiveSlotCard from "../activeSlotCard/activeSlotCard";
 import Swal from "sweetalert2";
 import AvailableSlots from "../availableSlots/availableSlots";
 import BookingCard from "../bookingCard/bookingCard";
+import "./slotBooking.css";
 import {
   Box,
   Button,
@@ -36,12 +37,11 @@ import Chip from "@material-ui-new/core/Chip";
 import Navbar from "../navbar/Navbar";
 import { CardHeader } from "@material-ui/core";
 
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 
-import {Howl, Howler} from 'howler';
-import audio_hi from "../../audio/hi/select_vaccine.mp3"
-import audio_en from "../../audio/en/select_vaccine.mp3" 
-
+import { Howl, Howler } from "howler";
+import audio_hi from "../../audio/hi/select_vaccine.mp3";
+import audio_en from "../../audio/en/select_vaccine.mp3";
 
 const SlotBooking = (props) => {
   //const navigate = useNavigate();
@@ -54,7 +54,7 @@ const SlotBooking = (props) => {
   ]);
   const [isChecked, setChecked] = React.useState([]);
 
-  const { t, i18n } = useTranslation(["slotbooking","snack_bar","swal"]);
+  const { t, i18n } = useTranslation(["slotbooking", "snack_bar", "swal"]);
 
   const useStyles = makeStyles((theme) => ({
     root: {
@@ -99,10 +99,7 @@ const SlotBooking = (props) => {
       if (isChecked[index] == 1) {
         leastOne = true;
         if (ben.vaccine === "") {
-          enqueueSnackbar(
-            t('snack_bar:choose_vaccine'),
-            3000
-          );
+          enqueueSnackbar(t("snack_bar:choose_vaccine"), 3000);
           flag = 1;
         }
         doseObj[ben.beneficiary_reference_id] =
@@ -112,7 +109,7 @@ const SlotBooking = (props) => {
     });
     if (!leastOne) {
       flag = 1;
-      enqueueSnackbar(t('snack_bar:select_ben'), 3000);
+      enqueueSnackbar(t("snack_bar:select_ben"), 3000);
     }
     let reqBody = {
       beneficiaries: benArr,
@@ -176,31 +173,28 @@ const SlotBooking = (props) => {
   React.useEffect(() => {
     console.log(i18n);
     var play;
-    if(i18n.language =='en'){
+    if (i18n.language == "en") {
       play = new Howl({
         src: audio_en,
-        html5: true
-      });      
-    }
-    else if(i18n.language =='hi'){
+        html5: true,
+      });
+    } else if (i18n.language == "hi") {
       play = new Howl({
         src: audio_hi,
-        html5: true
-      });  
+        html5: true,
+      });
+    } else {
     }
-    else{
-
-    }
-    let timer = setTimeout(()=>{
-      if(props.audio) {
+    let timer = setTimeout(() => {
+      if (props.audio) {
         play.play();
       }
-    },1000);
+    }, 1000);
     return () => {
       play.stop();
       clearTimeout(timer);
-    }
-  },[])
+    };
+  }, []);
 
   React.useEffect(() => {
     if (!props.location.state) {
@@ -247,8 +241,17 @@ const SlotBooking = (props) => {
     <>
       <Navbar {...props} />
       {!isLoading ? (
-        <div style={{ margin: "0 auto", width: "80%" }}>
-          <Card style={{ margin: "20px" }}>
+        <div
+          style={{
+            display: "grid",
+            minHeight: "90vh",
+            justifyContent: "center",
+            alignContent: "center",
+            gridTemplateColumns: "1.2fr 1fr",
+            justifyItems: "center",
+          }}
+        >
+          <Card style={{ margin: "15px", width: "95%" }}>
             <div style={{ display: "grid", gridTemplateColumns: "0.5fr 20fr" }}>
               <div
                 style={{
@@ -268,42 +271,11 @@ const SlotBooking = (props) => {
                 />
               </div>
               <CardHeader
-                title={t("slotbooking:available_slots")}
-                subheader={t("slotbooking:update_warning")}
+                title={t("slotbooking:book_slots")}
+                subheader={t("slotbooking:select_proceed")}
               />
             </div>
-            <Divider />
-            <CardContent>
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-                  gridColumnGap: "15px",
-                  gridRowGap: "15px",
-                  padding: "10px",
-                }}
-              >
-                {slotInfo.map((slot) => (
-                  <AvailableSlots
-                    vaccine={slot.vaccine}
-                    ageGrp={slot.age_group}
-                    dose_choice={slot.dose_choice}
-                    available={
-                      parseInt(slot.availability) - parseInt(slot.booked) > 0
-                        ? parseInt(slot.availability) - parseInt(slot.booked)
-                        : 0
-                    }
-                  />
-                ))}
-              </div>
-            </CardContent>
-            <Divider />
-          </Card>
-          <Card style={{ margin: "20px" }}>
-            <CardHeader
-              title={t("slotbooking:book_slots")}
-              subheader={t("slotbooking:select_proceed")}
-            />
+
             <Divider />
             <CardContent>
               <div
@@ -356,6 +328,38 @@ const SlotBooking = (props) => {
                 </Button>
               </Box>
             </CardContent>
+          </Card>
+          <Card style={{ margin: "20px", width: "90%", alignSelf: "center" }}>
+            <CardHeader
+              title={t("signinotp:available_slots")}
+              subheader={t("signinotp:update_warning")}
+            />
+            <Divider />
+            <CardContent>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(255px, 1fr))",
+                  gridColumnGap: "25px",
+                  gridRowGap: "2px",
+                  padding: "10px",
+                }}
+              >
+                {slotInfo.map((slot) => (
+                  <AvailableSlots
+                    vaccine={slot.vaccine}
+                    ageGrp={slot.age_group}
+                    dose_choice={slot.dose_choice}
+                    available={
+                      parseInt(slot.availability) - parseInt(slot.booked) > 0
+                        ? parseInt(slot.availability) - parseInt(slot.booked)
+                        : 0
+                    }
+                  />
+                ))}
+              </div>
+            </CardContent>
+            <Divider />
           </Card>
         </div>
       ) : (

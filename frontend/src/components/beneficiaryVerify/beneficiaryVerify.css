@@ -1,0 +1,6 @@
+.tempCard .MuiCardContent-root {
+  padding: 0px;
+}
+.tempCard .MuiCardContent-root:last-child {
+  padding: 0px;
+}

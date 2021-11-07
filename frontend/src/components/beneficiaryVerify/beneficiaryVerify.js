@@ -8,7 +8,7 @@ import Swal from "sweetalert2";
 import React from "react";
 import { api_endpoint, api_endpoint1 } from "../constants";
 import Loader from "react-loader-spinner";
-
+import "./beneficiaryVerify.css";
 import ActiveSlotCard from "../activeSlotCard/activeSlotCard";
 import {
   Box,
@@ -35,12 +35,11 @@ import Chip from "@material-ui-new/core/Chip";
 import Navbar from "../navbar/Navbar";
 import { CardHeader } from "@material-ui/core";
 
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 
-import {Howl, Howler} from 'howler';
-import audio_hi from "../../audio/hi/secret_code.mp3"
-import audio_en from "../../audio/en/secret_code.mp3" 
-
+import { Howl, Howler } from "howler";
+import audio_hi from "../../audio/hi/secret_code.mp3";
+import audio_en from "../../audio/en/secret_code.mp3";
 
 const BeneficiaryVerify = (props) => {
   //const navigate = useNavigate();
@@ -52,7 +51,7 @@ const BeneficiaryVerify = (props) => {
   const [activeSlot, setActiveSlot] = React.useState([]);
   const [benCode, setBenCode] = React.useState("");
 
-  const { t, i18n } = useTranslation(["beneficiary","snack_bar","swal"]);
+  const { t, i18n } = useTranslation(["beneficiary", "snack_bar", "swal"]);
 
   const downloadQRCode = (arr, payload) => {
     enqueueSnackbar("Generating PDF, please wait.");
@@ -151,31 +150,28 @@ const BeneficiaryVerify = (props) => {
   React.useEffect(() => {
     console.log(i18n);
     var play;
-    if(i18n.language =='en'){
+    if (i18n.language == "en") {
       play = new Howl({
         src: audio_en,
-        html5: true
-      });      
-    }
-    else if(i18n.language =='hi'){
+        html5: true,
+      });
+    } else if (i18n.language == "hi") {
       play = new Howl({
         src: audio_hi,
-        html5: true
-      });  
+        html5: true,
+      });
+    } else {
     }
-    else{
-
-    }
-    let timer = setTimeout(()=>{
-      if(props.audio) {
+    let timer = setTimeout(() => {
+      if (props.audio) {
         play.play();
       }
-    },1000);
+    }, 1000);
     return () => {
       play.stop();
       clearTimeout(timer);
-    }
-  },[])
+    };
+  }, []);
 
   React.useEffect(() => {
     //props.location.state.tokenId
@@ -245,7 +241,7 @@ const BeneficiaryVerify = (props) => {
       {!isLoadingAS && !isLoadingOS ? (
         <div style={{ margin: "0 auto", width: "90%" }}>
           {activeSlot.message === "Beneficiaries Found" ? (
-            <Card style={{ margin: "20px" }}>
+            <Card style={{ margin: "0px" }} className="tempCard">
               <CardHeader
                 title={t("beneficiary:active.title")}
                 subheader={t("beneficiary:active.sub_title")}
@@ -287,7 +283,7 @@ const BeneficiaryVerify = (props) => {
           ) : (
             <div></div>
           )}
-          <Card style={{ margin: "20px" }}>
+          <Card style={{ marginTop: "15px" }} className="tempCard">
             <CardHeader
               title={t("beneficiary:register.title")}
               subheader={t("beneficiary:register.sub_title")}
@@ -382,11 +378,13 @@ const BeneficiaryVerify = (props) => {
                       Swal.fire({
                         icon: "error",
                         title: "Error",
-                        text: `${t('swal:error.invalid_secret')}`,
-                        footer:
-                          `<p>${t('swal:error.find_code')}  <a href="https://selfregistration.cowin.gov.in/" target="_blank">${t('swal:error.here')}</a></p>`,
+                        text: `${t("swal:error.invalid_secret")}`,
+                        footer: `<p>${t(
+                          "swal:error.find_code"
+                        )}  <a href="https://selfregistration.cowin.gov.in/" target="_blank">${t(
+                          "swal:error.here"
+                        )}</a></p>`,
                       });
-
                     }
                   }}
                 >
