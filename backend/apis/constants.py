@@ -23,6 +23,18 @@ COVAXIN = "covaxin"
 AVAILABILITY = "availability"
 
 
+ALL_SLOTS = [
+    ["covishield",'dose1','18to45'],
+    ["covishield",'dose1','45plus'],
+    ["covishield",'dose2','18to45'],
+    ["covishield",'dose2','45plus'],
+    ["covaxin",'dose1','18to45'],
+    ["covaxin",'dose1','45plus'],
+    ["covaxin",'dose2','18to45'],
+    ["covaxin",'dose2','45plus']
+]
+
+
 
 BENEFICIARYS = 'beneficiaries'
 BENEFICIARY_ID = 'beneficiary_reference_id'
