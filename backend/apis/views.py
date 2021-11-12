@@ -37,10 +37,39 @@ def generateToken(request): # It generates a beneficiary for a user if not prese
             if data_obj[BENEFICIARY_ID] not in data[DOSES]: # Beneficiary id present in beneficiaries field should also be present in doses field.
                 raise IntegrityError(BENEFICIARY_ID + " " + data_obj[BENEFICIARY_ID] + ' is not present in ' + DOSES)
 
+        already_booked = {}
+        flag = False
+
+
         for data_obj in data[BENEFICIARYS]:  # Checks if a user have already booked a token for the current day.
             beneficiary = Beneficiary.objects.filter(id=str(data_obj[BENEFICIARY_ID]), date = date.today())
             if(len(beneficiary)):
-                raise ValueError("name: "+data_obj[NAME]+" beneficiaryId: "+data_obj[BENEFICIARY_ID]+" already booked.")
+                flag = True
+
+
+
+        tokens =  Token.objects.filter(created_by = data[PHONE_NUMBER], date = date.today())
+        if flag and len(tokens):
+            for token in tokens:
+                ser_token = TokenSerializer(token).data
+                print(token.registration_id)
+                curr_slot = Slot.objects.filter(id=token.slot.id)
+                ser_token["qr_payload"] = encrypt(token.registration_id)
+                ser_token["availability"] = curr_slot[0].availability
+                if token.registration_id in already_booked.keys():
+                    already_booked[token.registration_id].append(ser_token)
+                else:
+                    already_booked[token.registration_id] = [ser_token]
+            return Response( 
+            {'action': "Get Beneficiaries", 'message': "Beneficiaries Already Found", 'data': already_booked},
+            status=status.HTTP_200_OK)
+
+
+
+        
+            
+        # if(len(already_booked.keys())):
+        #     return Response({'action': "Generate Token", 'message': "Beneficiaries Already Found", 'data': already_booked},status=status.HTTP_200_OK)
 
         for data_obj in data[BENEFICIARYS]: # Generates a beneficiary and token for each user sequentially.
 
