@@ -1,54 +1,37 @@
-import { Link as RouterLink } from "react-router-dom";
-import * as Yup from "yup";
-import { useSnackbar } from "notistack";
-import { Formik } from "formik";
-import useSWR from "swr";
-import { jsPDF } from "jspdf";
-import Swal from "sweetalert2";
-import React from "react";
-import { api_endpoint, api_endpoint1 } from "../constants";
-import Loader from "react-loader-spinner";
-import "./beneficiaryVerify.css";
-import ActiveSlotCard from "../activeSlotCard/activeSlotCard";
 import {
   Box,
   Button,
-  Container,
-  Grid,
-  Link,
-  TextField,
-  Typography,
   Card,
   CardContent,
   Divider,
+  TextField,
 } from "@material-ui-new/core";
-import ClearOutlinedIcon from "@material-ui/icons/ClearOutlined";
-import BeneficiaryCard from "../beneficiaryCard/beneficiaryCard";
-import { api_key } from "../constants";
-import CheckOutlinedIcon from "@material-ui/icons/CheckOutlined";
-import VerifiedUserOutlinedIcon from "@material-ui/icons/VerifiedUserOutlined";
-import ContactMailIcon from "@material-ui/icons/ContactMail";
-import PersonIcon from "@material-ui/icons/Person";
-import EventAvailableIcon from "@material-ui/icons/EventAvailable";
-import { makeStyles } from "@material-ui/core/styles";
-import Chip from "@material-ui-new/core/Chip";
-import Navbar from "../navbar/Navbar";
 import { CardHeader } from "@material-ui/core";
-
+import { makeStyles } from "@material-ui/core/styles";
+import { Howl } from "howler";
+import { jsPDF } from "jspdf";
+import { useSnackbar } from "notistack";
+import React from "react";
 import { useTranslation } from "react-i18next";
-
-import { Howl, Howler } from "howler";
-import audio_hi from "../../audio/hi/secret_code.mp3";
+import Loader from "react-loader-spinner";
+import Swal from "sweetalert2";
 import audio_en from "../../audio/en/secret_code.mp3";
+import audio_hi from "../../audio/hi/secret_code.mp3";
+import ActiveSlotCard from "../activeSlotCard/activeSlotCard";
+import BeneficiaryCard from "../beneficiaryCard/beneficiaryCard";
+import { api_endpoint, api_endpoint1 } from "../constants";
+import Navbar from "../navbar/Navbar";
+import "./beneficiaryVerify.css";
 
 const BeneficiaryVerify = (props) => {
   //const navigate = useNavigate();
+  //initialise all states here
   const { match, history } = props;
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const [isLoadingAS, setLoadingAS] = React.useState(true);
   const [isLoadingOS, setLoadingOS] = React.useState(true);
   const [benData, setBenData] = React.useState([]);
-  const [activeSlot, setActiveSlot] = React.useState([]);
+  const [activeSlot, setActiveSlot] = React.useState({});
   const [benCode, setBenCode] = React.useState("");
 
   const { t, i18n } = useTranslation(["beneficiary", "snack_bar", "swal"]);
@@ -88,6 +71,7 @@ const BeneficiaryVerify = (props) => {
       line
     );
     line = 7 + line;
+    // template to generate PDF
     doc.setFontSize(10);
     arr.map((token, id) => {
       doc.text(`${id + 1}) Name: ${token.name}`, leftMargin, line);
@@ -117,6 +101,7 @@ const BeneficiaryVerify = (props) => {
     doc.text("QR code", leftMargin + 75, line);
     line = line + 8;
     var img = new Image();
+    // use api to get qr code image
     img.src = `https://api.qrserver.com/v1/create-qr-code/?data=${payload}&amp;size=150x150`;
     img.onload = function () {
       doc.addImage(img, "PNG", leftMargin + 65, line, 40, 40);
@@ -146,7 +131,7 @@ const BeneficiaryVerify = (props) => {
       margin: theme.spacing(3, 1, 1),
     },
   }));
-
+  // voice configuration
   React.useEffect(() => {
     console.log(i18n);
     var play;
@@ -174,9 +159,8 @@ const BeneficiaryVerify = (props) => {
   }, []);
 
   React.useEffect(() => {
-    //props.location.state.tokenId
     console.log(props.location);
-    //Authorization: "Bearer " + props.location.state.tokenId,
+    // redirect if user is trying to access the route directly without logging in.
     if (!props.location.state) {
       history.replace("/signinotp");
       return;
@@ -192,6 +176,7 @@ const BeneficiaryVerify = (props) => {
       .then((response) => {
         if (response.status == 200) return response.json();
         else if (response.status == 401) {
+          // handle the case where token is expired
           enqueueSnackbar(t("snack_bar:session_expire"), 1500);
           history.replace("/signinotp");
           return [];
@@ -241,7 +226,10 @@ const BeneficiaryVerify = (props) => {
       {!isLoadingAS && !isLoadingOS ? (
         <div style={{ margin: "0 auto", width: "90%" }}>
           {activeSlot.message === "Beneficiaries Found" ? (
-            <Card style={{ margin: "0px" }} className="tempCard">
+            <Card
+              style={{ margin: "0px", marginTop: "10px" }}
+              className="tempCard"
+            >
               <CardHeader
                 title={t("beneficiary:active.title")}
                 subheader={t("beneficiary:active.sub_title")}
@@ -304,7 +292,8 @@ const BeneficiaryVerify = (props) => {
                     photo_id_type={ben.photo_id_type}
                     photo_id_number={ben.photo_id_number}
                     isDose1={
-                      ben.vaccination_status == "Partially Vaccinated"
+                      ben.vaccination_status == "Partially Vaccinated" ||
+                      ben.vaccination_status == "Vaccinated"
                         ? true
                         : false
                     }
@@ -319,16 +308,20 @@ const BeneficiaryVerify = (props) => {
               <Divider />
               <CardHeader
                 title={t("beneficiary:secret.title")}
-                subheader={t("beneficiary:secret.sub_title")}
+                subheader={
+                  <div>
+                    {t("beneficiary:secret.sub_title")}.{" "}
+                    {t("swal:error.find_code")}
+                    <a
+                      href="https://selfregistration.cowin.gov.in/"
+                      target="_blank"
+                    >
+                      {t("swal:error.here")}
+                    </a>
+                  </div>
+                }
               />
               <Divider />
-
-              {/* <Typography
-              variant="h6"
-              style={{ marginTop: "10px", marginLeft: "10px" }}
-            >
-              Secret Code (Last four digit of reference ID)
-            </Typography> */}
               <Box
                 style={{
                   display: "flex",
@@ -390,13 +383,6 @@ const BeneficiaryVerify = (props) => {
                 >
                   {t("beneficiary:secret.verify_details")}
                 </Button>
-                {/* <Button
-                  color="primary"
-                  variant="contained"
-                  style={{ fontWeight: "bold", borderRadius: "20px" }}
-                >
-                  Back
-                </Button> */}
               </Box>
             </CardContent>
           </Card>
@@ -410,6 +396,7 @@ const BeneficiaryVerify = (props) => {
           style={{ position: "fixed", left: "50%", top: "50%" }}
         />
       )}
+      {/* handle the case where data is not loaded with a loader*/}
     </>
   );
 };

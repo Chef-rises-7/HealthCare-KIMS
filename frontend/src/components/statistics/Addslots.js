@@ -1,44 +1,24 @@
-import { Link as RouterLink } from "react-router-dom";
-import * as Yup from "yup";
-import Swal from "sweetalert2";
-import { useSnackbar } from "notistack";
-import { Formik } from "formik";
-import Image from "material-ui-image";
-import { api_endpoint1 } from "../constants";
-import useSWR from "swr";
-import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
-import React from "react";
-import { api_endpoint } from "../constants";
-import ActiveSlotCard from "../activeSlotCard/activeSlotCard";
-import AvailableSlots from "../availableSlots/availableSlots";
-import BookingCard from "../bookingCard/bookingCard";
-import {
-  Box,
-  Button,
-  Container,
-  Grid,
-  Link,
-  Typography,
-  Card,
-  CardContent,
-  Divider,
-} from "@material-ui-new/core";
+import { Box, Button, Card, CardContent, Divider } from "@material-ui-new/core";
+import { CardHeader } from "@material-ui/core";
+import FormControl from "@material-ui/core/FormControl";
+import FormHelperText from "@material-ui/core/FormHelperText";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
-import FormHelperText from "@material-ui/core/FormHelperText";
-import FormControl from "@material-ui/core/FormControl";
-import TextField from "@material-ui/core/TextField";
 import Select from "@material-ui/core/Select";
-import Loader from "react-loader-spinner";
 import { makeStyles } from "@material-ui/core/styles";
-import { CardHeader } from "@material-ui/core";
-
-import { useTranslation } from 'react-i18next';
-import {Howl, Howler} from 'howler';
-import audio_hi from "../../audio/hi/add_slots.mp3"
-import audio_en from "../../audio/en/add_slots.mp3" 
-
+import TextField from "@material-ui/core/TextField";
+import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
+import { Howl } from "howler";
+import { useSnackbar } from "notistack";
+import React from "react";
+import { useTranslation } from "react-i18next";
+import Loader from "react-loader-spinner";
+import Swal from "sweetalert2";
+import audio_en from "../../audio/en/add_slots.mp3";
+import audio_hi from "../../audio/hi/add_slots.mp3";
+import AvailableSlots from "../availableSlots/availableSlots";
+import { api_endpoint1 } from "../constants";
 
 const Addslots = (props) => {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -51,8 +31,7 @@ const Addslots = (props) => {
   const [isLoading2, setLoading2] = React.useState(true);
   const [dateInp, setDate] = React.useState(new Date());
 
-  const { t, i18n } = useTranslation(["db_addslots","snack_bar","swal"]);
-
+  const { t, i18n } = useTranslation(["db_addslots", "snack_bar", "swal"]);
 
   const handleVaccName = (event) => {
     setVaccName(event.target.value);
@@ -79,31 +58,28 @@ const Addslots = (props) => {
   React.useEffect(() => {
     console.log(i18n);
     var play;
-    if(i18n.language =='en'){
+    if (i18n.language == "en") {
       play = new Howl({
         src: audio_en,
-        html5: true
-      });      
-    }
-    else if(i18n.language =='hi'){
+        html5: true,
+      });
+    } else if (i18n.language == "hi") {
       play = new Howl({
         src: audio_hi,
-        html5: true
-      });  
+        html5: true,
+      });
+    } else {
     }
-    else{
-
-    }
-    let timer = setTimeout(()=>{
-      if(props.audio) {
+    let timer = setTimeout(() => {
+      if (props.audio) {
         play.play();
       }
-    },1000);
+    }, 1000);
     return () => {
       play.stop();
       clearTimeout(timer);
-    }
-  },[])
+    };
+  }, []);
 
   const addUpSlots = () => {
     let allVal = true;
@@ -167,7 +143,7 @@ const Addslots = (props) => {
           //   enqueueSnackbar(err, 3000);
         });
     } else {
-      enqueueSnackbar(t('snack_bar:fill_all_details'), 2000);
+      enqueueSnackbar(t("snack_bar:fill_all_details"), 2000);
     }
   };
   const useStyles = makeStyles((theme) => ({
@@ -283,34 +259,48 @@ const Addslots = (props) => {
                 }}
               >
                 <FormControl className={classes.formControl}>
-                  <InputLabel id="vacc">{t("db_addslots:select_vaccine")}</InputLabel>
+                  <InputLabel id="vacc">
+                    {t("db_addslots:select_vaccine")}
+                  </InputLabel>
                   <Select
                     labelId="vacc"
                     id="vaccsel"
                     value={vaccname}
                     onChange={handleVaccName}
                   >
-                    <MenuItem value={"Covishield"}>{t("db_addslots:covishield")}</MenuItem>
-                    <MenuItem value={"Covaxin"}>{t("db_addslots:covaxin")}</MenuItem>
+                    <MenuItem value={"Covishield"}>
+                      {t("db_addslots:covishield")}
+                    </MenuItem>
+                    <MenuItem value={"Covaxin"}>
+                      {t("db_addslots:covaxin")}
+                    </MenuItem>
                   </Select>
                   <FormHelperText>{t("db_addslots:required")}</FormHelperText>
                 </FormControl>
 
                 <FormControl className={classes.formControl}>
-                  <InputLabel id="dose">{t("db_addslots:select_dose")}</InputLabel>
+                  <InputLabel id="dose">
+                    {t("db_addslots:select_dose")}
+                  </InputLabel>
                   <Select
                     labelId="dose"
                     id="dosesel"
                     value={doseNo}
                     onChange={handleDoseNo}
                   >
-                    <MenuItem value={"Dose1"}>{t("db_addslots:dose_1")}</MenuItem>
-                    <MenuItem value={"Dose2"}>{t("db_addslots:dose_2")}</MenuItem>
+                    <MenuItem value={"Dose1"}>
+                      {t("db_addslots:dose_1")}
+                    </MenuItem>
+                    <MenuItem value={"Dose2"}>
+                      {t("db_addslots:dose_2")}
+                    </MenuItem>
                   </Select>
                   <FormHelperText>{t("db_addslots:required")}</FormHelperText>
                 </FormControl>
                 <FormControl className={classes.formControl}>
-                  <InputLabel id="agegrp">{t("db_addslots:select_age")}</InputLabel>
+                  <InputLabel id="agegrp">
+                    {t("db_addslots:select_age")}
+                  </InputLabel>
                   <Select
                     labelId="agegrp"
                     id="agegrpsel"

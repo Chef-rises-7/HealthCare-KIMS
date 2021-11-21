@@ -1,40 +1,15 @@
-import { Link as RouterLink } from "react-router-dom";
-import * as Yup from "yup";
-import { useSnackbar } from "notistack";
-import { Formik } from "formik";
-import Image from "material-ui-image";
-import useSWR from "swr";
-import React from "react";
-import { api_endpoint } from "../constants";
-import AddCircleIcon from "@material-ui/icons/AddCircle";
-import DeleteIcon from "@material-ui/icons/Delete";
-import {
-  Box,
-  Button,
-  Container,
-  Grid,
-  Link,
-  TextField,
-  Typography,
-  Card,
-  CardContent,
-  Divider,
-  Checkbox,
-} from "@material-ui-new/core";
-import ClearOutlinedIcon from "@material-ui/icons/ClearOutlined";
+import { Button, Grid, TextField } from "@material-ui-new/core";
+import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
-import FormHelperText from "@material-ui/core/FormHelperText";
-import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
-import CheckOutlinedIcon from "@material-ui/icons/CheckOutlined";
-import VerifiedUserOutlinedIcon from "@material-ui/icons/VerifiedUserOutlined";
-import ContactMailIcon from "@material-ui/icons/ContactMail";
-import PersonIcon from "@material-ui/icons/Person";
-import EventAvailableIcon from "@material-ui/icons/EventAvailable";
 import { makeStyles } from "@material-ui/core/styles";
-import Chip from "@material-ui-new/core/Chip";
-import { useTranslation } from 'react-i18next';
+import ContactMailIcon from "@material-ui/icons/ContactMail";
+import DeleteIcon from "@material-ui/icons/Delete";
+import PersonIcon from "@material-ui/icons/Person";
+import { useSnackbar } from "notistack";
+import React from "react";
+import { useTranslation } from "react-i18next";
 const BookingCardForm = (props) => {
   //const navigate = useNavigate();
   const { match, history } = props;
@@ -176,7 +151,8 @@ const BookingCardForm = (props) => {
                       Boolean(props.valRef === "")
                         ? t("alt_flow:ref_war")
                         : "\u00a0"
-                    }r
+                    }
+                    r
                     label={t("alt_flow:ref_id")}
                     margin="normal"
                     onChange={handleRefID}
@@ -203,7 +179,9 @@ const BookingCardForm = (props) => {
                 value={props.valVacc}
                 onChange={handleChangeVaccine}
               >
-                <MenuItem value={"covishield"}>{t("alt_flow:covishield")}</MenuItem>
+                <MenuItem value={"covishield"}>
+                  {t("alt_flow:covishield")}
+                </MenuItem>
                 <MenuItem value={"covaxin"}>{t("alt_flow:covaxin")}</MenuItem>
               </Select>
             </FormControl>

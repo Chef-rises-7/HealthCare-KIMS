@@ -1,47 +1,20 @@
-import { Link as RouterLink } from "react-router-dom";
-import * as Yup from "yup";
-import { useSnackbar } from "notistack";
-import { Formik } from "formik";
-import Image from "material-ui-image";
-import useSWR from "swr";
-import React from "react";
+import { Box, Button, Card, CardContent, Divider } from "@material-ui-new/core";
+import { CardHeader } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
-import { api_endpoint1 } from "../constants";
-import ActiveSlotCard from "../activeSlotCard/activeSlotCard";
+import { Howl } from "howler";
+import { useSnackbar } from "notistack";
+import React from "react";
+import { useTranslation } from "react-i18next";
+import Loader from "react-loader-spinner";
 import Swal from "sweetalert2";
+import audio_en from "../../audio/en/select_vaccine.mp3";
+import audio_hi from "../../audio/hi/select_vaccine.mp3";
 import AvailableSlots from "../availableSlots/availableSlots";
 import BookingCard from "../bookingCard/bookingCard";
-import "./slotBooking.css";
-import {
-  Box,
-  Button,
-  Container,
-  Grid,
-  Link,
-  TextField,
-  Typography,
-  Card,
-  CardContent,
-  Divider,
-} from "@material-ui-new/core";
-import Loader from "react-loader-spinner";
-import ClearOutlinedIcon from "@material-ui/icons/ClearOutlined";
-import BeneficiaryCard from "../beneficiaryCard/beneficiaryCard";
-import CheckOutlinedIcon from "@material-ui/icons/CheckOutlined";
-import VerifiedUserOutlinedIcon from "@material-ui/icons/VerifiedUserOutlined";
-import ContactMailIcon from "@material-ui/icons/ContactMail";
-import PersonIcon from "@material-ui/icons/Person";
-import EventAvailableIcon from "@material-ui/icons/EventAvailable";
-import { makeStyles } from "@material-ui/core/styles";
-import Chip from "@material-ui-new/core/Chip";
+import { api_endpoint1 } from "../constants";
 import Navbar from "../navbar/Navbar";
-import { CardHeader } from "@material-ui/core";
-
-import { useTranslation } from "react-i18next";
-
-import { Howl, Howler } from "howler";
-import audio_hi from "../../audio/hi/select_vaccine.mp3";
-import audio_en from "../../audio/en/select_vaccine.mp3";
+import "./slotBooking.css";
 
 const SlotBooking = (props) => {
   //const navigate = useNavigate();
@@ -149,14 +122,22 @@ const SlotBooking = (props) => {
         })
         .then((data) => {
           console.log(data);
-          history.push({
-            pathname: "/confirmPage",
-            state: {
-              qrPayload: data.qr_payload,
-              response_tokens: data.response_tokens,
-              fromApp: true,
-            },
-          });
+          if (data.message === "Beneficiaries Found")
+            history.push({
+              pathname: "/confirmPage",
+              state: {
+                qrPayload: data.qr_payload,
+                response_tokens: data.response_tokens,
+                fromApp: true,
+              },
+            });
+          else if (data.message === "Beneficiaries Already Found") {
+            Swal.fire({
+              icon: "error",
+              title: t("swal:slot_booking_2.title"),
+              text: t("swal:slot_booking_2.text"),
+            });
+          }
         })
         .catch((err) => {
           console.log(err);

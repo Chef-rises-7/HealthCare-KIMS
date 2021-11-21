@@ -1,48 +1,28 @@
-import { Link as RouterLink } from "react-router-dom";
-import * as Yup from "yup";
-import { useSnackbar } from "notistack";
-import { Formik } from "formik";
-import Image from "material-ui-image";
-import useSWR from "swr";
-import React from "react";
-import { api_endpoint, api_endpoint1 } from "../constants";
-import ActiveSlotCard from "../activeSlotCard/activeSlotCard";
-import AvailableSlots from "../availableSlots/availableSlots";
-import BookingCard from "../bookingCard/bookingCard";
-import Swal from "sweetalert2";
-
 import {
   Box,
   Button,
-  Container,
-  Grid,
-  Link,
-  TextField,
-  Typography,
   Card,
   CardContent,
   Divider,
+  TextField,
 } from "@material-ui-new/core";
-import Loader from "react-loader-spinner";
-
-import ClearOutlinedIcon from "@material-ui/icons/ClearOutlined";
-import BeneficiaryCard from "../beneficiaryCard/beneficiaryCard";
-import CheckOutlinedIcon from "@material-ui/icons/CheckOutlined";
-import VerifiedUserOutlinedIcon from "@material-ui/icons/VerifiedUserOutlined";
-import ContactMailIcon from "@material-ui/icons/ContactMail";
-import PersonIcon from "@material-ui/icons/Person";
-import EventAvailableIcon from "@material-ui/icons/EventAvailable";
-import { makeStyles } from "@material-ui/core/styles";
-import Chip from "@material-ui-new/core/Chip";
-import Navbar from "../navbar/Navbar";
 import { CardHeader } from "@material-ui/core";
-import BookingCardForm from "../bookingCardForm/bookingCardForm";
+import { makeStyles } from "@material-ui/core/styles";
+import PhoneIcon from "@material-ui/icons/Phone";
+import { Howl } from "howler";
+import { jsPDF } from "jspdf";
+import { useSnackbar } from "notistack";
+import React from "react";
+import { useTranslation } from "react-i18next";
+import Loader from "react-loader-spinner";
+import Swal from "sweetalert2";
+import audio_en from "../../audio/en/manual_token.mp3";
+import audio_hi from "../../audio/hi/manual_token.mp3";
+import ActiveSlotCard from "../activeSlotCard/activeSlotCard";
 import BookingCardAdd from "../bookingCardForm/bookingCardAdd";
-import { useTranslation } from 'react-i18next';
-
-import {Howl, Howler} from 'howler';
-import audio_hi from "../../audio/hi/manual_token.mp3"
-import audio_en from "../../audio/en/manual_token.mp3" 
+import BookingCardForm from "../bookingCardForm/bookingCardForm";
+import { api_endpoint1 } from "../constants";
+import Navbar from "../navbar/Navbar";
 
 const SlotBookingForm = (props) => {
   //const navigate = useNavigate();
@@ -54,47 +34,124 @@ const SlotBookingForm = (props) => {
   const [vaccName, setVaccName] = React.useState([""]);
   const [ageGrp, setAgeGrp] = React.useState([""]);
   const [doseNo, setDoseNo] = React.useState([""]);
+  const [activeSlot, setActiveSlot] = React.useState({});
+  const [errState, setErrState] = React.useState(false);
+  const [phoneNo, setPhoneNo] = React.useState("");
   const [slotInfo, setSlotInfo] = React.useState([]);
-  const { t, i18n } = useTranslation(["swal","alt_flow","snack_bar"]);
+  const { t, i18n } = useTranslation([
+    "swal",
+    "alt_flow",
+    "snack_bar",
+    "signinotp",
+    "beneficiary",
+  ]);
 
   React.useEffect(() => {
     console.log(i18n);
     var play;
-    if(i18n.language =='en'){
+    if (i18n.language == "en") {
       play = new Howl({
         src: audio_en,
-        html5: true
-      });      
-    }
-    else if(i18n.language =='hi'){
+        html5: true,
+      });
+    } else if (i18n.language == "hi") {
       play = new Howl({
         src: audio_hi,
-        html5: true
-      });  
+        html5: true,
+      });
+    } else {
     }
-    else{
-
-    }
-    let timer = setTimeout(()=>{
-      if(props.audio) {
+    let timer = setTimeout(() => {
+      if (props.audio) {
         play.play();
       }
-      
-    },1000);
+    }, 1000);
     return () => {
       play.stop();
       clearTimeout(timer);
-    }
-  },[])
+    };
+  }, []);
+  const downloadQRCode = (arr, payload) => {
+    enqueueSnackbar("Generating PDF, please wait.");
+    // const qrCodeURL = document
+    //   .getElementById("qrCodeEl")
+    //   .toDataURL("image/png")
+    //   .replace("image/png", "image/octet-stream");
+    // console.log(qrCodeURL);
+    // let aEl = document.createElement("a");
+    // aEl.href = qrCodeURL;
+    // aEl.download = "QRToken.png";
+    // document.body.appendChild(aEl);
+    // aEl.click();
+    // document.body.removeChild(aEl);
+    // Don't forget, that there are CORS-Restrictions. So if you want to run it without a Server in your Browser you need to transform the image to a dataURL
+    var doc = new jsPDF();
+    doc.setFontSize(20);
+    var line = 20; // Line height to start text at
+    var lineHeight = 10;
+    var leftMargin = 20;
+    var wrapWidth = 180;
+    var longString = "KIMS Hospital";
 
+    var splitText = doc.splitTextToSize(longString, wrapWidth);
+    for (var i = 0, length = splitText.length; i < length; i++) {
+      // loop thru each line and increase
+      doc.text(splitText[i], 85, line);
+      line = lineHeight + line;
+    }
+    doc.setFontSize(15);
+    doc.text(
+      "Please find the vaccination token details below.",
+      leftMargin,
+      line
+    );
+    line = 7 + line;
+    doc.setFontSize(10);
+    arr.map((token, id) => {
+      doc.text(`${id + 1}) Name: ${token.name}`, leftMargin, line);
+      line = 5 + line;
+      doc.text(`Age: ${token.age}`, leftMargin + 4, line);
+      line = 5 + line;
+      doc.text(`Vaccine: ${token.vaccine}`, leftMargin + 4, line);
+      line = 5 + line;
+      doc.text(`Token number: ${token.token_number}`, leftMargin + 4, line);
+      line = 5 + line;
+      doc.text(`Reference ID: ${token.beneficiary}`, leftMargin + 4, line);
+      line = 5 + line;
+      doc.text(`Date: ${token.date}`, leftMargin + 4, line);
+      line = 5 + line;
+      doc.text(
+        `Confirmation Status: ${
+          parseInt(token.availability) - parseInt(token.booked) > 0
+            ? `Confirmed`
+            : `Pending`
+        }`,
+        leftMargin + 4,
+        line
+      );
+      line = 10 + line;
+    });
+    doc.setFontSize(15);
+    doc.text("QR code", leftMargin + 75, line);
+    line = line + 8;
+    var img = new Image();
+    img.src = `https://api.qrserver.com/v1/create-qr-code/?data=${payload}&amp;size=150x150`;
+    img.onload = function () {
+      doc.addImage(img, "PNG", leftMargin + 65, line, 40, 40);
+      closeSnackbar();
+      doc.save("Confirmation.pdf");
+    };
+  };
   const handleBook = () => {
     let doseObj = {};
     let benArr = [];
     let flag = 0;
     let leastOne = false;
+    const regex = new RegExp("foo*");
     refId.forEach((refs, index) => {
       let benObj = {};
       leastOne = true;
+      // check if any of the details are not filled
       if (
         refId[index] === "" ||
         vaccName[index] === "" ||
@@ -116,9 +173,14 @@ const SlotBookingForm = (props) => {
       flag = 1;
       enqueueSnackbar(t("snack_bar:select_ben"), 3000);
     }
+    if (!/^\d{10}$/.test(phoneNo)) {
+      flag = 1;
+      enqueueSnackbar("Please enter valid phone number", 3000);
+      setErrState(true);
+    }
     let reqBody = {
       beneficiaries: benArr,
-      phone_number: props.location.state.phoneNo,
+      phone_number: phoneNo,
       doses: doseObj,
     };
     const requestOptions = {
@@ -142,6 +204,7 @@ const SlotBookingForm = (props) => {
       })
         .then((result) => {
           if (result.isConfirmed) {
+            setLoading(true);
             return fetch(
               api_endpoint1 + "/apis/generateToken/",
               requestOptions
@@ -154,17 +217,28 @@ const SlotBookingForm = (props) => {
         })
         .then((data) => {
           console.log(data);
-          history.push({
-            pathname: "/confirmPage",
-            state: {
-              qrPayload: data.qr_payload,
-              response_tokens: data.response_tokens,
-              fromApp: true,
-            },
-          });
+          setActiveSlot(data);
+          setLoading(false);
+          if (data.message === "Beneficiaries Found")
+            history.push({
+              pathname: "/confirmPage",
+              state: {
+                qrPayload: data.qr_payload,
+                response_tokens: data.response_tokens,
+                fromApp: true,
+              },
+            });
+          else if (data.message === "Beneficiaries Already Found") {
+            Swal.fire({
+              icon: "error",
+              title: t("swal:slot_booking_2.title"),
+              text: t("swal:slot_booking_2.text"),
+            });
+          }
         })
         .catch((err) => {
           console.log(err);
+          setLoading(false);
           Swal.fire({
             icon: "error",
             title: t("swal:slot_booking_2.title"),
@@ -263,34 +337,6 @@ const SlotBookingForm = (props) => {
     }, 2000);
   }, []);
 
-  React.useEffect(() => {
-    // if (!props.location.state) {
-    //   history.replace("/signinotp");
-    //   return;
-    // }
-    const requestOptions = {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
-
-    fetch(api_endpoint1 + "/apis/getSlots/", requestOptions)
-      .then((response) => {
-        if (response.status == 200) return response.json();
-        else throw new Error("Failed to fetch slots, try again later");
-      })
-      .then((data) => {
-        console.log(data);
-        setSlotInfo(data.slots);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setLoading(false);
-        console.log(err);
-      });
-  }, []);
-
   const classes = useStyles();
   return (
     <>
@@ -298,43 +344,27 @@ const SlotBookingForm = (props) => {
       {!isLoading ? (
         <div style={{ margin: "0 auto", width: "80%" }}>
           <Card style={{ margin: "20px" }}>
-            <CardHeader
-              title={t("alt_flow:available_slots")}
-              subheader={t("alt_flow:update_warning")}
-            />
+            <CardHeader title={t("alt_flow:book_slots")} />
             <Divider />
             <CardContent>
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-                  gridColumnGap: "15px",
-                  gridRowGap: "15px",
-                  padding: "10px",
+              <TextField
+                error={errState}
+                helperText={"Please enter your phone number here"}
+                // label="Phone number"
+                label={t("signinotp:phone_number")}
+                margin="normal"
+                name="phoneNo"
+                InputProps={{
+                  startAdornment: <PhoneIcon />,
                 }}
-              >
-                {slotInfo.map((slot) => (
-                  <AvailableSlots
-                    vaccine={slot.vaccine}
-                    ageGrp={slot.age_group}
-                    dose_choice={slot.dose_choice}
-                    available={
-                      parseInt(slot.availability) - parseInt(slot.booked) > 0
-                        ? parseInt(slot.availability) - parseInt(slot.booked)
-                        : 0
-                    }
-                  />
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-          <Card style={{ margin: "20px" }}>
-            <CardHeader
-              title={t("alt_flow:book_slots")}
-              subheader={t("alt_flow:failed_warning")}
-            />
-            <Divider />
-            <CardContent>
+                onChange={(e) => {
+                  setPhoneNo(e.target.value);
+                }}
+                variant="outlined"
+                style={{ margin: "15px" }}
+              />
+
+              <Divider />
               <div
                 style={{
                   display: "grid",
@@ -391,6 +421,52 @@ const SlotBookingForm = (props) => {
               </Box>
             </CardContent>
           </Card>
+          {activeSlot.message === "Beneficiaries Already Found" ? (
+            <Card style={{ margin: "20px" }} className="tempCard">
+              <CardHeader
+                title={t("beneficiary:active.title")}
+                subheader={t("beneficiary:active.sub_title")}
+              />
+              <Divider />
+              <CardContent>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns:
+                      "repeat(auto-fill, minmax(330px, 1fr))",
+                    gridColumnGap: "30px",
+                    gridRowGap: "30px",
+                    padding: "10px",
+                  }}
+                >
+                  {Object.keys(activeSlot.data).map((key) => {
+                    let activeObj = activeSlot.data[key];
+                    console.log(activeObj);
+                    let benNo = activeSlot.data[key].length;
+                    let tokenIds = activeSlot.data[key]
+                      .map((obj) => obj.token_number)
+                      .toString();
+                    let bookDate = activeObj[0].date;
+                    let qrPayload = activeObj[0].qr_payload;
+                    console.log(qrPayload);
+
+                    return (
+                      <ActiveSlotCard
+                        benNo={benNo}
+                        tokenIds={tokenIds}
+                        date={bookDate}
+                        activeObj={activeObj}
+                        genPdf={downloadQRCode}
+                        qrPayload={qrPayload}
+                      />
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <div></div>
+          )}
         </div>
       ) : (
         <Loader

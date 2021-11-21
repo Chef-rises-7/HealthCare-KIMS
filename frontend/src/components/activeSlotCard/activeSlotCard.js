@@ -1,35 +1,12 @@
-import { Link as RouterLink } from "react-router-dom";
-import * as Yup from "yup";
-import { useSnackbar } from "notistack";
-import { Formik } from "formik";
-import Image from "material-ui-image";
-import useSWR from "swr";
-import React from "react";
-import { api_endpoint } from "../constants";
-import ConfirmationNumberOutlinedIcon from "@material-ui/icons/ConfirmationNumberOutlined";
-import GetAppOutlinedIcon from "@material-ui/icons/GetAppOutlined";
-import {
-  Box,
-  Button,
-  Container,
-  Grid,
-  Link,
-  TextField,
-  Typography,
-  Card,
-  CardContent,
-  Divider,
-} from "@material-ui-new/core";
-import ClearOutlinedIcon from "@material-ui/icons/ClearOutlined";
-import CheckOutlinedIcon from "@material-ui/icons/CheckOutlined";
-import PeopleAltOutlinedIcon from "@material-ui/icons/PeopleAltOutlined";
-import VerifiedUserOutlinedIcon from "@material-ui/icons/VerifiedUserOutlined";
-import ContactMailIcon from "@material-ui/icons/ContactMail";
-import PersonIcon from "@material-ui/icons/Person";
-import EventAvailableIcon from "@material-ui/icons/EventAvailable";
+import { Button, Divider, Grid } from "@material-ui-new/core";
 import { makeStyles } from "@material-ui/core/styles";
-import Chip from "@material-ui-new/core/Chip";
-import { useTranslation } from 'react-i18next';
+import ConfirmationNumberOutlinedIcon from "@material-ui/icons/ConfirmationNumberOutlined";
+import EventAvailableIcon from "@material-ui/icons/EventAvailable";
+import GetAppOutlinedIcon from "@material-ui/icons/GetAppOutlined";
+import PeopleAltOutlinedIcon from "@material-ui/icons/PeopleAltOutlined";
+import { useSnackbar } from "notistack";
+import React from "react";
+import { useTranslation } from "react-i18next";
 const ActiveSlotCard = (props) => {
   //benNo,date, tokenIds, genPdf
   //const navigate = useNavigate();
@@ -115,7 +92,8 @@ const ActiveSlotCard = (props) => {
             }}
           >
             <EventAvailableIcon style={{ marginRight: "5px" }} />
-            {"  "}{t("beneficiary:active.date")} {props.date}
+            {"  "}
+            {t("beneficiary:active.date")} {props.date}
           </div>
 
           <div

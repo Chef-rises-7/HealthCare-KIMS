@@ -1,31 +1,24 @@
-import { Link as RouterLink } from "react-router-dom";
-import { isExpired } from "react-jwt";
-import * as Yup from "yup";
-import { useSnackbar } from "notistack";
-import { Formik } from "formik";
-import Image from "material-ui-image";
-import useSWR from "swr";
-import React from "react";
-import { api_endpoint1 } from "../constants";
 import {
   Box,
   Button,
-  Container,
-  Grid,
-  Link,
-  TextField,
-  Typography,
   Card,
   CardContent,
+  Container,
+  TextField,
+  Typography,
 } from "@material-ui-new/core";
-
+import { Formik } from "formik";
+import { Howl } from "howler";
+import Image from "material-ui-image";
+import { useSnackbar } from "notistack";
+import React from "react";
 import { useTranslation } from "react-i18next";
-import { Howl, Howler } from "howler";
-import audio_hi from "../../audio/hi/staff_login.mp3";
+import { isExpired } from "react-jwt";
+import * as Yup from "yup";
 import audio_en from "../../audio/en/staff_login.mp3";
-
-const fetcher = (...args) => fetch(...args).then((res) => res.json());
-const phoneNoExp = /^[6-9]\d{9}$/;
+import audio_hi from "../../audio/hi/staff_login.mp3";
+import { api_endpoint1 } from "../constants";
+import Navbar from "../navbar/Navbar";
 
 const HandleLogin = (
   history,
@@ -47,6 +40,7 @@ const HandleLogin = (
       password: String(password),
     }),
   };
+  //handle login with the password n username input
   fetch(api_endpoint1 + "/auth/login", requestOptions)
     .then((response) => {
       if (response.status == 200) return response.json();
@@ -69,9 +63,8 @@ const HandleLogin = (
 };
 
 const Login = (props) => {
-  //const navigate = useNavigate();
   const { t, i18n } = useTranslation(["staff_signin", "snack_bar"]);
-
+  //handle language change
   React.useEffect(() => {
     console.log(i18n);
     var play;
@@ -114,6 +107,7 @@ const Login = (props) => {
   let formikref = React.useRef(null);
   return (
     <>
+      <Navbar {...props} disableLogout={true} />
       <div
         style={{
           display: "grid",
@@ -132,22 +126,45 @@ const Login = (props) => {
                 alignContent: "center",
               }}
             >
-              <Image
+              <div
                 style={{
-                  backgroundColor: "#f4f6f8",
-                  width: "200px",
-                  height: "200px",
-                  paddingTop: 0,
-                  margin: "auto",
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gridGap: "10px",
                   marginBottom: "5px",
                 }}
-                imageStyle={{
-                  width: "200px",
-                  height: "200px",
-                  margin: "auto",
-                }}
-                src="/logo.png"
-              />
+              >
+                <Image
+                  style={{
+                    backgroundColor: "#ffffff",
+                    width: "170px",
+                    height: "170px",
+                    paddingTop: 0,
+                    margin: "auto",
+                  }}
+                  imageStyle={{
+                    width: "170px",
+                    height: "170px",
+                    margin: "auto",
+                  }}
+                  src="/logo1gg.jpeg"
+                />
+                <Image
+                  style={{
+                    backgroundColor: "#ffffff",
+                    width: "170px",
+                    height: "170px",
+                    paddingTop: 0,
+                    margin: "auto",
+                  }}
+                  imageStyle={{
+                    width: "170px",
+                    height: "170px",
+                    margin: "auto",
+                  }}
+                  src="/logo2gg.png"
+                />
+              </div>
               <Formik
                 innerRef={formikref}
                 initialValues={{

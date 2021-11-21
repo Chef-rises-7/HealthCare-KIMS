@@ -1,34 +1,15 @@
-import { Link as RouterLink } from "react-router-dom";
-import * as Yup from "yup";
-import { useSnackbar } from "notistack";
-import { Formik } from "formik";
-import Image from "material-ui-image";
-import useSWR from "swr";
-import React from "react";
-import { api_endpoint } from "../constants";
-import {
-  Box,
-  Button,
-  Container,
-  Grid,
-  Link,
-  TextField,
-  Typography,
-  Card,
-  CardContent,
-  Divider,
-} from "@material-ui-new/core";
-import ClearOutlinedIcon from "@material-ui/icons/ClearOutlined";
-import CheckOutlinedIcon from "@material-ui/icons/CheckOutlined";
-import VerifiedUserOutlinedIcon from "@material-ui/icons/VerifiedUserOutlined";
-import ContactMailIcon from "@material-ui/icons/ContactMail";
-import PersonIcon from "@material-ui/icons/Person";
-import EventAvailableIcon from "@material-ui/icons/EventAvailable";
-import { makeStyles } from "@material-ui/core/styles";
+import { Divider, Grid } from "@material-ui-new/core";
 import Chip from "@material-ui-new/core/Chip";
-
-import { useTranslation } from 'react-i18next';
-
+import { makeStyles } from "@material-ui/core/styles";
+import CheckOutlinedIcon from "@material-ui/icons/CheckOutlined";
+import ClearOutlinedIcon from "@material-ui/icons/ClearOutlined";
+import ContactMailIcon from "@material-ui/icons/ContactMail";
+import EventAvailableIcon from "@material-ui/icons/EventAvailable";
+import PersonIcon from "@material-ui/icons/Person";
+import VerifiedUserOutlinedIcon from "@material-ui/icons/VerifiedUserOutlined";
+import { useSnackbar } from "notistack";
+import React from "react";
+import { useTranslation } from "react-i18next";
 
 const BeneficiaryCard = (props) => {
   const { match, history } = props;
@@ -178,7 +159,8 @@ const BeneficiaryCard = (props) => {
             }}
           >
             <EventAvailableIcon style={{ marginRight: "5px" }} />
-            {"  "}{t("beneficiary:register.birth")} {props.birth_year}
+            {"  "}
+            {t("beneficiary:register.birth")} {props.birth_year}
           </div>
 
           <div

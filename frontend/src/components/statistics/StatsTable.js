@@ -1,51 +1,43 @@
+import DateFnsUtils from "@date-io/date-fns";
 import {
   Box,
   Button,
-  Grid,
   Card,
-  Container,
   CardContent,
-  TextField,
+  Chip,
+  Container,
   InputAdornment,
   SvgIcon,
+  TextField,
   Typography,
-  Chip,
-  TabPanel,
 } from "@material-ui-new/core";
-import "./dateFix.css";
-import XLXS from "xlsx";
-import { api_endpoint1 } from "../constants";
-import Loader from "react-loader-spinner";
-import DateFnsUtils from "@date-io/date-fns";
-import GetAppOutlinedIcon from "@material-ui/icons/GetAppOutlined";
-import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
-import { Search as SearchIcon } from "react-feather";
-import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
-import Tabs from "@material-ui-new/core/Tabs";
+import Paper from "@material-ui-new/core/Paper";
 import Tab from "@material-ui-new/core/Tab";
-import PropTypes from "prop-types";
-import { withStyles } from "@material-ui-new/styles";
-import TableSortLabel from "@material-ui-new/core/TableSortLabel";
-import Checkbox from "@material-ui-new/core/Checkbox";
-import Tooltip from "@material-ui-new/core/Tooltip";
-import AddIcon from "@material-ui-new/icons/Add";
-import React from "react";
-import { makeStyles } from "@material-ui-new/core/styles";
 import Table from "@material-ui-new/core/Table";
 import TableBody from "@material-ui-new/core/TableBody";
 import TableCell from "@material-ui-new/core/TableCell";
-import TableContainer from "@material-ui-new/core/TableContainer";
 import TableHead from "@material-ui-new/core/TableHead";
-import TableRow from "@material-ui-new/core/TableRow";
 import TablePagination from "@material-ui-new/core/TablePagination";
-import Paper from "@material-ui-new/core/Paper";
+import TableRow from "@material-ui-new/core/TableRow";
+import TableSortLabel from "@material-ui-new/core/TableSortLabel";
+import Tabs from "@material-ui-new/core/Tabs";
+import Tooltip from "@material-ui-new/core/Tooltip";
+import { withStyles } from "@material-ui-new/styles";
+import GetAppOutlinedIcon from "@material-ui/icons/GetAppOutlined";
+import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
+import { Howl } from "howler";
 import { withSnackbar } from "notistack";
-import { DataSaverOff } from "@material-ui/icons";
-
-import { withTranslation } from 'react-i18next';
-import {Howl, Howler} from 'howler';
-import audio_hi from "../../audio/hi/dashboard.mp3"
-import audio_en from "../../audio/en/dashboard.mp3" 
+import PropTypes from "prop-types";
+import React from "react";
+import { Search as SearchIcon } from "react-feather";
+import { withTranslation } from "react-i18next";
+import Loader from "react-loader-spinner";
+import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
+import XLXS from "xlsx";
+import audio_en from "../../audio/en/dashboard.mp3";
+import audio_hi from "../../audio/hi/dashboard.mp3";
+import { api_endpoint1 } from "../constants";
+import "./dateFix.css";
 
 function a11yProps(index) {
   return {
@@ -161,6 +153,7 @@ function desc(a, b, orderBy) {
 }
 
 function stableSort(array, cmp) {
+  //handle sorting feature of the table columns
   const stabilizedThis = array.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = cmp(a[0], b[0]);
@@ -213,10 +206,6 @@ class StatsTable extends React.Component {
   };
   timer;
   play;
-
-
- 
-  
 
   handleRequestSort = (event, property) => {
     const orderBy = property;
@@ -297,30 +286,24 @@ class StatsTable extends React.Component {
   };
   isSelected = (id) => this.state.selected.indexOf(id) !== -1;
 
-
   componentDidMount() {
-    
-    if(this.props.i18n.language =='en'){
+    if (this.props.i18n.language == "en") {
       this.play = new Howl({
         src: audio_en,
-        html5: true
-      });      
-    }
-    else if(this.props.i18n.language =='hi'){
+        html5: true,
+      });
+    } else if (this.props.i18n.language == "hi") {
       this.play = new Howl({
         src: audio_hi,
-        html5: true
-      });  
+        html5: true,
+      });
+    } else {
     }
-    else{
-
-    }
-    this.timer = setTimeout(()=>{
-      if(this.props.audio) {
+    this.timer = setTimeout(() => {
+      if (this.props.audio) {
         this.play.play();
       }
-    },1000);
-
+    }, 1000);
 
     const requestOptions = {
       method: "POST",
@@ -374,8 +357,6 @@ class StatsTable extends React.Component {
     this.play.stop();
     clearTimeout(this.timer);
   }
-
-  
 
   render() {
     const { classes } = this.props;
@@ -450,7 +431,7 @@ class StatsTable extends React.Component {
                       variant="h3"
                       style={{ margin: "auto" }}
                     >
-                      {this.props.t('db_statistics:search.token_details')}
+                      {this.props.t("db_statistics:search.token_details")}
                     </Typography>
                     <Box sx={{ minWidth: "100%" }}>
                       <TextField
@@ -468,7 +449,9 @@ class StatsTable extends React.Component {
                             </InputAdornment>
                           ),
                         }}
-                        placeholder={this.props.t('db_statistics:search.placeholder')}
+                        placeholder={this.props.t(
+                          "db_statistics:search.placeholder"
+                        )}
                         variant="outlined"
                       />
                     </Box>
@@ -481,12 +464,29 @@ class StatsTable extends React.Component {
                       }}
                     >
                       <GetAppOutlinedIcon />
-                      {this.props.t('db_statistics:search.export')}
+                      {this.props.t("db_statistics:search.export")}
                     </Button>
                   </CardContent>
                 </Card>
               </Box>
             </Box>
+            {/* {this.state.value == 1 && (
+              <div style={{ margin: "10px", justifySelf: "center" }}>
+                {this.props.t("db_statistics:by_date.title")}{" "}
+              </div>
+            )}
+            {this.state.value == 2 && (
+              <div style={{ margin: "10px", justifySelf: "center" }}>
+                {this.props.t("db_statistics:by_range.title")}{" "}
+              </div>
+            )}
+
+            {this.state.value == 3 && (
+              <div style={{ margin: "10px", justifySelf: "center" }}>
+                {this.props.t("db_statistics:by_month.title")}{" "}
+              </div>
+            )} */}
+
             <Tabs
               value={value}
               onChange={this.handleChange}
@@ -495,10 +495,142 @@ class StatsTable extends React.Component {
               scrollable
               scrollButtons="auto"
             >
-              <Tab label={(this.props.t("db_statistics:all"))} {...a11yProps(0)} />
-              <Tab label={(this.props.t("db_statistics:by_date.name"))} {...a11yProps(1)} />
-              <Tab label={(this.props.t("db_statistics:by_range.name"))} {...a11yProps(2)} />
-              <Tab label={(this.props.t("db_statistics:by_month.name"))} {...a11yProps(3)} />
+              <Tab
+                label={this.props.t("db_statistics:all")}
+                {...a11yProps(0)}
+              />
+              <Tab
+                label={this.props.t("db_statistics:by_date.name")}
+                {...a11yProps(1)}
+              />
+              <Tab
+                label={this.props.t("db_statistics:by_range.name")}
+                {...a11yProps(2)}
+              />
+              <Tab
+                label={this.props.t("db_statistics:by_month.name")}
+                {...a11yProps(3)}
+              />
+              <div style={{ flexGrow: 1 }}></div>
+              {this.state.value == 1 && (
+                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                  <DatePicker
+                    format="yyyy-MM-dd"
+                    value={this.state.date0}
+                    disableFuture
+                    onChange={(date) => {
+                      let temp = data.filter((el) => {
+                        console.log(
+                          new Date(el.date).getTime(),
+                          date.getTime()
+                        );
+                        return (
+                          new Date(el.date).setHours(0, 0, 0, 0) ===
+                          date.setHours(0, 0, 0, 0)
+                        );
+                      });
+
+                      this.setState({ date0: date, filteredDateData: temp });
+                    }}
+                    style={{
+                      margin: "5px",
+                      justifySelf: "center",
+                      width: "150px",
+                    }}
+                    className="forDate"
+                  />
+                </MuiPickersUtilsProvider>
+              )}
+              {this.state.value == 2 && (
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 0.5fr 1fr",
+                    justifySelf: "center",
+                  }}
+                  className="forDate"
+                >
+                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <DatePicker
+                      format="yyyy-MM-dd"
+                      value={this.state.date1}
+                      onChange={(date) => {
+                        let temp = data.filter(
+                          (el) =>
+                            new Date(el.date).setHours(0, 0, 0, 0) <=
+                              this.state.date2.setHours(0, 0, 0, 0) &&
+                            new Date(el.date).setHours(0, 0, 0, 0) >=
+                              date.setHours(0, 0, 0, 0)
+                        );
+                        this.setState({
+                          date1: date,
+                          filteredDateDataRange: temp,
+                        });
+                      }}
+                      style={{ margin: "5px", width: "150px" }}
+                    />
+                  </MuiPickersUtilsProvider>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    to
+                  </div>
+                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <DatePicker
+                      format="yyyy-MM-dd"
+                      value={this.state.date2}
+                      onChange={(date) => {
+                        let temp = data.filter(
+                          (el) =>
+                            new Date(el.date).setHours(0, 0, 0, 0) <=
+                              date.setHours(0, 0, 0, 0) &&
+                            new Date(el.date).setHours(0, 0, 0, 0) >=
+                              this.state.date1.setHours(0, 0, 0, 0)
+                        );
+                        this.setState({
+                          date2: date,
+                          filteredDateDataRange: temp,
+                        });
+                      }}
+                      style={{
+                        margin: "5px",
+                        width: "150px",
+                        textAlign: "center",
+                      }}
+                    />
+                  </MuiPickersUtilsProvider>
+                </div>
+              )}
+              {this.state.value == 3 && (
+                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                  <DatePicker
+                    views={["year", "month"]}
+                    value={this.state.month}
+                    disableFuture
+                    onChange={(date) => {
+                      let temp = data.filter(
+                        (el) =>
+                          new Date(el.date).getMonth() === date.getMonth() &&
+                          new Date(el.date).getFullYear() === date.getFullYear()
+                      );
+                      this.setState({
+                        month: date,
+                        filteredDateDataMonth: temp,
+                      });
+                    }}
+                    style={{
+                      margin: "5px",
+                      justifySelf: "center",
+                      width: "150px",
+                    }}
+                    className="forDate"
+                  />
+                </MuiPickersUtilsProvider>
+              )}
             </Tabs>
             {value == 0 && (
               <Box>
@@ -1297,108 +1429,6 @@ class StatsTable extends React.Component {
             )}
           </Container>
         </Box>
-        {this.state.value == 1 && (
-          <div style={{ margin: "10px", justifySelf: "center" }}>
-            {this.props.t('db_statistics:by_date.title')}{" "}
-          </div>
-        )}
-        {this.state.value == 1 && (
-          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <DatePicker
-              format="yyyy-MM-dd"
-              value={this.state.date0}
-              disableFuture
-              onChange={(date) => {
-                let temp = data.filter((el) => {
-                  console.log(new Date(el.date).getTime(), date.getTime());
-                  return (
-                    new Date(el.date).setHours(0, 0, 0, 0) ===
-                    date.setHours(0, 0, 0, 0)
-                  );
-                });
-
-                this.setState({ date0: date, filteredDateData: temp });
-              }}
-              style={{ margin: "10px", justifySelf: "center", width: "150px" }}
-              className="forDate"
-            />
-          </MuiPickersUtilsProvider>
-        )}
-        {this.state.value == 2 && (
-          <div style={{ margin: "10px", justifySelf: "center" }}>
-            {this.props.t('db_statistics:by_range.title')}{" "}
-          </div>
-        )}
-        {this.state.value == 2 && (
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 0.5fr 1fr",
-              justifySelf: "center",
-            }}
-            className="forDate"
-          >
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-              <DatePicker
-                format="yyyy-MM-dd"
-                value={this.state.date1}
-                onChange={(date) => {
-                  let temp = data.filter(
-                    (el) =>
-                      new Date(el.date).setHours(0, 0, 0, 0) <=
-                        this.state.date2.setHours(0, 0, 0, 0) &&
-                      new Date(el.date).setHours(0, 0, 0, 0) >=
-                        date.setHours(0, 0, 0, 0)
-                  );
-                  this.setState({ date1: date, filteredDateDataRange: temp });
-                }}
-                style={{ margin: "10px", width: "150px" }}
-              />
-            </MuiPickersUtilsProvider>
-            <div style={{ margin: "10px", textAlign: "center" }}>to</div>
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-              <DatePicker
-                format="yyyy-MM-dd"
-                value={this.state.date2}
-                onChange={(date) => {
-                  let temp = data.filter(
-                    (el) =>
-                      new Date(el.date).setHours(0, 0, 0, 0) <=
-                        date.setHours(0, 0, 0, 0) &&
-                      new Date(el.date).setHours(0, 0, 0, 0) >=
-                        this.state.date1.setHours(0, 0, 0, 0)
-                  );
-                  this.setState({ date2: date, filteredDateDataRange: temp });
-                }}
-                style={{ margin: "10px", width: "150px", textAlign: "center" }}
-              />
-            </MuiPickersUtilsProvider>
-          </div>
-        )}
-        {this.state.value == 3 && (
-          <div style={{ margin: "10px", justifySelf: "center" }}>
-            {this.props.t('db_statistics:by_month.title')}{" "}
-          </div>
-        )}
-        {this.state.value == 3 && (
-          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <DatePicker
-              views={["year", "month"]}
-              value={this.state.month}
-              disableFuture
-              onChange={(date) => {
-                let temp = data.filter(
-                  (el) =>
-                    new Date(el.date).getMonth() === date.getMonth() &&
-                    new Date(el.date).getFullYear() === date.getFullYear()
-                );
-                this.setState({ month: date, filteredDateDataMonth: temp });
-              }}
-              style={{ margin: "10px", justifySelf: "center", width: "150px" }}
-              className="forDate"
-            />
-          </MuiPickersUtilsProvider>
-        )}
       </div>
     ) : (
       <Loader
@@ -1423,4 +1453,6 @@ StatsTable.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withTranslation(["db_statistics"])(withStyles(styles)(withSnackbar(StatsTable)));
+export default withTranslation(["db_statistics"])(
+  withStyles(styles)(withSnackbar(StatsTable))
+);

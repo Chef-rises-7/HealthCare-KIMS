@@ -1,30 +1,26 @@
-import { Link as RouterLink } from "react-router-dom";
-import * as Yup from "yup";
-import { useSnackbar } from "notistack";
-import { Formik } from "formik";
-import Image from "material-ui-image";
-import { sha256 } from "js-sha256";
-import useSWR from "swr";
-import React from "react";
-import { api_key, secret } from "../constants";
-import Navbar from "../navbar/Navbar";
-
 import {
   Box,
   Button,
+  Card,
+  CardContent,
   Container,
-  Grid,
   Link,
   TextField,
   Typography,
-  Card,
-  CardContent,
 } from "@material-ui-new/core";
-import { api_endpoint } from "../constants";
+import { Formik } from "formik";
+import { Howl } from "howler";
+import { sha256 } from "js-sha256";
+import Image from "material-ui-image";
+import { useSnackbar } from "notistack";
+import React from "react";
 import { useTranslation } from "react-i18next";
-import { Howl, Howler } from "howler";
-import audio_hi from "../../audio/hi/otp.mp3";
+import { Link as RouterLink } from "react-router-dom";
+import * as Yup from "yup";
 import audio_en from "../../audio/en/otp.mp3";
+import audio_hi from "../../audio/hi/otp.mp3";
+import { api_endpoint, secret } from "../constants";
+import Navbar from "../navbar/Navbar";
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 const otpExp = /^\d{6}$/;
@@ -64,10 +60,7 @@ const HandleOTP = (
       console.log(data);
       if (data.isNewAccount === "Y") {
         setTimeout(() => {
-          window.open(
-            "https://selfregistration.sandbox.cowin.gov.in",
-            "_blank"
-          );
+          window.open("https://selfregistration.cowin.gov.in", "_blank");
         }, 1000);
         throw new Error("Your mobile number isn't registered with Co-WIN");
       }
@@ -104,7 +97,6 @@ const HandleOTPResend = (
     },
     body: JSON.stringify({ mobile: String(phoneNo), secret: secret }),
   };
-  //   fetch(api_endpoint + "/api/v2/auth/generateOTP", requestOptions)
   fetch(api_endpoint + "/api/v2/auth/generateMobileOTP", requestOptions)
     .then((response) => {
       setSeconds(181);
@@ -121,6 +113,8 @@ const HandleOTPResend = (
       setErr(String(err.Error));
     });
 };
+
+//this component is used to verify otp which the user will input
 const LoginVerify = (props) => {
   //const navigate = useNavigate();
   const [errMsg, setErr] = React.useState("\u00a0");
@@ -128,10 +122,8 @@ const LoginVerify = (props) => {
   const { match, history } = props;
   const [seconds, setSeconds] = React.useState(181);
   const { t, i18n } = useTranslation(["signinverify", "snack_bar"]);
-  //   const [txnId, settxnID] = React.useState(""); // do it in useeffect
-  //   const [phoneNo, setPhoneNo] = React.useState("");
 
-  const [txnId, settxnID] = React.useState(""); // do it in useeffect
+  const [txnId, settxnID] = React.useState("");
   const [phoneNo, setPhoneNo] = React.useState("");
 
   React.useEffect(() => {
@@ -197,22 +189,45 @@ const LoginVerify = (props) => {
                 alignContent: "center",
               }}
             >
-              <Image
+              <div
                 style={{
-                  backgroundColor: "#ffffff",
-                  width: "200px",
-                  height: "200px",
-                  paddingTop: 0,
-                  margin: "auto",
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gridGap: "10px",
                   marginBottom: "5px",
                 }}
-                imageStyle={{
-                  width: "200px",
-                  height: "200px",
-                  margin: "auto",
-                }}
-                src="/logo.png"
-              />
+              >
+                <Image
+                  style={{
+                    backgroundColor: "#ffffff",
+                    width: "170px",
+                    height: "170px",
+                    paddingTop: 0,
+                    margin: "auto",
+                  }}
+                  imageStyle={{
+                    width: "170px",
+                    height: "170px",
+                    margin: "auto",
+                  }}
+                  src="/logo1gg.jpeg"
+                />
+                <Image
+                  style={{
+                    backgroundColor: "#ffffff",
+                    width: "170px",
+                    height: "170px",
+                    paddingTop: 0,
+                    margin: "auto",
+                  }}
+                  imageStyle={{
+                    width: "170px",
+                    height: "170px",
+                    margin: "auto",
+                  }}
+                  src="/logo2gg.png"
+                />
+              </div>
               <Formik
                 innerRef={formikref}
                 initialValues={{

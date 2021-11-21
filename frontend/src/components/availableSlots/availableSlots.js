@@ -1,39 +1,11 @@
-import { Link as RouterLink } from "react-router-dom";
-import * as Yup from "yup";
-import { useSnackbar } from "notistack";
-import { Formik } from "formik";
-import "./availableSlots.css";
-import Image from "material-ui-image";
-import { OldAge, YoungAge, Injection } from "../media/Icons";
-import useSWR from "swr";
-import React from "react";
-import { api_endpoint } from "../constants";
-import ConfirmationNumberOutlinedIcon from "@material-ui/icons/ConfirmationNumberOutlined";
-import GetAppOutlinedIcon from "@material-ui/icons/GetAppOutlined";
-import Icon from "@material-ui/core/SvgIcon";
-import {
-  Box,
-  Button,
-  Container,
-  Grid,
-  Link,
-  TextField,
-  Typography,
-  Card,
-  CardContent,
-  Divider,
-  IconButton,
-} from "@material-ui-new/core";
-import ClearOutlinedIcon from "@material-ui/icons/ClearOutlined";
-import CheckOutlinedIcon from "@material-ui/icons/CheckOutlined";
-import PeopleAltOutlinedIcon from "@material-ui/icons/PeopleAltOutlined";
-import VerifiedUserOutlinedIcon from "@material-ui/icons/VerifiedUserOutlined";
-import ContactMailIcon from "@material-ui/icons/ContactMail";
-import PersonIcon from "@material-ui/icons/Person";
-import EventAvailableIcon from "@material-ui/icons/EventAvailable";
-import { makeStyles } from "@material-ui/core/styles";
+import { Divider, Grid } from "@material-ui-new/core";
 import Chip from "@material-ui-new/core/Chip";
-import { useTranslation } from 'react-i18next';
+import { makeStyles } from "@material-ui/core/styles";
+import ConfirmationNumberOutlinedIcon from "@material-ui/icons/ConfirmationNumberOutlined";
+import { useSnackbar } from "notistack";
+import React from "react";
+import { useTranslation } from "react-i18next";
+import "./availableSlots.css";
 const AvailableSlots = (props) => {
   //const navigate = useNavigate();
   const { match, history } = props;
@@ -325,7 +297,11 @@ const AvailableSlots = (props) => {
                     fontSize: "12px",
                     fontWeight: "bold",
                   }}
-                  label={props.dose_choice === "dose1" ? t("signinotp:dose_1") : t("signinotp:dose_2")}
+                  label={
+                    props.dose_choice === "dose1"
+                      ? t("signinotp:dose_1")
+                      : t("signinotp:dose_2")
+                  }
                 />
               </div>
             </Grid>

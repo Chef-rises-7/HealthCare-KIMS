@@ -1,36 +1,32 @@
-import { Link as RouterLink } from "react-router-dom";
-import * as Yup from "yup";
-import { useSnackbar } from "notistack";
-import Swal from "sweetalert2";
-import { Formik } from "formik";
-import Image from "material-ui-image";
-import useSWR from "swr";
-import Loader from "react-loader-spinner";
-import React from "react";
-import PhoneIcon from "@material-ui/icons/Phone";
-import AvailableSlots from "../availableSlots/availableSlots";
-import "intro.js/introjs.css";
-import { Steps } from "intro.js-react";
-import Navbar from "../navbar/Navbar";
-
-import { api_endpoint, api_key, api_endpoint1, secret } from "../constants";
 import {
   Box,
   Button,
-  Container,
-  Grid,
-  Link,
-  TextField,
-  Typography,
   Card,
   CardContent,
   CardHeader,
+  Container,
   Divider,
+  Link,
+  TextField,
+  Typography,
 } from "@material-ui-new/core";
+import PhoneIcon from "@material-ui/icons/Phone";
+import { Formik } from "formik";
+import { Howl } from "howler";
+import "intro.js/introjs.css";
+import Image from "material-ui-image";
+import { useSnackbar } from "notistack";
+import React from "react";
 import { useTranslation } from "react-i18next";
-import { Howl, Howler } from "howler";
-import audio_hi from "../../audio/hi/signin.mp3";
+import Loader from "react-loader-spinner";
+import { Link as RouterLink } from "react-router-dom";
+import Swal from "sweetalert2";
+import * as Yup from "yup";
 import audio_en from "../../audio/en/signin.mp3";
+import audio_hi from "../../audio/hi/signin.mp3";
+import AvailableSlots from "../availableSlots/availableSlots";
+import { api_endpoint, api_endpoint1, secret } from "../constants";
+import Navbar from "../navbar/Navbar";
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 const phoneNoExp = /^[6-9]\d{9}$/;
@@ -80,6 +76,7 @@ const Login = (props) => {
   const [isLoading2, setLoading2] = React.useState(true);
   const [slotInfo, setSlotInfo] = React.useState([]);
   const [boolSteps, setBoolSteps] = React.useState(true);
+  // below template could be used for demo
   const [steps, setSteps] = React.useState([
     {
       element: ".step0",
@@ -111,7 +108,6 @@ const Login = (props) => {
         denyButtonText: "ಕನ್ನಡ",
         cancelButtonText: "हिंदी",
       }).then((result) => {
-        /* Read more about isConfirmed, isDenied below */
         if (result.isConfirmed) {
           i18n.changeLanguage("en");
           const play = new Howl({
@@ -180,6 +176,7 @@ const Login = (props) => {
             });
           } else {
             setLoading(false);
+            // remove tokens if beneficiary fetching fails
             localStorage.setItem("userToken", "");
             localStorage.setItem("phoneNo", "");
           }
@@ -223,21 +220,45 @@ const Login = (props) => {
                     alignContent: "center",
                   }}
                 >
-                  <Image
+                  <div
                     style={{
-                      backgroundColor: "#ffffff",
-                      width: "200px",
-                      height: "200px",
-                      paddingTop: 0,
-                      margin: "auto",
+                      display: "grid",
+                      gridTemplateColumns: "1fr 1fr",
+                      gridGap: "10px",
+                      marginBottom: "5px",
                     }}
-                    imageStyle={{
-                      width: "200px",
-                      height: "200px",
-                      margin: "auto",
-                    }}
-                    src="/logo.png"
-                  />
+                  >
+                    <Image
+                      style={{
+                        backgroundColor: "#ffffff",
+                        width: "170px",
+                        height: "170px",
+                        paddingTop: 0,
+                        margin: "auto",
+                      }}
+                      imageStyle={{
+                        width: "170px",
+                        height: "170px",
+                        margin: "auto",
+                      }}
+                      src="/logo1gg.jpeg"
+                    />
+                    <Image
+                      style={{
+                        backgroundColor: "#ffffff",
+                        width: "170px",
+                        height: "170px",
+                        paddingTop: 0,
+                        margin: "auto",
+                      }}
+                      imageStyle={{
+                        width: "170px",
+                        height: "170px",
+                        margin: "auto",
+                      }}
+                      src="/logo2gg.png"
+                    />
+                  </div>
                   <Formik
                     innerRef={formikref}
                     initialValues={{
@@ -314,71 +335,59 @@ const Login = (props) => {
                             {t("signinotp:get_otp")}
                           </Button>
                         </Box>
-                        <Divider />
-                        <div style={{ textAlign: "center", margin: "5px" }}>
-                          OR
-                        </div>
-                        <Box sx={{ py: 2 }}>
-                          <Button
-                            color="primary"
-                            fullWidth
-                            size="large"
-                            type="submit"
-                            variant="contained"
-                            className="step3"
-                            onClick={() => {
-                              if (
-                                !Boolean(touched.phoneNo && errors.phoneNo) &&
-                                values.phoneNo !== ""
-                              ) {
-                                history.push({
-                                  pathname: "/slotBookingForm",
-                                  state: {
-                                    fromApp: true,
-                                    phoneNo: values.phoneNo,
-                                  },
-                                });
-                              } else
-                                enqueueSnackbar(
-                                  "Please enter a valid phone number",
-                                  1500
-                                );
-                            }}
-                          >
-                            {t("signinotp:book_slots_manual")}
-                          </Button>
-                        </Box>
-                        <Divider />
-                        <Typography
-                          color="textSecondary"
-                          variant="body1"
-                          style={{ marginTop: "10px" }}
-                        >
-                          {t("signinotp:not_reg_cowin")}{" "}
-                          <a
-                            href="https://selfregistration.sandbox.cowin.gov.in"
-                            target="_blank"
-                          >
-                            {t("signinotp:register_here")}
-                          </a>
-                        </Typography>
-                        <Typography
-                          color="textSecondary"
-                          gutterBottom
-                          variant="body1"
-                          style={{ marginTop: "10px" }}
-                        >
-                          <Link
-                            component={RouterLink}
-                            to="/signinstaff"
-                            variant="body1"
-                          >
-                            {t("signinotp:staff_login")}
-                          </Link>
-                        </Typography>
                       </form>
                     )}
                   </Formik>
+                  <Divider />
+                  <div style={{ textAlign: "center", margin: "5px" }}>OR</div>
+                  <Box sx={{ py: 2 }}>
+                    <Button
+                      color="primary"
+                      fullWidth
+                      size="large"
+                      type="submit"
+                      variant="contained"
+                      className="step3"
+                      onClick={() => {
+                        history.push({
+                          pathname: "/slotBookingForm",
+                          state: {
+                            fromApp: true,
+                          },
+                        });
+                      }}
+                    >
+                      {t("signinotp:book_slots_manual")}
+                    </Button>
+                  </Box>
+                  <Divider />
+                  <Typography
+                    color="textSecondary"
+                    variant="body1"
+                    style={{ marginTop: "10px" }}
+                  >
+                    {t("signinotp:not_reg_cowin")}{" "}
+                    <a
+                      href="https://selfregistration.cowin.gov.in"
+                      target="_blank"
+                    >
+                      {t("signinotp:register_here")}
+                    </a>
+                  </Typography>
+                  <Typography
+                    color="textSecondary"
+                    gutterBottom
+                    variant="body1"
+                    style={{ marginTop: "10px" }}
+                  >
+                    <Link
+                      component={RouterLink}
+                      to="/signinstaff"
+                      variant="body1"
+                    >
+                      {t("signinotp:staff_login")}
+                    </Link>
+                  </Typography>
                 </Container>
               </CardContent>
             </Card>
@@ -426,6 +435,7 @@ const Login = (props) => {
           style={{ position: "fixed", left: "50%", top: "50%" }}
         />
       )}
+      {/* handle the case where data is not loaded with a loader*/}
     </>
   );
 };

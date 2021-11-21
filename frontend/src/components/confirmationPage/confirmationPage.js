@@ -1,50 +1,27 @@
-import { Link as RouterLink } from "react-router-dom";
-import * as Yup from "yup";
-import { useSnackbar } from "notistack";
-import { Formik } from "formik";
-import useSWR from "swr";
-import { jsPDF } from "jspdf";
-import React from "react";
-import { api_endpoint } from "../constants";
-import ActiveSlotCard from "../activeSlotCard/activeSlotCard";
-import ArrowBackIcon from "@material-ui/icons/ArrowBack";
-import AvailableSlots from "../availableSlots/availableSlots";
-import BookingCard from "../bookingCard/bookingCard";
-import GeneratedCard from "../generatedCard/generatedCard";
-import html2canvas from "html2canvas";
-import QRCode from "qrcode.react";
-import ReactToPdf from "react-to-pdf";
-import GetAppOutlinedIcon from "@material-ui/icons/GetAppOutlined";
 import {
-  Box,
   Button,
-  Container,
-  Grid,
-  Link,
-  TextField,
-  Typography,
   Card,
   CardContent,
   Divider,
+  Typography,
 } from "@material-ui-new/core";
-
-import { useTranslation } from "react-i18next";
-import { Howl, Howler } from "howler";
-import audio_hi from "../../audio/hi/token_success.mp3";
-import audio_en from "../../audio/en/token_success.mp3";
-
-import ClearOutlinedIcon from "@material-ui/icons/ClearOutlined";
-import BeneficiaryCard from "../beneficiaryCard/beneficiaryCard";
-import CheckOutlinedIcon from "@material-ui/icons/CheckOutlined";
-import VerifiedUserOutlinedIcon from "@material-ui/icons/VerifiedUserOutlined";
-import ContactMailIcon from "@material-ui/icons/ContactMail";
-import PersonIcon from "@material-ui/icons/Person";
-import EventAvailableIcon from "@material-ui/icons/EventAvailable";
-import { makeStyles } from "@material-ui/core/styles";
-import Chip from "@material-ui-new/core/Chip";
-import Navbar from "../navbar/Navbar";
 import { CardHeader } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import ArrowBackIcon from "@material-ui/icons/ArrowBack";
+import GetAppOutlinedIcon from "@material-ui/icons/GetAppOutlined";
+import { Howl } from "howler";
+import html2canvas from "html2canvas";
+import { jsPDF } from "jspdf";
+import { useSnackbar } from "notistack";
+import QRCode from "qrcode.react";
+import React from "react";
+import { useTranslation } from "react-i18next";
 import Loader from "react-loader-spinner";
+import audio_en from "../../audio/en/token_success.mp3";
+import audio_hi from "../../audio/hi/token_success.mp3";
+import GeneratedCard from "../generatedCard/generatedCard";
+import Navbar from "../navbar/Navbar";
+
 const ConfirmationPage = (props) => {
   //const navigate = useNavigate();
   const { match, history } = props;
@@ -73,7 +50,7 @@ const ConfirmationPage = (props) => {
     } else {
     }
     let timer = setTimeout(() => {
-      if(props.audio) {
+      if (props.audio) {
         play.play();
       }
     }, 1000);
@@ -116,20 +93,7 @@ const ConfirmationPage = (props) => {
   }));
   const downloadQRCode = (arr, payload) => {
     enqueueSnackbar(t("snack_bar:generate_pdf"));
-
-    // const qrCodeURL = document
-    //   .getElementById("qrCodeEl")
-    //   .toDataURL("image/png")
-    //   .replace("image/png", "image/octet-stream");
-    // console.log(qrCodeURL);
-    // let aEl = document.createElement("a");
-    // aEl.href = qrCodeURL;
-    // aEl.download = "QRToken.png";
-    // document.body.appendChild(aEl);
-    // aEl.click();
-    // document.body.removeChild(aEl);
-    // Don't forget, that there are CORS-Restrictions. So if you want to run it without a Server in your Browser you need to transform the image to a dataURL
-    // Use http://dataurl.net/#dataurlmaker
+    // define template for pdf
     var doc = new jsPDF();
     doc.setFontSize(20);
     var line = 20; // Line height to start text at
@@ -226,7 +190,9 @@ const ConfirmationPage = (props) => {
                   alignItems: "center",
                 }}
               >
-                <Typography variant="h3">{t("confirmpage:token_details")}</Typography>
+                <Typography variant="h3">
+                  {t("confirmpage:token_details")}
+                </Typography>
                 <div
                   style={{
                     display: "grid",
@@ -293,16 +259,12 @@ const ConfirmationPage = (props) => {
               <Divider variant="middle" style={{ marginTop: "20px" }} />
               <div>
                 <Typography variant="h3" style={{ marginTop: "10px" }}>
-                {t("confirmpage:post_booking_instruction")}
+                  {t("confirmpage:post_booking_instruction")}
                 </Typography>
               </div>
               <ul>
-                <li>
-                {t("confirmpage:post_inst_1")}
-                </li>
-                <li>
-                {t("confirmpage:post_inst_2")}
-                </li>
+                <li>{t("confirmpage:post_inst_1")}</li>
+                <li>{t("confirmpage:post_inst_2")}</li>
               </ul>
             </CardContent>
           </Card>
@@ -316,6 +278,7 @@ const ConfirmationPage = (props) => {
           style={{ position: "fixed", left: "50%", top: "50%" }}
         />
       )}
+      {/* handle the case where data is not loaded with a loader*/}
     </>
   );
 };
